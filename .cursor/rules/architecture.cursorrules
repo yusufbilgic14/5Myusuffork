@@ -1,0 +1,167 @@
+# Architecture Guidelines
+
+## Clean Architecture Principles
+- Strictly adhere to the Clean Architecture layers: Presentation, Domain, and Data
+- Follow the dependency rule: dependencies always point inward
+- Domain layer contains entities, repositories (interfaces), and use cases
+- Data layer implements repositories and contains data sources and models
+- Presentation layer contains UI components, blocs, and view models
+- Use proper abstractions with interfaces/abstract classes for each component
+- Every feature should follow this layered architecture pattern
+
+## Feature-First Organization
+- Organize code by features instead of technical layers
+- Each feature is a self-contained module with its own implementation of all layers
+- Core or shared functionality goes in a separate 'core' directory
+- Features should have minimal dependencies on other features
+
+### Directory Structure
+```
+lib/
+├── core/                          # Shared/common code
+│   ├── error/                     # Error handling, failures
+│   ├── network/                   # Network utilities, interceptors
+│   ├── utils/                     # Utility functions and extensions
+│   └── widgets/                   # Reusable widgets
+├── features/                      # All app features
+│   ├── feature_a/                 # Single feature
+│   │   ├── data/                  # Data layer
+│   │   │   ├── datasources/       # Remote and local data sources
+│   │   │   ├── models/            # DTOs and data models
+│   │   │   └── repositories/      # Repository implementations
+│   │   ├── domain/                # Domain layer
+│   │   │   ├── entities/          # Business objects
+│   │   │   ├── repositories/      # Repository interfaces
+│   │   │   └── usecases/          # Business logic use cases
+│   │   └── presentation/          # Presentation layer
+│   │       ├── bloc/              # Bloc/Cubit state management
+│   │       ├── pages/             # Screen widgets
+│   │       └── widgets/           # Feature-specific widgets
+│   └── feature_b/                 # Another feature with same structure
+└── main.dart                      # Entry point
+```
+
+## Repository Pattern
+- Use repository pattern for data persistence
+- Repositories act as a single source of truth for data
+- Implement caching strategies when appropriate
+- Handle network connectivity issues gracefully
+- Map data models to domain entities
+- Create proper abstractions with well-defined method signatures
+- Handle pagination and data fetching logic
+
+## Dependency Injection
+- Use GetIt as a service locator for dependency injection
+- Register dependencies by feature in separate files
+- Implement lazy initialization where appropriate
+- Use factories for transient objects and singletons for services
+- Create proper abstractions that can be easily mocked for testing
+- Use singleton for services and repositories
+- Use factory for use cases
+- Use lazy singleton for controllers
+
+## Use Case Pattern
+- Controller always takes methods as input and updates the UI state that effects the UI
+- Each use case should have a single responsibility
+- Use cases contain the business logic
+- They act as an interface between the presentation and data layers
+
+## Module Organization
+- Break down large widgets into smaller, focused widgets
+- Utilize const constructors wherever possible to reduce rebuilds
+- When a widget tree becomes too deep, create reusable components
+- A flatter widget structure improves performance and maintainability
+- Avoid Nesting Widgets Deeply in Flutter - break down complex widget trees
+- Deeply nested widgets can make state management more challenging
+
+## Examples
+
+### Use Case Implementation
+```dart
+abstract class UseCase<Type, Params> {
+  Future<Either<Failure, Type>> call(Params params);
+}
+
+class GetUser implements UseCase<User, String> {
+  final UserRepository repository;
+
+  GetUser(this.repository);
+
+  @override
+  Future<Either<Failure, User>> call(String userId) async {
+    return await repository.getUser(userId);
+  }
+}
+```
+
+### Repository Implementation
+```dart
+abstract class UserRepository {
+  Future<Either<Failure, User>> getUser(String id);
+  Future<Either<Failure, List<User>>> getUsers();
+  Future<Either<Failure, Unit>> saveUser(User user);
+}
+
+class UserRepositoryImpl implements UserRepository {
+  final UserRemoteDataSource remoteDataSource;
+  final UserLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
+
+  UserRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+    required this.networkInfo,
+  });
+
+  @override
+  Future<Either<Failure, User>> getUser(String id) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final remoteUser = await remoteDataSource.getUser(id);
+        await localDataSource.cacheUser(remoteUser);
+        return Right(remoteUser.toDomain());
+      } on ServerException {
+        return Left(ServerFailure());
+      }
+    } else {
+      try {
+        final localUser = await localDataSource.getLastUser();
+        return Right(localUser.toDomain());
+      } on CacheException {
+        return Left(CacheFailure());
+      }
+    }
+  }
+}
+```
+
+### Dependency Registration
+```dart
+final getIt = GetIt.instance;
+
+void initDependencies() {
+  // Core
+  getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt()));
+  
+  // Features - User
+  // Data sources
+  getIt.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImpl(client: getIt()),
+  );
+  getIt.registerLazySingleton<UserLocalDataSource>(
+    () => UserLocalDataSourceImpl(sharedPreferences: getIt()),
+  );
+  
+  // Repository
+  getIt.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(
+    remoteDataSource: getIt(),
+    localDataSource: getIt(),
+    networkInfo: getIt(),
+  ));
+  
+  // Use cases
+  getIt.registerLazySingleton(() => GetUser(getIt()));
+  
+  // Bloc
+  getIt.registerFactory(() => UserBloc(getUser: getIt()));
+} 

@@ -1,0 +1,137 @@
+# Performance Optimization Guidelines
+
+## Core Performance Principles
+- Optimize for Flutter performance metrics (first meaningful paint, time to interactive)
+- Use const widgets where possible to optimize rebuilds
+- Implement list view optimizations (e.g., ListView.builder)
+- Use AssetImage for static images and cached_network_image for remote images
+- Minimize widget rebuilds with proper state management
+- Use computation isolation for expensive operations with compute()
+- Profile and optimize render performance
+
+## Widget Performance
+- Use const constructors for immutable widgets wherever possible
+- Avoid creating widgets in build methods - prefer private widget classes
+- Use const constructors to reduce widget tree rebuilds
+- Break down large widgets into smaller, focused widgets
+- Utilize const constructors wherever possible to reduce rebuilds
+- When a widget tree becomes too deep, it can lead to longer build times and increased memory usage
+- A flatter widget structure improves performance and maintainability
+
+## State Management Performance
+- Minimize widget rebuilds with proper state management
+- Use BlocBuilder with buildWhen for optimized rebuilds
+- Implement proper cancellation of asynchronous operations when widgets are disposed
+- Use ref.invalidate() sparingly in Riverpod
+- Avoid unnecessary state updates
+
+## List and Data Performance
+- Implement list view optimizations using ListView.builder for large lists
+- Use ListView.builder for efficient rendering of large datasets
+- Implement pagination for large data sets
+- Cache network resources appropriately
+- Use lazy loading for expensive data operations
+- Implement proper scrolling optimizations
+
+## Image and Asset Performance
+- Use AssetImage for static images and cached_network_image for remote images
+- Always include an errorBuilder when using Image.network
+- Implement proper image caching strategies
+- Optimize image sizes and formats
+- Use appropriate image compression
+- Implement progressive image loading
+
+## Memory Management
+- Implement proper cancellation of asynchronous operations when widgets are disposed
+- Use weak references where appropriate
+- Dispose of controllers and streams properly
+- Avoid memory leaks in long-running operations
+- Monitor memory usage during development
+
+## Computation Performance
+- Use computation isolation for expensive operations with compute()
+- Move heavy calculations off the main thread
+- Implement background processing for non-UI operations
+- Use isolates for CPU-intensive tasks
+- Cache results of expensive computations
+
+## Network Performance
+- Implement caching strategies for network requests
+- Use compression for data transfer
+- Implement proper retry mechanisms
+- Bundle network requests when possible
+- Use connection pooling for HTTP requests
+- Implement offline-first strategies
+
+## Animation Performance
+- Use appropriate animation durations
+- Avoid animating expensive properties
+- Use Transform widgets for efficient animations
+- Implement proper animation disposal
+- Test animations on lower-end devices
+
+## Build Performance
+- Profile build times regularly
+- Use const constructors consistently
+- Avoid expensive operations in build methods
+- Implement proper widget lifecycle management
+- Use keys appropriately for widget identity
+
+## Profiling and Monitoring
+- Use Flutter Inspector for widget tree analysis
+- Profile render performance regularly
+- Monitor frame rates during development
+- Use DevTools for performance analysis
+- Test on various device configurations
+- Implement performance monitoring in production
+
+## Performance Testing
+- Test on lower-end devices
+- Verify scroll performance with large lists
+- Test image loading performance
+- Monitor memory usage during testing
+- Profile complex UI interactions
+- Test navigation performance
+
+## Code Optimization
+- Keep functions small and focused (less than 20 instructions)
+- Use higher-order functions efficiently
+- Avoid deep nesting in widget trees
+- Implement efficient algorithms and data structures
+- Use appropriate data types for operations
+
+## Best Practices
+- Profile before optimizing
+- Focus on user-perceived performance
+- Test on real devices, not just simulators
+- Implement progressive loading strategies
+- Use lazy initialization where appropriate
+- Monitor performance metrics continuously
+- Document performance considerations
+- Use appropriate caching strategies
+- Implement efficient error handling
+- Optimize for the critical rendering path
+
+## Performance Checklist
+- [ ] Use const constructors for immutable widgets
+- [ ] Implement ListView.builder for large lists
+- [ ] Use proper image loading and caching
+- [ ] Minimize widget rebuilds
+- [ ] Profile render performance
+- [ ] Test on various device configurations
+- [ ] Implement proper memory management
+- [ ] Use appropriate animation strategies
+- [ ] Cache network requests
+- [ ] Monitor performance metrics
+
+## Common Performance Pitfalls to Avoid
+- Creating widgets in build methods instead of using const constructors
+- Not using ListView.builder for large lists
+- Excessive widget rebuilds due to poor state management
+- Loading large images without optimization
+- Blocking the main thread with heavy computations
+- Not disposing of resources properly
+- Over-animating UI elements
+- Inefficient network request patterns
+- Deep widget tree nesting
+- Not testing on lower-end devices 

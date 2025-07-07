@@ -1,0 +1,139 @@
+# State Management Guidelines
+
+## Riverpod Guidelines
+- Use @riverpod annotation for generating providers
+- Prefer AsyncNotifierProvider and NotifierProvider over StateProvider
+- Avoid StateProvider, StateNotifierProvider, and ChangeNotifierProvider
+- Use ref.invalidate() for manually triggering provider updates
+- Implement proper cancellation of asynchronous operations when widgets are disposed
+- Use Riverpod to manage state globally
+- Use keepAlive when you need to keep the state alive
+
+## Key Conventions
+- Use ConsumerWidget with Riverpod for state-dependent widgets
+- Use HookConsumerWidget when combining Riverpod and Flutter Hooks
+- Prefer stateless widgets - use ConsumerWidget with Riverpod for state-dependent widgets
+
+## flutter_bloc Implementation
+- Use Bloc for complex event-driven logic and Cubit for simpler state management
+- Implement properly typed Events and States for each Bloc
+- Use Freezed for immutable state and union types
+- Create granular, focused Blocs for specific feature segments
+- Handle loading, error, and success states explicitly
+- Avoid business logic in UI components
+- Use BlocProvider for dependency injection of Blocs
+- Implement BlocObserver for logging and debugging
+- Separate event handling from UI logic
+
+## State Design Patterns
+- States should be immutable using Freezed
+- Use union types for state representation (initial, loading, success, error)
+- Emit specific, typed error states with failure details
+- Keep state classes small and focused
+- Use copyWith for state transitions
+- Handle side effects with BlocListener
+- Prefer BlocBuilder with buildWhen for optimized rebuilds
+- Use AsyncValue for proper error handling and loading states
+
+## Bloc Implementation Example
+```dart
+@freezed
+class UserState with _$UserState {
+  const factory UserState.initial() = _Initial;
+  const factory UserState.loading() = _Loading;
+  const factory UserState.loaded(User user) = _Loaded;
+  const factory UserState.error(Failure failure) = _Error;
+}
+
+@freezed
+class UserEvent with _$UserEvent {
+  const factory UserEvent.getUser(String id) = _GetUser;
+  const factory UserEvent.refreshUser() = _RefreshUser;
+}
+
+class UserBloc extends Bloc<UserEvent, UserState> {
+  final GetUser getUser;
+  String? currentUserId;
+
+  UserBloc({required this.getUser}) : super(const UserState.initial()) {
+    on<_GetUser>(_onGetUser);
+    on<_RefreshUser>(_onRefreshUser);
+  }
+
+  Future<void> _onGetUser(_GetUser event, Emitter<UserState> emit) async {
+    currentUserId = event.id;
+    emit(const UserState.loading());
+    final result = await getUser(event.id);
+    result.fold(
+      (failure) => emit(UserState.error(failure)),
+      (user) => emit(UserState.loaded(user)),
+    );
+  }
+
+  Future<void> _onRefreshUser(_RefreshUser event, Emitter<UserState> emit) async {
+    if (currentUserId != null) {
+      emit(const UserState.loading());
+      final result = await getUser(currentUserId!);
+      result.fold(
+        (failure) => emit(UserState.error(failure)),
+        (user) => emit(UserState.loaded(user)),
+      );
+    }
+  }
+}
+```
+
+## UI Implementation with Bloc
+```dart
+class UserPage extends StatelessWidget {
+  final String userId;
+
+  const UserPage({Key? key, required this.userId}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => getIt<UserBloc>()
+        ..add(UserEvent.getUser(userId)),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('User Details'),
+          actions: [
+            BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                return IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () {
+                    context.read<UserBloc>().add(const UserEvent.refreshUser());
+                  },
+                );
+              },
+            ),
+          ],
+        ),
+        body: BlocBuilder<UserBloc, UserState>(
+          builder: (context, state) {
+            return state.maybeWhen(
+              initial: () => const SizedBox(),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              loaded: (user) => UserDetailsWidget(user: user),
+              error: (failure) => ErrorWidget(failure: failure),
+              orElse: () => const SizedBox(),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+```
+
+## Best Practices
+- Use freezed to manage UI states
+- Use controller pattern for business logic with Riverpod
+- Use proper cancellation of asynchronous operations when widgets are disposed
+- Implement proper error handling for async operations
+- Centralize state management logic
+- Keep UI components stateless when possible
+- Use meaningful state names and transitions
+- Handle edge cases and loading states consistently 

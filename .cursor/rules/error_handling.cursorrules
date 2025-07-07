@@ -1,0 +1,180 @@
+# Error Handling & Validation Guidelines
+
+## Error Handling Principles
+- Use Either<Failure, Success> from Dartz for functional error handling
+- Create custom Failure classes for domain-specific errors
+- Implement proper error mapping between layers
+- Centralize error handling strategies
+- Provide user-friendly error messages
+- Log errors for debugging and analytics
+
+## Error Display in UI
+- Implement error handling in views using SelectableText.rich instead of SnackBars
+- Display errors in SelectableText.rich with red color for visibility
+- Handle empty states within the displaying screen
+- Use AsyncValue for proper error handling and loading states
+- Implement proper error handling for Supabase operations, including network errors
+
+## Dartz Error Handling
+- Use Either for better error control without exceptions
+- Left represents failure case, Right represents success case
+- Create a base Failure class and extend it for specific error types
+- Leverage pattern matching with fold() method to handle both success and error cases in one call
+- Use flatMap/bind for sequential operations that could fail
+- Create extension functions to simplify working with Either
+
+## Failure Classes
+```dart
+// Define base failure class
+abstract class Failure extends Equatable {
+  final String message;
+  
+  const Failure(this.message);
+  
+  @override
+  List<Object> get props => [message];
+}
+
+// Specific failure types
+class ServerFailure extends Failure {
+  const ServerFailure([String message = 'Server error occurred']) : super(message);
+}
+
+class CacheFailure extends Failure {
+  const CacheFailure([String message = 'Cache error occurred']) : super(message);
+}
+
+class NetworkFailure extends Failure {
+  const NetworkFailure([String message = 'Network error occurred']) : super(message);
+}
+
+class ValidationFailure extends Failure {
+  const ValidationFailure([String message = 'Validation failed']) : super(message);
+}
+```
+
+## Either Extensions
+```dart
+// Extension to handle Either<Failure, T> consistently
+extension EitherExtensions<L, R> on Either<L, R> {
+  R getRight() => (this as Right<L, R>).value;
+  L getLeft() => (this as Left<L, R>).value;
+  
+  // For use in UI to map to different widgets based on success/failure
+  Widget when({
+    required Widget Function(L failure) failure,
+    required Widget Function(R data) success,
+  }) {
+    return fold(
+      (l) => failure(l),
+      (r) => success(r),
+    );
+  }
+  
+  // Simplify chaining operations that can fail
+  Either<L, T> flatMap<T>(Either<L, T> Function(R r) f) {
+    return fold(
+      (l) => Left(l),
+      (r) => f(r),
+    );
+  }
+}
+```
+
+## Exception Handling
+- Use exceptions to handle errors you don't expect
+- If you catch an exception, it should be to:
+  - Fix an expected problem
+  - Add context
+  - Otherwise, use a global handler
+- Convert exceptions to failures at the data layer boundary
+- Never let exceptions bubble up to the presentation layer
+
+## Validation Patterns
+- Avoid data validations in functions and use classes with internal validation
+- Create value objects for domain-specific validation
+- Implement validation at the domain layer
+- Use functional validation patterns with Either
+- Provide clear validation error messages
+
+## Network Error Handling
+- Handle network connectivity issues gracefully
+- Implement retry mechanisms for transient failures
+- Provide offline capabilities where appropriate
+- Cache data to handle network failures
+- Show appropriate error messages for different network states
+
+## UI Error States
+```dart
+// Example error widget implementation
+class ErrorDisplayWidget extends StatelessWidget {
+  final Failure failure;
+  final VoidCallback? onRetry;
+  
+  const ErrorDisplayWidget({
+    Key? key,
+    required this.failure,
+    this.onRetry,
+  }) : super(key: key);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 64,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          const SizedBox(height: 16),
+          SelectableText.rich(
+            TextSpan(
+              text: failure.message,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontSize: 16,
+              ),
+            ),
+          ),
+          if (onRetry != null) ...[
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRetry,
+              child: const Text('Retry'),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+```
+
+## Error Recovery Strategies
+- Implement graceful fallbacks for failed operations
+- Provide retry mechanisms for temporary failures
+- Cache data for offline scenarios
+- Use circuit breaker patterns for external services
+- Implement progressive error disclosure
+- Allow users to recover from error states
+
+## Logging and Debugging
+- Log errors with appropriate context
+- Include stack traces for debugging
+- Use structured logging for better analysis
+- Implement error tracking and monitoring
+- Provide different log levels for different environments
+- Never log sensitive user data
+
+## Best Practices
+- Handle errors at the appropriate layer
+- Provide meaningful error messages to users
+- Use functional error handling patterns
+- Implement proper error recovery mechanisms
+- Test error scenarios thoroughly
+- Document error handling strategies
+- Use consistent error handling patterns across the app
+- Avoid silent failures
+- Handle edge cases explicitly 
