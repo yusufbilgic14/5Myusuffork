@@ -312,70 +312,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
-                    // Üst status bar alanı / Top status bar area
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          '9:41',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            // Sinyal çubukları / Signal bars
-                            Row(
-                              children: [
-                                Container(width: 3, height: 4, color: Colors.white),
-                                const SizedBox(width: 1),
-                                Container(width: 3, height: 6, color: Colors.white),
-                                const SizedBox(width: 1),
-                                Container(width: 3, height: 8, color: Colors.white),
-                                const SizedBox(width: 1),
-                                Container(width: 3, height: 10, color: Colors.white),
-                              ],
-                            ),
-                            const SizedBox(width: 5),
-                            const Icon(Icons.wifi, size: 15, color: Colors.white),
-                            const SizedBox(width: 5),
-                            // Batarya ikonu / Battery icon
-                            Container(
-                              width: 24,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white, width: 1),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      margin: const EdgeInsets.all(1),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(1),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: 1,
-                              height: 4,
-                              color: Colors.white,
-                              margin: const EdgeInsets.only(left: 1),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 24),
-                    
                     // Hamburger menu ve hoşgeldin metni / Hamburger menu and welcome text
                     Row(
                       children: [
@@ -419,8 +355,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    
-                    const SizedBox(height: 16),
                   ],
                 ),
               ),

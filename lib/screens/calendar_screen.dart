@@ -21,6 +21,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _selectedDate = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isLocaleInitialized = false;
+  bool _isGridView = false; // Takvim görünüm modu / Calendar view mode
 
   // Örnek ders verisi / Sample course data
   final List<Map<String, dynamic>> _courses = [
@@ -113,9 +114,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_view_month),
+            icon: Icon(_isGridView ? Icons.view_timeline : Icons.calendar_view_month),
             onPressed: () {
-              // TODO: Takvim grid görünümüne geç / Switch to calendar grid view
+              setState(() {
+                _isGridView = !_isGridView;
+              });
             },
           ),
         ],
@@ -126,12 +129,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
       body: Column(
         children: [
-          // Yatay tarih seçici / Horizontal date picker
-          _buildHorizontalDatePicker(),
+          // Yatay tarih seçici (sadece timeline view'da) / Horizontal date picker (only in timeline view)
+          if (!_isGridView) _buildHorizontalDatePicker(),
           
           // Ana takvim görünümü / Main calendar view
           Expanded(
-            child: _buildTimelineView(),
+            child: _isGridView ? _buildGridView() : _buildTimelineView(),
           ),
         ],
       ),
@@ -254,6 +257,196 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       ),
     );
+  }
+
+  // Grid takvim görünümü / Grid calendar view
+  Widget _buildGridView() {
+    return Container(
+      color: Colors.grey[50],
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Ay navigasyonu / Month navigation
+          _buildMonthNavigation(),
+          
+          const SizedBox(height: 16),
+          
+          // Haftanın günleri başlıkları / Days of week headers
+          _buildWeekdayHeaders(),
+          
+          const SizedBox(height: 8),
+          
+          // Takvim grid'i / Calendar grid
+          Expanded(
+            child: _buildCalendarGrid(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Ay navigasyonu / Month navigation
+  Widget _buildMonthNavigation() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          onPressed: () {
+            setState(() {
+              _selectedDate = DateTime(_selectedDate.year, _selectedDate.month - 1, 1);
+            });
+          },
+          icon: const Icon(Icons.chevron_left),
+          color: AppConstants.primaryColor,
+        ),
+        Text(
+          DateFormat('MMMM yyyy', 'tr_TR').format(_selectedDate),
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: AppConstants.primaryColor,
+          ),
+        ),
+        IconButton(
+          onPressed: () {
+            setState(() {
+              _selectedDate = DateTime(_selectedDate.year, _selectedDate.month + 1, 1);
+            });
+          },
+          icon: const Icon(Icons.chevron_right),
+          color: AppConstants.primaryColor,
+        ),
+      ],
+    );
+  }
+
+  // Haftanın günleri başlıkları / Days of week headers
+  Widget _buildWeekdayHeaders() {
+    final weekdays = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+    
+    return Row(
+      children: weekdays.map((day) => Expanded(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            day,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey[600],
+            ),
+          ),
+        ),
+      )).toList(),
+    );
+  }
+
+  // Takvim grid'i / Calendar grid
+  Widget _buildCalendarGrid() {
+    final firstDayOfMonth = DateTime(_selectedDate.year, _selectedDate.month, 1);
+    final lastDayOfMonth = DateTime(_selectedDate.year, _selectedDate.month + 1, 0);
+    final firstDayWeekday = (firstDayOfMonth.weekday - 1) % 7; // Pazartesi = 0
+    final daysInMonth = lastDayOfMonth.day;
+    
+    // Takvim için toplam hücre sayısı / Total cells needed for calendar
+    final totalCells = (firstDayWeekday + daysInMonth);
+    final rows = (totalCells / 7).ceil();
+    
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 7,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: rows * 7,
+      itemBuilder: (context, index) {
+        final dayIndex = index - firstDayWeekday + 1;
+        
+        // Boş hücreler (ay başından önce) / Empty cells before month start
+        if (index < firstDayWeekday) {
+          return Container();
+        }
+        
+        // Geçerli ay günleri / Valid days of current month
+        if (dayIndex <= daysInMonth) {
+          final date = DateTime(_selectedDate.year, _selectedDate.month, dayIndex);
+          final isToday = _isToday(date);
+          final isSelected = _isSameDay(date, _selectedDate);
+          final hasEvents = _hasEventsOnDate(date);
+          
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedDate = date;
+                _isGridView = false; // Grid'den timeline'a geç / Switch from grid to timeline
+              });
+            },
+            child: Container(
+              margin: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: isSelected 
+                    ? AppConstants.primaryColor
+                    : isToday 
+                        ? AppConstants.primaryColor.withValues(alpha: 0.1)
+                        : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+                border: isToday && !isSelected
+                    ? Border.all(color: AppConstants.primaryColor, width: 1)
+                    : null,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    dayIndex.toString(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected 
+                          ? Colors.white
+                          : isToday 
+                              ? AppConstants.primaryColor
+                              : AppConstants.textColorDark,
+                    ),
+                  ),
+                  if (hasEvents) ...[
+                    const SizedBox(height: 2),
+                    Container(
+                      width: 6,
+                      height: 6,
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.white : AppConstants.primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
+        }
+        
+        // Ay sonundan sonraki boş hücreler / Empty cells after month end
+        return Container();
+      },
+    );
+  }
+
+  // Bugün mü kontrol et / Check if today
+  bool _isToday(DateTime date) {
+    final today = DateTime.now();
+    return date.year == today.year && date.month == today.month && date.day == today.day;
+  }
+
+  // Aynı gün mü kontrol et / Check if same day
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+  }
+
+  // Tarihte etkinlik var mı kontrol et / Check if date has events
+  bool _hasEventsOnDate(DateTime date) {
+    // Basit örnek: hafta içi günlerde ders var varsayımı / Simple example: assume courses on weekdays
+    return date.weekday >= 1 && date.weekday <= 5;
   }
 
   // Tüm ders kartlarını oluştur / Build all course cards
@@ -479,25 +672,48 @@ class _CalendarScreenState extends State<CalendarScreen> {
            _selectedDate.day == today.day;
   }
 
-  // Sidebar drawer (basit versiyon - home screen'den adapte edilebilir)
+  // Sidebar drawer oluştur / Build sidebar drawer
   Widget _buildSideDrawer() {
     return Drawer(
       backgroundColor: const Color(0xFF1E3A8A),
       child: SafeArea(
         child: Column(
           children: [
-            // Profil bölümü / Profile section
+            // Üst profil bölümü / Top profile section
             Container(
               padding: const EdgeInsets.all(20),
-              child: const Column(
+              child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    child: Icon(Icons.person, size: 40, color: Color(0xFF1E3A8A)),
+                  // Profil resmi / Profile picture
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/elifyılmaz.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[300],
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.grey,
+                              size: 40,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 12),
-                  Text(
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Kullanıcı adı / Username
+                  const Text(
                     'Elif Yılmaz',
                     style: TextStyle(
                       color: Colors.white,
@@ -505,42 +721,149 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Text(
-                    'MIS - 3rd Grade',
+                  
+                  const SizedBox(height: 4),
+                  
+                  // Bölüm bilgisi / Department info
+                  const Text(
+                    'MIS',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  
+                  const Text(
+                    '3rd Grade',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
               ),
             ),
             
+            // Ayırıcı çizgi / Divider line
+            Container(
+              height: 1,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              color: Colors.white.withValues(alpha: 0.3),
+            ),
+            
+            const SizedBox(height: 20),
+            
             // Menü öğeleri / Menu items
             Expanded(
               child: ListView(
+                padding: EdgeInsets.zero,
                 children: [
-                  ListTile(
-                    leading: const Icon(Icons.home, color: Colors.white),
-                    title: const Text('Ana Sayfa', style: TextStyle(color: Colors.white)),
-                    onTap: () => Navigator.pop(context),
+                  _buildDrawerItem(
+                    icon: Icons.event,
+                    title: 'Upcoming Events',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // TODO: Upcoming Events sayfasına git
+                    },
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.calendar_today, color: Colors.white),
-                    title: const Text('Takvim', style: TextStyle(color: Colors.white)),
-                    onTap: () => Navigator.pop(context),
+                  _buildDrawerItem(
+                    icon: Icons.school,
+                    title: 'Course Grades',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // TODO: Course Grades sayfasına git
+                    },
                   ),
-                  ListTile(
-                    leading: const Icon(Icons.logout, color: Colors.white),
-                    title: const Text('Çıkış Yap', style: TextStyle(color: Colors.white)),
-                    onTap: () => Navigator.pop(context),
+                  _buildDrawerItem(
+                    icon: Icons.restaurant,
+                    title: 'Cafeteria Menu',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // TODO: Cafeteria Menu sayfasına git
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.notifications,
+                    title: 'Notifications',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // TODO: Notifications sayfasına git
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.feedback,
+                    title: 'Feedbacks',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // TODO: Feedbacks sayfasına git
+                    },
+                  ),
+                  _buildDrawerItem(
+                    icon: Icons.settings,
+                    title: 'Settings',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // TODO: Settings sayfasına git
+                    },
                   ),
                 ],
               ),
             ),
+            
+            // Alt bölüm - Help ve Logout / Bottom section - Help and Logout
+            Column(
+              children: [
+                _buildDrawerItem(
+                  icon: Icons.help_outline,
+                  title: 'Help',
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Help sayfasına git
+                  },
+                ),
+                _buildDrawerItem(
+                  icon: Icons.logout,
+                  title: 'Logout',
+                  textColor: Colors.red[300],
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Logout işlemi
+                  },
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  // Drawer menü öğesi oluştur / Build drawer menu item
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    Color? textColor,
+  }) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: textColor ?? Colors.white,
+        size: 24,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: textColor ?? Colors.white,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
     );
   }
 } 

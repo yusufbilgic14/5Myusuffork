@@ -21,48 +21,24 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   bool _mapError = false; // Google Maps error state
   
   // İstanbul Medipol Üniversitesi koordinatları / Medipol University coordinates
-  static const LatLng _medipolCenter = LatLng(41.0082, 28.9784);
+  static const LatLng _medipolCenter = LatLng(41.088612162240274, 29.08920602676745);
   
   // Kampüs binaları / Campus buildings
   final Set<Marker> _buildingMarkers = {
     const Marker(
       markerId: MarkerId('main_building'),
-      position: LatLng(41.0085, 28.9780),
+      position: LatLng(41.08852308584411, 29.088860275782068),
       infoWindow: InfoWindow(
-        title: 'Ana Bina',
-        snippet: 'Rektörlük ve İdari Birimler',
+        title: 'Main Building',
+        snippet: 'Kavacık South Campus',
       ),
     ),
     const Marker(
-      markerId: MarkerId('engineering_building'),
-      position: LatLng(41.0080, 28.9785),
+      markerId: MarkerId('north_campus'),
+      position: LatLng(41.091203723712844, 29.091344541914122),
       infoWindow: InfoWindow(
-        title: 'Mühendislik Fakültesi',
-        snippet: 'Bilgisayar ve Elektrik Mühendisliği',
-      ),
-    ),
-    const Marker(
-      markerId: MarkerId('library'),
-      position: LatLng(41.0088, 28.9782),
-      infoWindow: InfoWindow(
-        title: 'Kütüphane',
-        snippet: 'Merkez Kütüphane',
-      ),
-    ),
-    const Marker(
-      markerId: MarkerId('cafeteria'),
-      position: LatLng(41.0078, 28.9788),
-      infoWindow: InfoWindow(
-        title: 'Kafeterya',
-        snippet: 'Ana Yemek Salonu',
-      ),
-    ),
-    const Marker(
-      markerId: MarkerId('sports_center'),
-      position: LatLng(41.0082, 28.9790),
-      infoWindow: InfoWindow(
-        title: 'Spor Merkezi',
-        snippet: 'Kapalı Spor Salonu',
+        title: 'North Campus',
+        snippet: 'Kavacık North Campus',
       ),
     ),
   };
@@ -71,29 +47,18 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   final Set<Marker> _shuttleStops = {
     Marker(
       markerId: const MarkerId('shuttle_main_gate'),
-      position: const LatLng(41.0075, 28.9775),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      position: const LatLng(41.08958242494858, 29.0899021494668),
       infoWindow: const InfoWindow(
-        title: 'Ana Kapı Durağı',
-        snippet: 'Servis Durağı',
+        title: 'Kavacık Köprüsü Bus Stop',
+        snippet: 'Asia Road',
       ),
     ),
     Marker(
-      markerId: const MarkerId('shuttle_library'),
-      position: const LatLng(41.0090, 28.9784),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      markerId: const MarkerId('shuttle_europe'),
+      position: const LatLng(41.08764623193279, 29.093379648637885),
       infoWindow: const InfoWindow(
-        title: 'Kütüphane Durağı',
-        snippet: 'Servis Durağı',
-      ),
-    ),
-    Marker(
-      markerId: const MarkerId('shuttle_dormitory'),
-      position: const LatLng(41.0085, 28.9795),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-      infoWindow: const InfoWindow(
-        title: 'Yurt Durağı',
-        snippet: 'Servis Durağı',
+        title: 'Kavacık Köprüsü Bus Stop',
+        snippet: 'Europe Road',
       ),
     ),
   };
