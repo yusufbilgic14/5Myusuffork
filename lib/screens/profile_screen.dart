@@ -10,6 +10,7 @@ import 'home_screen.dart';
 import 'calendar_screen.dart';
 import 'campus_map_screen.dart';
 import 'qr_access_screen.dart';
+import 'feedback_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -562,7 +563,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: 'Feedbacks',
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Feedbacks sayfasına git
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                      );
                     },
                   ),
                   _buildDrawerItem(
