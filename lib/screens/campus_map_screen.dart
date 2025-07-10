@@ -19,6 +19,22 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   String _selectedBuildingType = 'Tümü';
   int _selectedIndex = 0; // Navigation tab is selected
   bool _mapError = false; // Google Maps error state
+  bool _isInitializing = true; // Map initialization state
+  
+  @override
+  void initState() {
+    super.initState();
+    // iOS için timeout mekanizması / Timeout mechanism for iOS
+    Future.delayed(const Duration(seconds: 10), () {
+      if (mounted && _isInitializing) {
+        setState(() {
+          _mapError = true;
+          _isInitializing = false;
+        });
+        debugPrint('Google Maps initialization timeout on iOS');
+      }
+    });
+  }
   
   // İstanbul Medipol Üniversitesi koordinatları / Medipol University coordinates
   static const LatLng _medipolCenter = LatLng(41.088612162240274, 29.08920602676745);
@@ -66,26 +82,28 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Ana Google Maps widget'ı / Main Google Maps widget
-          _buildMapWidget(),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Ana Google Maps widget'ı / Main Google Maps widget
+            _buildMapWidget(),
 
-          // Üst overlay - Arama çubuğu ve filtre / Top overlay - Search bar and filter
-          _buildTopOverlay(),
+            // Üst overlay - Arama çubuğu ve filtre / Top overlay - Search bar and filter
+            _buildTopOverlay(),
 
-          // Sol üst - Geri butonu / Top left - Back button
-          _buildBackButton(),
+            // Sol üst - Geri butonu / Top left - Back button
+            _buildBackButton(),
 
-          // Sağ alt - Servis katmanı toggle / Bottom right - Shuttle layer toggle
-          _buildShuttleToggle(),
+            // Sağ alt - Servis katmanı toggle / Bottom right - Shuttle layer toggle
+            _buildShuttleToggle(),
 
-          // Alt overlay - Rota paneli / Bottom overlay - Route panel
-          if (_showRoutePanel) _buildRoutePanel(),
+            // Alt overlay - Rota paneli / Bottom overlay - Route panel
+            if (_showRoutePanel) _buildRoutePanel(),
 
-          // Alt navigasyon çubuğu / Bottom navigation bar
-          _buildBottomNavigation(),
-        ],
+            // Alt navigasyon çubuğu / Bottom navigation bar
+            _buildBottomNavigation(),
+          ],
+        ),
       ),
     );
   }
@@ -419,10 +437,58 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
       return _buildMapErrorWidget();
     }
     
+    // iOS için initialization loading göster / Show initialization loading for iOS
+    if (_isInitializing) {
+      return Container(
+        color: Colors.grey[100],
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                color: Color(0xFF1E3A8A),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Harita yükleniyor...',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xFF1E3A8A),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    
     return GoogleMap(
       onMapCreated: (GoogleMapController controller) {
-        if (mounted) {
-          _mapController = controller;
+        try {
+          if (mounted) {
+            _mapController = controller;
+            setState(() {
+              _isInitializing = false;
+            });
+            debugPrint('Google Maps initialized successfully on iOS');
+          }
+        } catch (e) {
+          // API anahtarı veya yapılandırma hataları için / For API key or configuration errors
+          debugPrint('Google Maps initialization error: $e');
+          if (mounted) {
+            setState(() {
+              _mapError = true;
+              _isInitializing = false;
+            });
+          }
+        }
+      },
+      onCameraMove: (CameraPosition position) {
+        // Hareket sırasında herhangi bir hata varsa yakala / Catch any errors during movement
+        try {
+          // Bu callback normalde hata vermez, ama güvenlik için / This callback normally doesn't error, but for safety
+        } catch (e) {
+          debugPrint('Camera move error: $e');
         }
       },
       initialCameraPosition: const CameraPosition(
@@ -463,7 +529,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Google Maps API anahtarı yapılandırılmamış.',
+              'Google Maps yüklenemedi.',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -472,7 +538,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Lütfen API anahtarını AndroidManifest.xml dosyasına ekleyin.',
+              'API anahtarı yapılandırmasını kontrol edin veya internet bağlantınızı doğrulayın.',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[500],

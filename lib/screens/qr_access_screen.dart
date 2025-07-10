@@ -8,6 +8,7 @@ import 'home_screen.dart';
 import 'calendar_screen.dart';
 import 'campus_map_screen.dart';
 import 'profile_screen.dart';
+import 'feedback_screen.dart';
 import 'qr_scanner_screen.dart';
 
 class QRAccessScreen extends StatefulWidget {
@@ -482,7 +483,10 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                     title: 'Feedbacks',
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Feedbacks sayfasına git
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                      );
                     },
                   ),
                   _buildDrawerItem(

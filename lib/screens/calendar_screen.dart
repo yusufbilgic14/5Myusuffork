@@ -9,6 +9,7 @@ import 'home_screen.dart';
 import 'campus_map_screen.dart';
 import 'qr_access_screen.dart';
 import 'profile_screen.dart';
+import 'feedback_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -797,7 +798,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     title: 'Feedbacks',
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Feedbacks sayfasına git
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                      );
                     },
                   ),
                   _buildDrawerItem(
