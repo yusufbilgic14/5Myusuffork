@@ -46,17 +46,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {
                 _scaffoldKey.currentState?.openDrawer();
               },
-              child: const Icon(
-                Icons.menu,
-                color: Colors.white,
-                size: 24,
-              ),
+              child: const Icon(Icons.menu, color: Colors.white, size: 24),
             );
           },
         ),
         automaticallyImplyLeading: false,
       ),
-      
+
       // Hamburger menu drawer
       drawer: _buildSideDrawer(),
 
@@ -68,9 +64,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               // Üst kullanıcı bilgi kartı / Top user info card
               _buildUserInfoCard(),
-              
+
               const SizedBox(height: AppConstants.paddingXLarge),
-              
+
               // İstatistik kartları başlığı / Stats cards title
               Text(
                 'Hızlı İstatistikler',
@@ -80,14 +76,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: AppThemes.getPrimaryColor(context),
                 ),
               ),
-              
+
               const SizedBox(height: AppConstants.paddingMedium),
-              
+
               // Yatay kaydırılabilir istatistik kartları / Horizontal scrollable stats cards
               _buildStatsCards(),
-              
+
               const SizedBox(height: AppConstants.paddingXLarge),
-              
+
               // Menü öğeleri başlığı / Menu items title
               Text(
                 'Hesap Ayarları',
@@ -97,13 +93,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: AppThemes.getPrimaryColor(context),
                 ),
               ),
-              
+
               const SizedBox(height: AppConstants.paddingMedium),
-              
+
               // Menü öğeleri listesi / Menu items list
               _buildMenuItems(),
-              
-              const SizedBox(height: 80), // Alt navigasyon için boşluk / Space for bottom navigation
+
+              const SizedBox(
+                height: 80,
+              ), // Alt navigasyon için boşluk / Space for bottom navigation
             ],
           ),
         ),
@@ -178,7 +176,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     return Container(
       width: 140,
-      padding: const EdgeInsets.all(AppConstants.paddingSmall + 2), // Reduced padding
+      padding: const EdgeInsets.all(
+        AppConstants.paddingSmall + 2,
+      ), // Reduced padding
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
         borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
@@ -313,7 +313,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: (iconColor ?? AppConstants.primaryColor).withValues(alpha: 0.1),
+          color: (iconColor ?? AppConstants.primaryColor).withValues(
+            alpha: 0.1,
+          ),
           borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
         ),
         child: Icon(
@@ -351,7 +353,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
           leading: Container(
             width: 40,
             height: 40,
@@ -415,7 +420,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'Çıkış Yap',
             style: TextStyle(color: AppConstants.primaryColor),
           ),
-          content: const Text('Hesabınızdan çıkış yapmak istediğinizden emin misiniz?'),
+          content: const Text(
+            'Hesabınızdan çıkış yapmak istediğinizden emin misiniz?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -475,9 +482,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Kullanıcı adı / Username
                   const Text(
                     'Elif Yılmaz',
@@ -487,9 +494,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 4),
-                  
+
                   // Bölüm bilgisi / Department info
                   const Text(
                     'MIS',
@@ -499,7 +506,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  
+
                   const Text(
                     '3rd Grade',
                     style: TextStyle(
@@ -511,16 +518,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            
+
             // Ayırıcı çizgi / Divider line
             Container(
               height: 1,
               margin: const EdgeInsets.symmetric(horizontal: 20),
               color: Colors.white.withValues(alpha: 0.3),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Menü öğeleri / Menu items
             Expanded(
               child: ListView(
@@ -565,7 +572,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const FeedbackScreen(),
+                        ),
                       );
                     },
                   ),
@@ -580,7 +589,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
-            
+
             // Alt bölüm - Help ve Logout / Bottom section - Help and Logout
             Column(
               children: [
@@ -618,11 +627,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Color? textColor,
   }) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: textColor ?? Colors.white,
-        size: 24,
-      ),
+      leading: Icon(icon, color: textColor ?? Colors.white, size: 24),
       title: Text(
         title,
         style: TextStyle(
@@ -635,6 +640,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
     );
   }
-
-
-} 
+}

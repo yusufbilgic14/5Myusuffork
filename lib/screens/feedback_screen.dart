@@ -14,32 +14,57 @@ class FeedbackScreen extends StatefulWidget {
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
   int _selectedIndex = -1; // Feedback screen - no bottom nav selection
-  
+
   // Form controllers / Form kontrolleri
   final _formKey = GlobalKey<FormState>();
   final _subjectController = TextEditingController();
   final _messageController = TextEditingController();
   final _emailController = TextEditingController();
-  
+
   // Form state variables / Form durum değişkenleri
   String _selectedCategory = '';
   String _selectedDepartment = '';
   String _selectedPriority = 'Medium';
   bool _isAnonymous = false;
   bool _isSubmitting = false;
-  String _selectedType = ''; // 'talep' veya 'geri_bildirim' / 'request' or 'feedback'
+  String _selectedType =
+      ''; // 'talep' veya 'geri_bildirim' / 'request' or 'feedback'
   List<String> _attachedFiles = []; // Eklenen dosyalar / Attached files
-  
+
   // Talep kategorileri / Request categories
   final List<Map<String, dynamic>> _talepCategories = [
     {'name': 'Akademik Destek', 'icon': Icons.school, 'color': Colors.blue},
     {'name': 'Teknik Yardım', 'icon': Icons.build, 'color': Colors.orange},
-    {'name': 'Kütüphane Hizmetleri', 'icon': Icons.library_books, 'color': Colors.green},
-    {'name': 'Yemekhane Hizmetleri', 'icon': Icons.restaurant, 'color': Colors.red},
-    {'name': 'Ulaşım Talebi', 'icon': Icons.directions_bus, 'color': Colors.purple},
-    {'name': 'Güvenlik Desteği', 'icon': Icons.security, 'color': Colors.red[700]},
-    {'name': 'Mali İşler', 'icon': Icons.account_balance_wallet, 'color': Colors.indigo},
-    {'name': 'Genel Talep', 'icon': Icons.chat_bubble_outline, 'color': Colors.grey[600]},
+    {
+      'name': 'Kütüphane Hizmetleri',
+      'icon': Icons.library_books,
+      'color': Colors.green,
+    },
+    {
+      'name': 'Yemekhane Hizmetleri',
+      'icon': Icons.restaurant,
+      'color': Colors.red,
+    },
+    {
+      'name': 'Ulaşım Talebi',
+      'icon': Icons.directions_bus,
+      'color': Colors.purple,
+    },
+    {
+      'name': 'Güvenlik Desteği',
+      'icon': Icons.security,
+      'color': Colors.red[700],
+    },
+    {
+      'name': 'Mali İşler',
+      'icon': Icons.account_balance_wallet,
+      'color': Colors.indigo,
+    },
+    {
+      'name': 'Genel Talep',
+      'icon': Icons.chat_bubble_outline,
+      'color': Colors.grey[600],
+    },
   ];
 
   // Geri bildirim kategorileri / Feedback categories
@@ -48,11 +73,23 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     {'name': 'Öneri', 'icon': Icons.lightbulb, 'color': Colors.orange},
     {'name': 'Şikayet', 'icon': Icons.error_outline, 'color': Colors.red[700]},
     {'name': 'Takdir', 'icon': Icons.thumb_up, 'color': Colors.green},
-    {'name': 'Özellik İsteği', 'icon': Icons.add_circle_outline, 'color': Colors.blue},
-    {'name': 'Uygulama Yorumu', 'icon': Icons.rate_review, 'color': Colors.purple},
-    {'name': 'Genel Geri Bildirim', 'icon': Icons.chat_bubble_outline, 'color': Colors.grey[600]},
+    {
+      'name': 'Özellik İsteği',
+      'icon': Icons.add_circle_outline,
+      'color': Colors.blue,
+    },
+    {
+      'name': 'Uygulama Yorumu',
+      'icon': Icons.rate_review,
+      'color': Colors.purple,
+    },
+    {
+      'name': 'Genel Geri Bildirim',
+      'icon': Icons.chat_bubble_outline,
+      'color': Colors.grey[600],
+    },
   ];
-  
+
   // Departman listesi / Department list
   final List<String> _departments = [
     'Information Technology',
@@ -66,7 +103,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     'Financial Aid',
     'General Administration',
   ];
-  
+
   // Öncelik seviyeleri / Priority levels
   final List<String> _priorities = ['Low', 'Medium', 'High', 'Urgent'];
 
@@ -115,9 +152,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Kullanıcı adı / Username
                   const Text(
                     'Elif Yılmaz',
@@ -127,9 +164,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 4),
-                  
+
                   // Bölüm bilgisi / Department info
                   const Text(
                     'MIS',
@@ -139,7 +176,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  
+
                   const Text(
                     '3rd Grade',
                     style: TextStyle(
@@ -151,16 +188,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 ],
               ),
             ),
-            
+
             // Ayırıcı çizgi / Divider line
             Container(
               height: 1,
               margin: const EdgeInsets.symmetric(horizontal: 20),
               color: Colors.white.withValues(alpha: 0.3),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Menü öğeleri / Menu items
             Expanded(
               child: ListView(
@@ -218,7 +255,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 ],
               ),
             ),
-            
+
             // Alt bölüm - Help ve Logout / Bottom section - Help and Logout
             Column(
               children: [
@@ -265,11 +302,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             )
           : null,
       child: ListTile(
-        leading: Icon(
-          icon,
-          color: textColor ?? Colors.white,
-          size: 24,
-        ),
+        leading: Icon(icon, color: textColor ?? Colors.white, size: 24),
         title: Text(
           title,
           style: TextStyle(
@@ -305,23 +338,31 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 onTap: () {
                   setState(() {
                     _selectedType = 'talep';
-                    _selectedCategory = ''; // Kategori seçimini sıfırla / Reset category selection
-                    _isAnonymous = false; // Talep için anonim seçeneği sıfırla / Reset anonymous for request
+                    _selectedCategory =
+                        ''; // Kategori seçimini sıfırla / Reset category selection
+                    _isAnonymous =
+                        false; // Talep için anonim seçeneği sıfırla / Reset anonymous for request
                   });
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: _selectedType == 'talep' ? const Color(0xFF1E3A8A) : Colors.white,
+                    color: _selectedType == 'talep'
+                        ? const Color(0xFF1E3A8A)
+                        : Colors.white,
                     border: Border.all(
-                      color: _selectedType == 'talep' ? const Color(0xFF1E3A8A) : Colors.grey[300]!,
+                      color: _selectedType == 'talep'
+                          ? const Color(0xFF1E3A8A)
+                          : Colors.grey[300]!,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: _selectedType == 'talep'
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF1E3A8A).withValues(alpha: 0.3),
+                              color: const Color(
+                                0xFF1E3A8A,
+                              ).withValues(alpha: 0.3),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
@@ -333,14 +374,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     children: [
                       Icon(
                         Icons.request_page,
-                        color: _selectedType == 'talep' ? Colors.white : const Color(0xFF1E3A8A),
+                        color: _selectedType == 'talep'
+                            ? Colors.white
+                            : const Color(0xFF1E3A8A),
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Talep',
                         style: TextStyle(
-                          color: _selectedType == 'talep' ? Colors.white : const Color(0xFF1E3A8A),
+                          color: _selectedType == 'talep'
+                              ? Colors.white
+                              : const Color(0xFF1E3A8A),
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
@@ -356,22 +401,29 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 onTap: () {
                   setState(() {
                     _selectedType = 'geri_bildirim';
-                    _selectedCategory = ''; // Kategori seçimini sıfırla / Reset category selection
+                    _selectedCategory =
+                        ''; // Kategori seçimini sıfırla / Reset category selection
                   });
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
-                    color: _selectedType == 'geri_bildirim' ? const Color(0xFF1E3A8A) : Colors.white,
+                    color: _selectedType == 'geri_bildirim'
+                        ? const Color(0xFF1E3A8A)
+                        : Colors.white,
                     border: Border.all(
-                      color: _selectedType == 'geri_bildirim' ? const Color(0xFF1E3A8A) : Colors.grey[300]!,
+                      color: _selectedType == 'geri_bildirim'
+                          ? const Color(0xFF1E3A8A)
+                          : Colors.grey[300]!,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: _selectedType == 'geri_bildirim'
                         ? [
                             BoxShadow(
-                              color: const Color(0xFF1E3A8A).withValues(alpha: 0.3),
+                              color: const Color(
+                                0xFF1E3A8A,
+                              ).withValues(alpha: 0.3),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
@@ -383,14 +435,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     children: [
                       Icon(
                         Icons.feedback,
-                        color: _selectedType == 'geri_bildirim' ? Colors.white : const Color(0xFF1E3A8A),
+                        color: _selectedType == 'geri_bildirim'
+                            ? Colors.white
+                            : const Color(0xFF1E3A8A),
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         'Geri Bildirim',
                         style: TextStyle(
-                          color: _selectedType == 'geri_bildirim' ? Colors.white : const Color(0xFF1E3A8A),
+                          color: _selectedType == 'geri_bildirim'
+                              ? Colors.white
+                              : const Color(0xFF1E3A8A),
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
@@ -412,8 +468,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       return const SizedBox.shrink(); // Tip seçilmemişse gösterme / Don't show if type not selected
     }
 
-    final categories = _selectedType == 'talep' ? _talepCategories : _geriBildirimCategories;
-    final title = _selectedType == 'talep' ? 'Talep Kategorisi Seçin' : 'Geri Bildirim Kategorisi Seçin';
+    final categories = _selectedType == 'talep'
+        ? _talepCategories
+        : _geriBildirimCategories;
+    final title = _selectedType == 'talep'
+        ? 'Talep Kategorisi Seçin'
+        : 'Geri Bildirim Kategorisi Seçin';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -439,18 +499,25 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 });
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: isSelected ? const Color(0xFF1E3A8A) : Colors.white,
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[300]!,
+                    color: isSelected
+                        ? const Color(0xFF1E3A8A)
+                        : Colors.grey[300]!,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: const Color(0xFF1E3A8A).withValues(alpha: 0.3),
+                            color: const Color(
+                              0xFF1E3A8A,
+                            ).withValues(alpha: 0.3),
                             offset: const Offset(0, 2),
                             blurRadius: 8,
                           ),
@@ -509,11 +576,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         ),
         child: Row(
           children: [
-            const Icon(
-              Icons.star_rate,
-              color: Color(0xFF1E3A8A),
-              size: 24,
-            ),
+            const Icon(Icons.star_rate, color: Color(0xFF1E3A8A), size: 24),
             const SizedBox(width: 12),
             const Expanded(
               child: Text(
@@ -608,13 +671,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
           items: _departments.map((department) {
-            return DropdownMenuItem(
-              value: department,
-              child: Text(department),
-            );
+            return DropdownMenuItem(value: department, child: Text(department));
           }).toList(),
           onChanged: (value) {
             setState(() {
@@ -628,9 +691,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             return null;
           },
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Öncelik seviyesi / Priority level
         const Text(
           'Öncelik Seviyesi',
@@ -647,11 +710,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             final color = priority == 'Low'
                 ? Colors.green
                 : priority == 'Medium'
-                    ? Colors.orange
-                    : priority == 'High'
-                        ? Colors.red
-                        : Colors.red[800]!;
-            
+                ? Colors.orange
+                : priority == 'High'
+                ? Colors.red
+                : Colors.red[800]!;
+
             return Expanded(
               child: GestureDetector(
                 onTap: () {
@@ -681,9 +744,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             );
           }).toList(),
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // E-posta adresi (anonim değilse veya talep türü seçildiyse) / Email address (if not anonymous or request type selected)
         if (!_isAnonymous || _selectedType == 'talep') ...[
           const Text(
@@ -707,9 +770,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+                borderSide: const BorderSide(
+                  color: Color(0xFF1E3A8A),
+                  width: 2,
+                ),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
             ),
             validator: (!_isAnonymous || _selectedType == 'talep')
                 ? (value) {
@@ -725,7 +794,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           ),
           const SizedBox(height: 20),
         ],
-        
+
         // Konu / Subject
         const Text(
           'Konu',
@@ -749,7 +818,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -761,9 +833,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             return null;
           },
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Mesaj / Message
         const Text(
           'Detaylı Açıklama',
@@ -789,10 +861,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
             ),
             contentPadding: const EdgeInsets.all(16),
-            counterStyle: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 12,
-            ),
+            counterStyle: TextStyle(color: Colors.grey[600], fontSize: 12),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -804,9 +873,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             return null;
           },
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Dosya ekleme bölümü / File attachment section
         _buildFileAttachment(),
       ],
@@ -827,7 +896,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        
+
         // Dosya ekleme butonu / File add button
         GestureDetector(
           onTap: _pickFile,
@@ -861,16 +930,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 ),
                 Text(
                   'JPG, PNG, PDF (Maksimum 10MB)',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[500],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
                 ),
               ],
             ),
           ),
         ),
-        
+
         // Seçilen dosyalar listesi / Selected files list
         if (_attachedFiles.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -944,7 +1010,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     setState(() {
       _attachedFiles.add(fileName);
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$fileName dosyası eklendi'),
@@ -992,7 +1058,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    
+
     if (_selectedType.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -1002,40 +1068,44 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       );
       return;
     }
-    
+
     if (_selectedCategory.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_selectedType == 'talep' 
-              ? 'Lütfen bir talep kategorisi seçin'
-              : 'Lütfen bir geri bildirim kategorisi seçin'),
+          content: Text(
+            _selectedType == 'talep'
+                ? 'Lütfen bir talep kategorisi seçin'
+                : 'Lütfen bir geri bildirim kategorisi seçin',
+          ),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
-    
+
     setState(() {
       _isSubmitting = true;
     });
-    
+
     // Simülasyon için bekle / Wait for simulation
     await Future.delayed(const Duration(seconds: 2));
-    
+
     setState(() {
       _isSubmitting = false;
     });
-    
+
     // Başarı mesajı göster / Show success message
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Geri bildiriminiz başarıyla gönderildi! Teşekkür ederiz.'),
+          content: Text(
+            'Geri bildiriminiz başarıyla gönderildi! Teşekkür ederiz.',
+          ),
           backgroundColor: Colors.green,
           duration: Duration(seconds: 3),
         ),
       );
-      
+
       // Formu temizle / Clear form
       _clearForm();
     }
@@ -1066,9 +1136,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         foregroundColor: Colors.white,
         title: const Text(
           'Talep-Geri Bildirim',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
         actions: [
@@ -1134,14 +1202,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Uygulama puanlama metni / App rating text
               _buildAppRatingText(),
-              
+
               const SizedBox(height: 24),
-              
+
               // Tip seçimi (Talep/Geri Bildirim) / Type selection (Request/Feedback)
               Container(
                 width: double.infinity,
@@ -1159,7 +1227,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 ),
                 child: _buildTypeSelection(),
               ),
-              
+
               // Kategori seçimi - sadece tip seçildiyse göster / Category selection - only show if type is selected
               if (_selectedType.isNotEmpty) ...[
                 const SizedBox(height: 24),
@@ -1180,9 +1248,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   child: _buildCategorySelection(),
                 ),
               ],
-              
+
               const SizedBox(height: 24),
-              
+
               // Form alanları / Form fields
               Container(
                 width: double.infinity,
@@ -1200,13 +1268,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 ),
                 child: _buildFormFields(),
               ),
-              
+
               const SizedBox(height: 24),
-              
-   
-              
+
               const SizedBox(height: 32),
-              
+
               // Gönder ve temizle butonları / Submit and clear buttons
               Row(
                 children: [
@@ -1254,7 +1320,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(width: 12),
@@ -1278,13 +1346,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 32),
             ],
           ),
         ),
       ),
-      
+
       // Alt navigasyon çubuğu / Bottom navigation bar
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
@@ -1356,7 +1424,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             );
             break;
         }
-        
+
         setState(() {
           _selectedIndex = index;
         });
@@ -1382,4 +1450,4 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ),
     );
   }
-} 
+}

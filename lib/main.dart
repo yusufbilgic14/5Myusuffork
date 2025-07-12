@@ -20,11 +20,15 @@ class MedipolApp extends StatelessWidget {
         builder: (context, themeProvider, child) {
           return MaterialApp(
             title: 'Medipol Üniversitesi',
-            debugShowCheckedModeBanner: false, // Debug banner'ını kaldır / Remove debug banner
+            debugShowCheckedModeBanner:
+                false, // Debug banner'ını kaldır / Remove debug banner
             theme: AppThemes.lightTheme,
             darkTheme: AppThemes.darkTheme,
-            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            home: const InitialLoadingScreen(), // Yükleme ekranından başla / Start with loading screen
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            home:
+                const InitialLoadingScreen(), // Yükleme ekranından başla / Start with loading screen
           );
         },
       ),

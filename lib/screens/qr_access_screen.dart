@@ -51,7 +51,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
         timer.cancel();
         return;
       }
-      
+
       if (_timeRemaining.inSeconds > 0) {
         setState(() {
           _timeRemaining = _timeRemaining - const Duration(seconds: 1);
@@ -66,12 +66,12 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
   // QR kodu yenile / Refresh QR code
   void _refreshQRCode() {
     if (!mounted) return;
-    
+
     setState(() {
       _timeRemaining = const Duration(minutes: 5);
       _generateQRCode();
     });
-    
+
     // Kullanıcıya bilgi ver / Notify user
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -112,17 +112,13 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
               onTap: () {
                 _scaffoldKey.currentState?.openDrawer();
               },
-              child: const Icon(
-                Icons.menu,
-                color: Colors.white,
-                size: 24,
-              ),
+              child: const Icon(Icons.menu, color: Colors.white, size: 24),
             );
           },
         ),
         automaticallyImplyLeading: false,
       ),
-      
+
       // Hamburger menu drawer
       drawer: _buildSideDrawer(),
 
@@ -133,7 +129,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Spacer(),
-              
+
               // Ana QR kod kartı / Main QR code card
               Container(
                 width: double.infinity,
@@ -162,19 +158,16 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // QR kod / QR code
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.grey[200]!,
-                          width: 1,
-                        ),
+                        border: Border.all(color: Colors.grey[200]!, width: 1),
                       ),
                       child: QrImageView(
                         data: _qrData,
@@ -182,27 +175,32 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                         size: 200.0,
                         backgroundColor: Colors.white,
                         foregroundColor: const Color(0xFF1E3A8A),
-                        embeddedImage: const AssetImage('assets/images/medipol_logo.png'),
+                        embeddedImage: const AssetImage(
+                          'assets/images/medipol_logo.png',
+                        ),
                         embeddedImageStyle: const QrEmbeddedImageStyle(
                           size: Size(30, 30),
                         ),
                         errorCorrectionLevel: QrErrorCorrectLevel.H,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Geri sayım zamanlayıcısı / Countdown timer
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        color: _timeRemaining.inMinutes < 1 
+                        color: _timeRemaining.inMinutes < 1
                             ? Colors.red.withValues(alpha: 0.1)
                             : Colors.grey[100],
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: _timeRemaining.inMinutes < 1 
-                              ? Colors.red 
+                          color: _timeRemaining.inMinutes < 1
+                              ? Colors.red
                               : Colors.grey[300]!,
                         ),
                       ),
@@ -212,8 +210,8 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                           Icon(
                             Icons.timer,
                             size: 16,
-                            color: _timeRemaining.inMinutes < 1 
-                                ? Colors.red 
+                            color: _timeRemaining.inMinutes < 1
+                                ? Colors.red
                                 : Colors.grey[600],
                           ),
                           const SizedBox(width: 6),
@@ -222,17 +220,17 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: _timeRemaining.inMinutes < 1 
-                                  ? Colors.red 
+                              color: _timeRemaining.inMinutes < 1
+                                  ? Colors.red
                                   : Colors.grey[700],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Yenile butonu / Refresh button
                     SizedBox(
                       width: double.infinity,
@@ -280,27 +278,20 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 30),
-              
+
               // Açıklama metni / Explanation text
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.blue[200]!,
-                    width: 1,
-                  ),
+                  border: Border.all(color: Colors.blue[200]!, width: 1),
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.blue[700],
-                      size: 20,
-                    ),
+                    Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -316,12 +307,15 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                   ],
                 ),
               ),
-              
+
               const Spacer(),
-              
+
               // Alt kullanım bilgisi / Bottom usage info
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
@@ -329,11 +323,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.security,
-                      size: 16,
-                      color: Colors.grey[600],
-                    ),
+                    Icon(Icons.security, size: 16, color: Colors.grey[600]),
                     const SizedBox(width: 8),
                     Text(
                       'Güvenli kampüs erişimi',
@@ -395,9 +385,9 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Kullanıcı adı / Username
                   const Text(
                     'Elif Yılmaz',
@@ -407,9 +397,9 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 4),
-                  
+
                   // Bölüm bilgisi / Department info
                   const Text(
                     'MIS',
@@ -419,7 +409,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  
+
                   const Text(
                     '3rd Grade',
                     style: TextStyle(
@@ -431,16 +421,16 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                 ],
               ),
             ),
-            
+
             // Ayırıcı çizgi / Divider line
             Container(
               height: 1,
               margin: const EdgeInsets.symmetric(horizontal: 20),
               color: Colors.white.withValues(alpha: 0.3),
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Menü öğeleri / Menu items
             Expanded(
               child: ListView(
@@ -485,7 +475,9 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const FeedbackScreen(),
+                        ),
                       );
                     },
                   ),
@@ -500,7 +492,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                 ],
               ),
             ),
-            
+
             // Alt bölüm - Help ve Logout / Bottom section - Help and Logout
             Column(
               children: [
@@ -538,11 +530,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
     Color? textColor,
   }) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: textColor ?? Colors.white,
-        size: 24,
-      ),
+      leading: Icon(icon, color: textColor ?? Colors.white, size: 24),
       title: Text(
         title,
         style: TextStyle(
@@ -557,16 +545,24 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
   }
 
   // Alt navigasyon öğesi oluşturucu / Bottom navigation item builder
-  Widget _buildBottomNavItem(IconData icon, String label, int index, {bool isSelected = false}) {
+  Widget _buildBottomNavItem(
+    IconData icon,
+    String label,
+    int index, {
+    bool isSelected = false,
+  }) {
     return GestureDetector(
       onTap: () {
         // Eğer farklı bir tab seçildiyse navigasyon yap / Navigate if different tab is selected
-        if (index != 3) { // QR Access is index 3
+        if (index != 3) {
+          // QR Access is index 3
           switch (index) {
             case 0: // Navigation / Campus Map
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const CampusMapScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const CampusMapScreen(),
+                ),
               );
               break;
             case 1: // Calendar
@@ -613,4 +609,4 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
       ),
     );
   }
-} 
+}
