@@ -13,7 +13,7 @@ import 'feedback_screen.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
-
+  
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
@@ -799,14 +799,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       // TODO: Cafeteria Menu sayfasına git
                     },
                   ),
-                  _buildDrawerItem(
-                    icon: Icons.notifications,
-                    title: 'Notifications',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Notifications sayfasına git
-                    },
-                  ),
+                  
                   _buildDrawerItem(
                     icon: Icons.feedback,
                     title: 'Feedbacks',

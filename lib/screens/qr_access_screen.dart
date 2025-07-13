@@ -73,13 +73,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
     });
 
     // Kullanıcıya bilgi ver / Notify user
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('QR kod yenilendi'),
-        duration: Duration(seconds: 2),
-        backgroundColor: Color(0xFF1E3A8A),
-      ),
-    );
+    
   }
 
   // Kalan süreyi formatla / Format remaining time
@@ -460,14 +454,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                       // TODO: Cafeteria Menu sayfasına git
                     },
                   ),
-                  _buildDrawerItem(
-                    icon: Icons.notifications,
-                    title: 'Notifications',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Notifications sayfasına git
-                    },
-                  ),
+                  
                   _buildDrawerItem(
                     icon: Icons.feedback,
                     title: 'Feedbacks',

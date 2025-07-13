@@ -547,14 +547,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       // TODO: Cafeteria Menu sayfasına git
                     },
                   ),
-                  _buildDrawerItem(
-                    icon: Icons.notifications,
-                    title: 'Notifications',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Notifications sayfasına git
-                    },
-                  ),
+                  
                   _buildDrawerItem(
                     icon: Icons.mail,
                     title: 'Message Box',

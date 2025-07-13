@@ -557,14 +557,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // TODO: Cafeteria Menu sayfasına git
                     },
                   ),
-                  _buildDrawerItem(
-                    icon: Icons.notifications,
-                    title: 'Notifications',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Notifications sayfasına git
-                    },
-                  ),
+                  
                   _buildDrawerItem(
                     icon: Icons.feedback,
                     title: 'Feedbacks',
