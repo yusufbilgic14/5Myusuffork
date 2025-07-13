@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'calendar_screen.dart';
-import 'campus_map_screen.dart';
-import 'qr_access_screen.dart';
-import 'profile_screen.dart';
-import 'feedback_screen.dart';
+import '../constants/app_constants.dart';
+import '../widgets/common/app_drawer_widget.dart';
+import '../widgets/common/bottom_navigation_widget.dart';
 import 'inbox_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -15,7 +13,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 2; // Home tab is selected (index 2)
   int _currentAnnouncementIndex = 0;
   late PageController _pageController;
   Timer? _autoAdvanceTimer;
@@ -220,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const Icon(
                   Icons.notifications,
-                  color: Color(0xFF1E3A8A),
+                  color: AppConstants.primaryColor,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -228,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     'Bildirimler',
                     style: TextStyle(
-                      color: Color(0xFF1E3A8A),
+                      color: AppConstants.primaryColor,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -435,213 +432,13 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Sidebar drawer oluştur / Build sidebar drawer
-  Widget _buildSideDrawer() {
-    return Drawer(
-      backgroundColor: const Color(0xFF1E3A8A),
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Üst profil bölümü / Top profile section
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Profil resmi / Profile picture
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/images/elifyılmaz.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.grey,
-                              size: 40,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
 
-                  const SizedBox(height: 12),
-
-                  // Kullanıcı adı / Username
-                  const Text(
-                    'Elif Yılmaz',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  // Bölüm bilgisi / Department info
-                  const Text(
-                    'MIS',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  const Text(
-                    '3rd Grade',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Ayırıcı çizgi / Divider line
-            Container(
-              height: 1,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              color: Colors.white.withValues(alpha: 0.3),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Menü öğeleri / Menu items
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  _buildDrawerItem(
-                    icon: Icons.event,
-                    title: 'Upcoming Events',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Upcoming Events sayfasına git
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.school,
-                    title: 'Course Grades',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Course Grades sayfasına git
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.restaurant,
-                    title: 'Cafeteria Menu',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Cafeteria Menu sayfasına git
-                    },
-                  ),
-                  
-                  _buildDrawerItem(
-                    icon: Icons.mail,
-                    title: 'Message Box',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const InboxScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.feedback,
-                    title: 'Feedbacks',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FeedbackScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.settings,
-                    title: 'Settings',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Settings sayfasına git
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            // Alt bölüm - Help ve Logout / Bottom section - Help and Logout
-            Column(
-              children: [
-                _buildDrawerItem(
-                  icon: Icons.help_outline,
-                  title: 'Help',
-                  onTap: () {
-                    Navigator.pop(context);
-                    // TODO: Help sayfasına git
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.logout,
-                  title: 'Logout',
-                  textColor: Colors.red[300],
-                  onTap: () {
-                    Navigator.pop(context);
-                    // TODO: Logout işlemi
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Drawer menü öğesi oluştur / Build drawer menu item
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    Color? textColor,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: textColor ?? Colors.white, size: 24),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: textColor ?? Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: _buildSideDrawer(), // Sidebar eklendi / Sidebar added
+      drawer: const AppDrawerWidget(currentPageIndex: AppConstants.navIndexHome), // Ana sayfa drawer'ı / Home page drawer
       body: Stack(
         children: [
           Column(
@@ -1151,100 +948,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       // Alt navigasyon çubuğu / Bottom navigation bar
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.2),
-              spreadRadius: 0,
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Container(
-            height: 60,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildBottomNavItem(Icons.location_on, 'Navigation', 0),
-                _buildBottomNavItem(Icons.calendar_today, 'Calendar', 1),
-                _buildBottomNavItem(Icons.home, 'Home', 2),
-                _buildBottomNavItem(Icons.qr_code_scanner, 'Scan', 3),
-                _buildBottomNavItem(Icons.person, 'Profile', 4),
-              ],
-            ),
-          ),
-        ),
+      bottomNavigationBar: const BottomNavigationWidget(
+        currentIndex: AppConstants.navIndexHome,
       ),
     );
   }
 
-  // Alt navigasyon öğesi oluşturucu / Bottom navigation item builder
-  Widget _buildBottomNavItem(IconData icon, String label, int index) {
-    final isSelected = _selectedIndex == index;
-    return GestureDetector(
-      onTap: () {
-        // Eğer farklı bir tab seçildiyse navigasyon yap / Navigate if different tab is selected
-        if (index != _selectedIndex) {
-          switch (index) {
-            case 0: // Navigation / Campus Map
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CampusMapScreen(),
-                ),
-              );
-              break;
-            case 1: // Calendar
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CalendarScreen()),
-              );
-              break;
-            case 2: // Home - zaten buradayız / Already here
-              break;
-            case 3: // Scan / QR Access
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const QRAccessScreen()),
-              );
-              break;
-            case 4: // Profile
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
-              break;
-          }
-        }
 
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[600],
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[600],
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

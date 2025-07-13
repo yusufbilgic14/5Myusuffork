@@ -7,6 +7,7 @@ import '../screens/qr_access_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/feedback_screen.dart';
 import '../screens/inbox_screen.dart';
+import '../screens/course_grades_screen.dart';
 
 /// Navigasyon hizmetleri / Navigation services
 class NavigationService {
@@ -61,6 +62,13 @@ class NavigationService {
       MaterialPageRoute(
         builder: (context) => InboxScreen(selectedMessageId: messageId),
       ),
+    );
+  }
+
+  static void navigateToCourseGrades(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CourseGradesScreen()),
     );
   }
 

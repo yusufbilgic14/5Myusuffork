@@ -2,13 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'dart:async';
 import '../constants/app_constants.dart';
-import '../widgets/common/app_bar_widget.dart';
+
+import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
-import 'home_screen.dart';
-import 'calendar_screen.dart';
-import 'campus_map_screen.dart';
-import 'profile_screen.dart';
-import 'feedback_screen.dart';
 import 'qr_scanner_screen.dart';
 
 class QRAccessScreen extends StatefulWidget {
@@ -113,8 +109,8 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
         automaticallyImplyLeading: false,
       ),
 
-      // Hamburger menu drawer
-      drawer: _buildSideDrawer(),
+      // Ana sayfa drawer'ı / Main drawer
+      drawer: const AppDrawerWidget(currentPageIndex: AppConstants.navIndexScan),
 
       body: SafeArea(
         child: Padding(
@@ -168,7 +164,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                         version: QrVersions.auto,
                         size: 200.0,
                         backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF1E3A8A),
+                        foregroundColor: AppConstants.primaryColor,
                         embeddedImage: const AssetImage(
                           'assets/images/medipol_logo.png',
                         ),
@@ -233,8 +229,8 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                         icon: const Icon(Icons.refresh),
                         label: const Text('Yenile'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF1E3A8A),
-                          side: const BorderSide(color: Color(0xFF1E3A8A)),
+                          foregroundColor: AppConstants.primaryColor,
+                          side: BorderSide(color: AppConstants.primaryColor),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -260,7 +256,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                         icon: const Icon(Icons.qr_code_scanner),
                         label: const Text('QR Kodu Tarat'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1E3A8A),
+                          backgroundColor: AppConstants.primaryColor,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -342,258 +338,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
     );
   }
 
-  // Sidebar drawer oluştur / Build sidebar drawer
-  Widget _buildSideDrawer() {
-    return Drawer(
-      backgroundColor: const Color(0xFF1E3A8A),
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Üst profil bölümü / Top profile section
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Profil resmi / Profile picture
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/images/elifyılmaz.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.grey,
-                              size: 40,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
 
-                  const SizedBox(height: 12),
 
-                  // Kullanıcı adı / Username
-                  const Text(
-                    'Elif Yılmaz',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
 
-                  const SizedBox(height: 4),
-
-                  // Bölüm bilgisi / Department info
-                  const Text(
-                    'MIS',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-
-                  const Text(
-                    '3rd Grade',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Ayırıcı çizgi / Divider line
-            Container(
-              height: 1,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              color: Colors.white.withValues(alpha: 0.3),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Menü öğeleri / Menu items
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  _buildDrawerItem(
-                    icon: Icons.event,
-                    title: 'Upcoming Events',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Upcoming Events sayfasına git
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.school,
-                    title: 'Course Grades',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Course Grades sayfasına git
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.restaurant,
-                    title: 'Cafeteria Menu',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Cafeteria Menu sayfasına git
-                    },
-                  ),
-                  
-                  _buildDrawerItem(
-                    icon: Icons.feedback,
-                    title: 'Feedbacks',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FeedbackScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.settings,
-                    title: 'Settings',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Settings sayfasına git
-                    },
-                  ),
-                ],
-              ),
-            ),
-
-            // Alt bölüm - Help ve Logout / Bottom section - Help and Logout
-            Column(
-              children: [
-                _buildDrawerItem(
-                  icon: Icons.help_outline,
-                  title: 'Help',
-                  onTap: () {
-                    Navigator.pop(context);
-                    // TODO: Help sayfasına git
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.logout,
-                  title: 'Logout',
-                  textColor: Colors.red[300],
-                  onTap: () {
-                    Navigator.pop(context);
-                    // TODO: Logout işlemi
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Drawer menü öğesi oluştur / Build drawer menu item
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    Color? textColor,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: textColor ?? Colors.white, size: 24),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: textColor ?? Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-    );
-  }
-
-  // Alt navigasyon öğesi oluşturucu / Bottom navigation item builder
-  Widget _buildBottomNavItem(
-    IconData icon,
-    String label,
-    int index, {
-    bool isSelected = false,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        // Eğer farklı bir tab seçildiyse navigasyon yap / Navigate if different tab is selected
-        if (index != 3) {
-          // QR Access is index 3
-          switch (index) {
-            case 0: // Navigation / Campus Map
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CampusMapScreen(),
-                ),
-              );
-              break;
-            case 1: // Calendar
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const CalendarScreen()),
-              );
-              break;
-            case 2: // Home
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
-              break;
-            case 3: // Scan / QR Access - zaten buradayız / Already here
-              break;
-            case 4: // Profile
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
-              break;
-          }
-        }
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[600],
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected ? const Color(0xFF1E3A8A) : Colors.grey[600],
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

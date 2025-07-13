@@ -1,22 +1,5 @@
-import 'package:flutter/material.dart';
-import '../../screens/inbox_screen.dart';
-import '../../screens/feedback_screen.dart';
-import '../../screens/course_grades_screen.dart';
-import '../../screens/upcoming_events_screen.dart';
-
-/// Uygulama drawer widget'ı - Tüm sayfalarda kullanılan ana drawer / App drawer widget - Main drawer used across all pages
-class AppDrawerWidget extends StatelessWidget {
-  final int currentPageIndex;
-
-  const AppDrawerWidget({super.key, required this.currentPageIndex});
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildSideDrawer(context);
-  }
-
-  // Sidebar drawer oluştur / Build sidebar drawer
-  Widget _buildSideDrawer(BuildContext context) {
+// Sidebar drawer oluştur / Build sidebar drawer
+  Widget _buildSideDrawer() {
     return Drawer(
       backgroundColor: const Color(0xFF1E3A8A),
       child: SafeArea(
@@ -37,7 +20,7 @@ class AppDrawerWidget extends StatelessWidget {
                     ),
                     child: ClipOval(
                       child: Image.asset(
-                        'assets/images/elifyilmaz.png',
+                        'assets/images/elifyılmaz.png',
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
@@ -108,12 +91,7 @@ class AppDrawerWidget extends StatelessWidget {
                     title: 'Upcoming Events',
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const UpcomingEventsScreen(),
-                        ),
-                      );
+                      // TODO: Upcoming Events sayfasına git
                     },
                   ),
                   _buildDrawerItem(
@@ -121,12 +99,7 @@ class AppDrawerWidget extends StatelessWidget {
                     title: 'Course Grades',
                     onTap: () {
                       Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CourseGradesScreen(),
-                        ),
-                      );
+                      // TODO: Course Grades sayfasına git
                     },
                   ),
                   _buildDrawerItem(
@@ -204,30 +177,3 @@ class AppDrawerWidget extends StatelessWidget {
       ),
     );
   }
-
-  // Drawer menü öğesi oluşturucu / Drawer menu item builder
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    Color? textColor,
-  }) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: textColor ?? Colors.white,
-        size: 24,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: textColor ?? Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-    );
-  }
-}
