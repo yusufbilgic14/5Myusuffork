@@ -10,7 +10,7 @@ void main() {
 
 class MedipolApp extends StatelessWidget {
   const MedipolApp({super.key});
-
+   // deneme 1
   // Uygulamanın ana widget'ı / Main application widget
   @override
   Widget build(BuildContext context) {
