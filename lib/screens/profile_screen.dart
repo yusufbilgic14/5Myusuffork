@@ -236,14 +236,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Column(
         children: [
-          _buildMenuItem(
-            icon: Icons.edit,
-            title: 'Profili Düzenle',
-            subtitle: 'Kişisel bilgilerinizi güncelleyin',
-            onTap: () {
-              // TODO: Profil düzenleme sayfasına git / Navigate to profile edit page
-            },
-          ),
+          
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.lock,
@@ -253,15 +246,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // TODO: Şifre değiştirme sayfasına git / Navigate to password change page
             },
           ),
-          _buildDivider(),
-          _buildMenuItem(
-            icon: Icons.link,
-            title: 'Bağlı Hesaplar',
-            subtitle: 'Sosyal medya hesaplarınızı yönetin',
-            onTap: () {
-              // TODO: Bağlı hesaplar sayfasına git / Navigate to linked accounts page
-            },
-          ),
+          
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.notifications,
