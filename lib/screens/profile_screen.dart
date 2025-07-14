@@ -3,14 +3,10 @@ import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../providers/theme_provider.dart';
 import '../themes/app_themes.dart';
-import '../widgets/common/app_bar_widget.dart';
+
+import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import '../widgets/common/user_info_widget.dart';
-import 'home_screen.dart';
-import 'calendar_screen.dart';
-import 'campus_map_screen.dart';
-import 'qr_access_screen.dart';
-import 'feedback_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -46,19 +42,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onTap: () {
                 _scaffoldKey.currentState?.openDrawer();
               },
-              child: const Icon(
-                Icons.menu,
-                color: Colors.white,
-                size: 24,
-              ),
+              child: const Icon(Icons.menu, color: Colors.white, size: 24),
             );
           },
         ),
         automaticallyImplyLeading: false,
       ),
-      
-      // Hamburger menu drawer
-      drawer: _buildSideDrawer(),
+
+      // Ana sayfa drawer'ı / Main drawer
+      drawer: const AppDrawerWidget(currentPageIndex: AppConstants.navIndexProfile),
 
       body: SingleChildScrollView(
         child: Padding(
@@ -68,9 +60,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               // Üst kullanıcı bilgi kartı / Top user info card
               _buildUserInfoCard(),
-              
+
               const SizedBox(height: AppConstants.paddingXLarge),
-              
+
               // İstatistik kartları başlığı / Stats cards title
               Text(
                 'Hızlı İstatistikler',
@@ -80,14 +72,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: AppThemes.getPrimaryColor(context),
                 ),
               ),
-              
+
               const SizedBox(height: AppConstants.paddingMedium),
-              
+
               // Yatay kaydırılabilir istatistik kartları / Horizontal scrollable stats cards
               _buildStatsCards(),
-              
+
               const SizedBox(height: AppConstants.paddingXLarge),
-              
+
               // Menü öğeleri başlığı / Menu items title
               Text(
                 'Hesap Ayarları',
@@ -97,13 +89,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: AppThemes.getPrimaryColor(context),
                 ),
               ),
-              
+
               const SizedBox(height: AppConstants.paddingMedium),
-              
+
               // Menü öğeleri listesi / Menu items list
               _buildMenuItems(),
-              
-              const SizedBox(height: 80), // Alt navigasyon için boşluk / Space for bottom navigation
+
+              const SizedBox(
+                height: 80,
+              ), // Alt navigasyon için boşluk / Space for bottom navigation
             ],
           ),
         ),
@@ -178,7 +172,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }) {
     return Container(
       width: 140,
-      padding: const EdgeInsets.all(AppConstants.paddingSmall + 2), // Reduced padding
+      padding: const EdgeInsets.all(
+        AppConstants.paddingSmall + 2,
+      ), // Reduced padding
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
         borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
@@ -236,14 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Column(
         children: [
-          _buildMenuItem(
-            icon: Icons.edit,
-            title: 'Profili Düzenle',
-            subtitle: 'Kişisel bilgilerinizi güncelleyin',
-            onTap: () {
-              // TODO: Profil düzenleme sayfasına git / Navigate to profile edit page
-            },
-          ),
+          
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.lock,
@@ -253,15 +242,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // TODO: Şifre değiştirme sayfasına git / Navigate to password change page
             },
           ),
-          _buildDivider(),
-          _buildMenuItem(
-            icon: Icons.link,
-            title: 'Bağlı Hesaplar',
-            subtitle: 'Sosyal medya hesaplarınızı yönetin',
-            onTap: () {
-              // TODO: Bağlı hesaplar sayfasına git / Navigate to linked accounts page
-            },
-          ),
+          
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.notifications,
@@ -313,7 +294,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: (iconColor ?? AppConstants.primaryColor).withValues(alpha: 0.1),
+          color: (iconColor ?? AppConstants.primaryColor).withValues(
+            alpha: 0.1,
+          ),
           borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
         ),
         child: Icon(
@@ -351,7 +334,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
           leading: Container(
             width: 40,
             height: 40,
@@ -415,7 +401,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             'Çıkış Yap',
             style: TextStyle(color: AppConstants.primaryColor),
           ),
-          content: const Text('Hesabınızdan çıkış yapmak istediğinizden emin misiniz?'),
+          content: const Text(
+            'Hesabınızdan çıkış yapmak istediğinizden emin misiniz?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -438,203 +426,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Sidebar drawer oluştur / Build sidebar drawer
-  Widget _buildSideDrawer() {
-    return Drawer(
-      backgroundColor: const Color(0xFF1E3A8A),
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Üst profil bölümü / Top profile section
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Profil resmi / Profile picture
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/images/elifyılmaz.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.grey,
-                              size: 40,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Kullanıcı adı / Username
-                  const Text(
-                    'Elif Yılmaz',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 4),
-                  
-                  // Bölüm bilgisi / Department info
-                  const Text(
-                    'MIS',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  
-                  const Text(
-                    '3rd Grade',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Ayırıcı çizgi / Divider line
-            Container(
-              height: 1,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              color: Colors.white.withValues(alpha: 0.3),
-            ),
-            
-            const SizedBox(height: 20),
-            
-            // Menü öğeleri / Menu items
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  _buildDrawerItem(
-                    icon: Icons.event,
-                    title: 'Upcoming Events',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Upcoming Events sayfasına git
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.school,
-                    title: 'Course Grades',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Course Grades sayfasına git
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.restaurant,
-                    title: 'Cafeteria Menu',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Cafeteria Menu sayfasına git
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.notifications,
-                    title: 'Notifications',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Notifications sayfasına git
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.feedback,
-                    title: 'Feedbacks',
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const FeedbackScreen()),
-                      );
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.settings,
-                    title: 'Settings',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Settings sayfasına git
-                    },
-                  ),
-                ],
-              ),
-            ),
-            
-            // Alt bölüm - Help ve Logout / Bottom section - Help and Logout
-            Column(
-              children: [
-                _buildDrawerItem(
-                  icon: Icons.help_outline,
-                  title: 'Help',
-                  onTap: () {
-                    Navigator.pop(context);
-                    // TODO: Help sayfasına git
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.logout,
-                  title: 'Logout',
-                  textColor: Colors.red[300],
-                  onTap: () {
-                    Navigator.pop(context);
-                    _showLogoutDialog();
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  // Drawer menü öğesi oluştur / Build drawer menu item
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String title,
-    required VoidCallback onTap,
-    Color? textColor,
-  }) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: textColor ?? Colors.white,
-        size: 24,
-      ),
-      title: Text(
-        title,
-        style: TextStyle(
-          color: textColor ?? Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-    );
-  }
-
-
-} 
+}

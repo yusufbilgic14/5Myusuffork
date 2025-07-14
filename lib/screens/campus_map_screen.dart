@@ -20,7 +20,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   int _selectedIndex = 0; // Navigation tab is selected
   bool _mapError = false; // Google Maps error state
   bool _isInitializing = true; // Map initialization state
-  
+
   @override
   void initState() {
     super.initState();
@@ -35,10 +35,13 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
       }
     });
   }
-  
+
   // İstanbul Medipol Üniversitesi koordinatları / Medipol University coordinates
-  static const LatLng _medipolCenter = LatLng(41.088612162240274, 29.08920602676745);
-  
+  static const LatLng _medipolCenter = LatLng(
+    41.088612162240274,
+    29.08920602676745,
+  );
+
   // Kampüs binaları / Campus buildings
   final Set<Marker> _buildingMarkers = {
     const Marker(
@@ -136,7 +139,10 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                   hintText: 'Bina veya konum ara...',
                   prefixIcon: Icon(Icons.search, color: Colors.grey),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                 ),
                 onChanged: (value) {
                   // TODO: Arama fonksiyonalitesi / Search functionality
@@ -144,9 +150,9 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(width: 12),
-          
+
           // Filtre butonu / Filter button
           Container(
             width: 48,
@@ -192,7 +198,11 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
           ],
         ),
         child: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1E3A8A), size: 20),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Color(0xFF1E3A8A),
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -202,11 +212,17 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   // Servis katmanı toggle butonu / Shuttle layer toggle button
   Widget _buildShuttleToggle() {
     return Positioned(
-      bottom: _showRoutePanel ? 240 : 140, // Rota paneli varsa yukarı taşı / Move up if route panel exists
+      bottom: _showRoutePanel
+          ? 240
+          : 140, // Rota paneli varsa yukarı taşı / Move up if route panel exists
       right: 16,
       child: FloatingActionButton(
-        backgroundColor: _showShuttleLayer ? const Color(0xFF1E3A8A) : Colors.white,
-        foregroundColor: _showShuttleLayer ? Colors.white : const Color(0xFF1E3A8A),
+        backgroundColor: _showShuttleLayer
+            ? const Color(0xFF1E3A8A)
+            : Colors.white,
+        foregroundColor: _showShuttleLayer
+            ? Colors.white
+            : const Color(0xFF1E3A8A),
         onPressed: () {
           setState(() {
             _showShuttleLayer = !_showShuttleLayer;
@@ -265,43 +281,61 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Başlangıç ve bitiş noktaları / Start and end points
             Row(
               children: [
-                const Icon(Icons.radio_button_checked, color: Colors.green, size: 16),
+                const Icon(
+                  Icons.radio_button_checked,
+                  color: Colors.green,
+                  size: 16,
+                ),
                 const SizedBox(width: 8),
                 const Text('Mevcut Konumunuz', style: TextStyle(fontSize: 14)),
                 const Spacer(),
-                Container(
-                  width: 2,
-                  height: 20,
-                  color: Colors.grey[300],
-                ),
+                Container(width: 2, height: 20, color: Colors.grey[300]),
                 const Spacer(),
                 const Icon(Icons.location_on, color: Colors.red, size: 16),
                 const SizedBox(width: 8),
-                const Text('Mühendislik Fakültesi', style: TextStyle(fontSize: 14)),
+                const Text(
+                  'Mühendislik Fakültesi',
+                  style: TextStyle(fontSize: 14),
+                ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Yolculuk modları / Travel modes
             Row(
               children: [
-                _buildTravelModeChip(Icons.directions_walk, 'Yürüyüş', '8 dk', true),
+                _buildTravelModeChip(
+                  Icons.directions_walk,
+                  'Yürüyüş',
+                  '8 dk',
+                  true,
+                ),
                 const SizedBox(width: 12),
-                _buildTravelModeChip(Icons.directions_bus, 'Servis', '3 dk', false),
+                _buildTravelModeChip(
+                  Icons.directions_bus,
+                  'Servis',
+                  '3 dk',
+                  false,
+                ),
                 const SizedBox(width: 12),
-                _buildTravelModeChip(Icons.directions_bike, 'Bisiklet', '5 dk', false),
+                _buildTravelModeChip(
+                  Icons.directions_bike,
+                  'Bisiklet',
+                  '5 dk',
+                  false,
+                ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Navigasyon başlat butonu / Start navigation button
             SizedBox(
               width: double.infinity,
@@ -333,7 +367,12 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   }
 
   // Yolculuk modu chip'i / Travel mode chip
-  Widget _buildTravelModeChip(IconData icon, String mode, String time, bool isSelected) {
+  Widget _buildTravelModeChip(
+    IconData icon,
+    String mode,
+    String time,
+    bool isSelected,
+  ) {
     return GestureDetector(
       onTap: () {
         // TODO: Yolculuk modunu değiştir / Change travel mode
@@ -436,7 +475,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     if (_mapError) {
       return _buildMapErrorWidget();
     }
-    
+
     // iOS için initialization loading göster / Show initialization loading for iOS
     if (_isInitializing) {
       return Container(
@@ -445,23 +484,18 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(
-                color: Color(0xFF1E3A8A),
-              ),
+              CircularProgressIndicator(color: Color(0xFF1E3A8A)),
               SizedBox(height: 16),
               Text(
                 'Harita yükleniyor...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF1E3A8A),
-                ),
+                style: TextStyle(fontSize: 16, color: Color(0xFF1E3A8A)),
               ),
             ],
           ),
         ),
       );
     }
-    
+
     return GoogleMap(
       onMapCreated: (GoogleMapController controller) {
         try {
@@ -495,11 +529,12 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
         target: _medipolCenter,
         zoom: 16.0,
       ),
-      markers: _showShuttleLayer 
+      markers: _showShuttleLayer
           ? {..._buildingMarkers, ..._shuttleStops}
           : _buildingMarkers,
       myLocationEnabled: true,
-      myLocationButtonEnabled: false, // Kendi butonumuzu kullanacağız / We'll use our own button
+      myLocationButtonEnabled:
+          false, // Kendi butonumuzu kullanacağız / We'll use our own button
       zoomControlsEnabled: false, // Zoom butonlarını gizle / Hide zoom buttons
       mapToolbarEnabled: false,
     );
@@ -513,11 +548,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.map_outlined,
-              size: 80,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.map_outlined, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 20),
             Text(
               'Harita Yüklenemedi',
@@ -530,19 +561,13 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             const SizedBox(height: 8),
             Text(
               'Google Maps yüklenemedi.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
               'API anahtarı yapılandırmasını kontrol edin veya internet bağlantınızı doğrulayın.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[500],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -638,7 +663,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               break;
           }
         }
-        
+
         setState(() {
           _selectedIndex = index;
         });
@@ -664,4 +689,4 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
       ),
     );
   }
-} 
+}

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../constants/app_constants.dart';
+import '../widgets/common/medipol_logo_widget.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -16,83 +18,29 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
           SizedBox(height: MediaQuery.of(context).padding.top),
-          // Logo ve şirket bilgileri
+          // Logo ve şirket bilgileri / Logo and company information
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppConstants.paddingLarge,
+            ),
             child: Row(
               children: [
                 // Logo
-                Container(
-                  width: 63,
-                  height: 63,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 3,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.asset(
-                      'assets/images/medipol_logo.png', // Boşluksuz dosya adı kullan
-                      width: 63,
-                      height: 63,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        // Eğer görsel yüklenemezse, debug bilgisi yazdır ve fallback logo kullan
-                        print('Logo yükleme hatası: $error');
-                        return Container(
-                          width: 63,
-                          height: 63,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1E3A8A),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: CustomPaint(
-                            painter: MedipolLogoPainter(),
-                            child: const Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SizedBox(height: 15),
-                                  Text(
-                                    'MEDİPOL',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 8,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    'UNIVERSITY',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 4,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                const MedipolLogoWidget(
+                  size: 63,
+                  isRounded: false,
+                  showFallbackText: false,
+                  borderRadius: AppConstants.radiusMedium,
                 ),
-                const SizedBox(width: 12),
-                // Şirket metinleri
+
+                const SizedBox(width: AppConstants.radiusMedium),
+                // Şirket metinleri / Company texts
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,8 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'MEDIPOL',
                           style: TextStyle(
-                            color: const Color(0xFF1E3A8A),
-                            fontSize: screenWidth < 350 ? 20 : 24,
+                            color: AppConstants.primaryColor,
+                            fontSize: screenWidth < 350
+                                ? 20
+                                : AppConstants.fontSizeXXLarge,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.2,
                           ),
@@ -116,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Text(
                           'ÜNV-İSTANBUL',
                           style: TextStyle(
-                            color: const Color(0xFF1E3A8A),
+                            color: AppConstants.primaryColor,
                             fontSize: screenWidth < 350 ? 18 : 22,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 1.0,
@@ -144,26 +94,28 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 40),
-          
-          // Mavi eğri ve login alanı - Kalan tüm alanı kapla
+
+          // Mavi eğri ve login alanı - Kalan tüm alanı kapla / Blue curve and login area - Fill remaining space
           Expanded(
             child: ClipPath(
               clipper: CurvedTopClipper(),
               child: Container(
                 width: double.infinity,
-                color: const Color(0xFF1E3A8A),
+                color: AppConstants.primaryColor,
                 child: SingleChildScrollView(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
-                      minHeight: screenHeight - 147, // Status bar + logo alanı - spacing
+                      minHeight:
+                          screenHeight -
+                          147, // Status bar + logo alanı - spacing / Status bar + logo area - spacing
                     ),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(40, 60, 40, 40),
                       child: Column(
                         children: [
-                          // Login başlığı
+                          // Login başlığı / Login title
                           const Text(
                             'Login',
                             style: TextStyle(
@@ -172,129 +124,50 @@ class _LoginScreenState extends State<LoginScreen> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          
+
                           const SizedBox(height: 40),
-                          
-                          // Student ID alanı
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Student ID',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: TextField(
-                                  controller: _studentIdController,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                  ),
-                                ),
-                              ),
-                            ],
+
+                          // Student ID alanı / Student ID field
+                          _buildInputField(
+                            label: 'Student ID',
+                            controller: _studentIdController,
+                            isPassword: false,
                           ),
-                          
-                          const SizedBox(height: 24),
-                          
-                          // Password alanı
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Password',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: TextField(
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                                  ),
-                                ),
-                              ),
-                            ],
+
+                          const SizedBox(height: AppConstants.paddingXLarge),
+
+                          // Password alanı / Password field
+                          _buildInputField(
+                            label: 'Password',
+                            controller: _passwordController,
+                            isPassword: true,
                           ),
-                          
+
                           const SizedBox(height: 40),
-                          
-                          // Login butonu
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: OutlinedButton(
-                              onPressed: () {
-                                // Şimdilik doğrudan ana sayfaya yönlendir / Navigate directly to home page for now
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const HomeScreen()),
-                                );
-                              },
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Colors.white, width: 2),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+
+                          // Login butonu / Login button
+                          _buildActionButton(
+                            text: 'Login',
+                            onPressed: () {
+                              // Şimdilik doğrudan ana sayfaya yönlendir / Navigate directly to home page for now
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HomeScreen(),
                                 ),
-                              ),
-                              child: const Text(
-                                'Login',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
-                          
-                          const SizedBox(height: 16),
-                          
-                          // Back butonu
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: OutlinedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: Colors.white, width: 2),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Text(
-                                'Back',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
+
+                          const SizedBox(height: AppConstants.paddingMedium),
+
+                          // Back butonu / Back button
+                          _buildActionButton(
+                            text: 'Back',
+                            onPressed: () => Navigator.pop(context),
                           ),
-                          
-                          const SizedBox(height: 20),
+
+                          const SizedBox(height: AppConstants.paddingLarge),
                         ],
                       ),
                     ),
@@ -308,6 +181,73 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  /// Giriş alanı oluşturucu / Input field builder
+  Widget _buildInputField({
+    required String label,
+    required TextEditingController controller,
+    required bool isPassword,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: AppConstants.fontSizeLarge,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: AppConstants.paddingSmall),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+          ),
+          child: TextField(
+            controller: controller,
+            obscureText: isPassword,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: AppConstants.paddingMedium,
+                vertical: AppConstants.paddingSmall + 4,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Aksiyon butonu oluşturucu / Action button builder
+  Widget _buildActionButton({
+    required String text,
+    required VoidCallback onPressed,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Colors.white, width: 2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+          ),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: AppConstants.fontSizeLarge,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     _studentIdController.dispose();
@@ -316,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-// Mavi alanın üst kısmı için eğri şekil
+// Mavi alanın üst kısmı için eğri şekil / Curved shape for top of blue area
 class CurvedTopClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -332,33 +272,3 @@ class CurvedTopClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
-
-// Fallback logo painter - eğer görsel yüklenemezse kullanılacak
-class MedipolLogoPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-
-    final centerX = size.width / 2;
-    final centerY = size.height / 2 - 8;
-    final radius = 8.0;
-
-    // X sembolü çiz
-    canvas.drawLine(
-      Offset(centerX - radius, centerY - radius),
-      Offset(centerX + radius, centerY + radius),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(centerX + radius, centerY - radius),
-      Offset(centerX - radius, centerY + radius),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-} 
