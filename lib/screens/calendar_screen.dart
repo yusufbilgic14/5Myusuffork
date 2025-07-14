@@ -251,7 +251,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ..._buildAllCourseCards(),
 
             // Eğer bugünü görüntülüyorsak "Şimdi" göstergesini ekle / Add "Now" indicator if viewing today
-            if (_isViewingToday()) _buildNowIndicator(),
+            // if (_isViewingToday()) _buildNowIndicator(),
           ],
         ),
       ),
