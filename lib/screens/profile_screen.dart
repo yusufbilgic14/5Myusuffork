@@ -50,7 +50,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
 
       // Ana sayfa drawer'ı / Main drawer
-      drawer: const AppDrawerWidget(currentPageIndex: AppConstants.navIndexProfile),
+      drawer: const AppDrawerWidget(
+        currentPageIndex: AppConstants.navIndexProfile,
+      ),
 
       body: SingleChildScrollView(
         child: Padding(
@@ -232,7 +234,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Column(
         children: [
-          
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.lock,
@@ -242,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // TODO: Şifre değiştirme sayfasına git / Navigate to password change page
             },
           ),
-          
+
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.notifications,
@@ -425,6 +426,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
-
-
 }

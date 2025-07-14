@@ -17,7 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentAnnouncementIndex = 0;
   late PageController _pageController;
   Timer? _autoAdvanceTimer;
-  bool _showNotifications = false; // Bildirim popup'ını kontrol etmek için / To control notification popup
+  bool _showNotifications =
+      false; // Bildirim popup'ını kontrol etmek için / To control notification popup
 
   // Duyuru listesi / Announcements list
   final List<Map<String, String>> _announcements = [
@@ -111,35 +112,40 @@ class _HomeScreenState extends State<HomeScreen> {
     // Ek bildirimler / Additional notifications
     {
       'title': 'Visual Programming Final Notunuz Paylaşılmıştır',
-      'message': 'Visual Programming dersi final sınavı notunuz sisteme yüklenmiştir. Notunuzu kontrol edebilirsiniz.',
+      'message':
+          'Visual Programming dersi final sınavı notunuz sisteme yüklenmiştir. Notunuzu kontrol edebilirsiniz.',
       'time': '2 saat önce',
       'isRead': false,
       'type': 'grade',
     },
     {
       'title': 'Kütüphane Kitap İade Hatırlatması',
-      'message': 'Ödünç aldığınız "Algorithm Design" kitabının iade tarihi yaklaşmaktadır. Lütfen 3 gün içinde iade ediniz.',
+      'message':
+          'Ödünç aldığınız "Algorithm Design" kitabının iade tarihi yaklaşmaktadır. Lütfen 3 gün içinde iade ediniz.',
       'time': '5 saat önce',
       'isRead': false,
       'type': 'reminder',
     },
     {
       'title': 'Dönem Sonu Proje Teslim Tarihi',
-      'message': 'Database Management Systems dersi dönem sonu projesi için son teslim tarihi: 25 Haziran 2025',
+      'message':
+          'Database Management Systems dersi dönem sonu projesi için son teslim tarihi: 25 Haziran 2025',
       'time': '1 gün önce',
       'isRead': true,
       'type': 'assignment',
     },
     {
       'title': 'Burs Başvuru Sonucu',
-      'message': 'Başarı bursu başvurunuz değerlendirme aşamasındadır. Sonuç 1 hafta içinde bildirilecektir.',
+      'message':
+          'Başarı bursu başvurunuz değerlendirme aşamasındadır. Sonuç 1 hafta içinde bildirilecektir.',
       'time': '2 gün önce',
       'isRead': true,
       'type': 'scholarship',
     },
     {
       'title': 'Yeni Duyuru: Mezuniyet Töreni',
-      'message': 'Mezuniyet töreni için kayıt işlemleri başlamıştır. Detaylı bilgi için öğrenci işleri ile iletişime geçiniz.',
+      'message':
+          'Mezuniyet töreni için kayıt işlemleri başlamıştır. Detaylı bilgi için öğrenci işleri ile iletişime geçiniz.',
       'time': '3 gün önce',
       'isRead': true,
       'type': 'announcement',
@@ -234,7 +240,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppThemes.getBackgroundColor(context),
-      drawer: const AppDrawerWidget(currentPageIndex: AppConstants.navIndexHome),
+      drawer: const AppDrawerWidget(
+        currentPageIndex: AppConstants.navIndexHome,
+      ),
       body: Stack(
         children: [
           Column(
@@ -247,13 +255,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 duration: AppConstants.animationNormal,
                 curve: Curves.easeInOut,
                 height: _showNotifications ? 350 : 0,
-                child: _showNotifications ? _buildNotificationPanel(context) : null,
+                child: _showNotifications
+                    ? _buildNotificationPanel(context)
+                    : null,
               ),
 
               // Ana içerik / Main content
               Expanded(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingMedium),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppConstants.paddingMedium,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -267,7 +279,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       // Günün dersleri bölümü / Today's courses section
                       _buildTodaysCoursesSection(context),
 
-                      const SizedBox(height: 100), // Alt navigasyon için boşluk / Space for bottom navigation
+                      const SizedBox(
+                        height: 100,
+                      ), // Alt navigasyon için boşluk / Space for bottom navigation
                     ],
                   ),
                 ),
@@ -376,7 +390,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   icon: Stack(
                     children: [
-                      const Icon(Icons.notifications_rounded, color: Colors.white),
+                      const Icon(
+                        Icons.notifications_rounded,
+                        color: Colors.white,
+                      ),
                       // Okunmamış bildirim badge'i / Unread notification badge
                       if (_notifications.where((n) => !n['isRead']).isNotEmpty)
                         Positioned(
@@ -471,11 +488,15 @@ class _HomeScreenState extends State<HomeScreen> {
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    AppConstants.radiusMedium,
+                  ),
                   boxShadow: AppThemes.getCardShadow(context),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    AppConstants.radiusMedium,
+                  ),
                   child: Stack(
                     children: [
                       // Arka plan resmi / Background image
@@ -491,7 +512,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   end: Alignment.bottomRight,
                                   colors: [
                                     AppThemes.getPrimaryColor(context),
-                                    AppThemes.getPrimaryColor(context).withValues(alpha: 0.7),
+                                    AppThemes.getPrimaryColor(
+                                      context,
+                                    ).withValues(alpha: 0.7),
                                   ],
                                 ),
                               ),
@@ -534,7 +557,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: Colors.white.withValues(alpha: 0.9),
-                            borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                            borderRadius: BorderRadius.circular(
+                              AppConstants.radiusSmall,
+                            ),
                           ),
                           child: Text(
                             announcement['date']!,
@@ -553,7 +578,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         left: 0,
                         right: 0,
                         child: Padding(
-                          padding: const EdgeInsets.all(AppConstants.paddingMedium),
+                          padding: const EdgeInsets.all(
+                            AppConstants.paddingMedium,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
@@ -607,7 +634,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                   color: index == _currentAnnouncementIndex
                       ? AppThemes.getPrimaryColor(context)
-                      : AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+                      : AppThemes.getSecondaryTextColor(
+                          context,
+                        ).withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -647,7 +676,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 vertical: 4,
               ),
               decoration: BoxDecoration(
-                color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+                color: AppThemes.getPrimaryColor(
+                  context,
+                ).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
               child: Text(
@@ -674,9 +705,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Ders kartı / Course card
-  Widget _buildCourseCard(BuildContext context, Map<String, dynamic> course, int index) {
+  Widget _buildCourseCard(
+    BuildContext context,
+    Map<String, dynamic> course,
+    int index,
+  ) {
     final isQuiz = course['type'] == 'quiz';
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppConstants.paddingMedium),
       decoration: BoxDecoration(
@@ -692,11 +727,13 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(AppConstants.paddingMedium),
         child: Row(
           children: [
-                         // Zaman göstergesi / Time indicator
-             SizedBox(
-               width: 60,
-               child: Text(
-                course['time'].split(' - ')[0], // Sadece başlama saati / Only start time
+            // Zaman göstergesi / Time indicator
+            SizedBox(
+              width: 60,
+              child: Text(
+                course['time'].split(
+                  ' - ',
+                )[0], // Sadece başlama saati / Only start time
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeSmall,
                   fontWeight: FontWeight.bold,
@@ -842,7 +879,9 @@ class _HomeScreenState extends State<HomeScreen> {
               color: AppThemes.getBackgroundColor(context),
               border: Border(
                 bottom: BorderSide(
-                  color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.2),
+                  color: AppThemes.getSecondaryTextColor(
+                    context,
+                  ).withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -915,7 +954,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   /// Bildirim öğesi / Notification item
-  Widget _buildNotificationItem(BuildContext context, Map<String, dynamic> notification, int index) {
+  Widget _buildNotificationItem(
+    BuildContext context,
+    Map<String, dynamic> notification,
+    int index,
+  ) {
     IconData getNotificationIcon(String type) {
       switch (type) {
         case 'grade':
@@ -961,11 +1004,13 @@ class _HomeScreenState extends State<HomeScreen> {
         });
 
         // E-posta tipindeki bildirimler için inbox'a git / Navigate to inbox for email notifications
-        if (notification['type'] == 'email' && notification['inboxId'] != null) {
+        if (notification['type'] == 'email' &&
+            notification['inboxId'] != null) {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => InboxScreen(selectedMessageId: notification['inboxId']),
+              builder: (context) =>
+                  InboxScreen(selectedMessageId: notification['inboxId']),
             ),
           );
         }
@@ -973,12 +1018,14 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         padding: const EdgeInsets.all(AppConstants.paddingMedium),
         decoration: BoxDecoration(
-          color: notification['isRead'] 
-              ? AppThemes.getSurfaceColor(context) 
+          color: notification['isRead']
+              ? AppThemes.getSurfaceColor(context)
               : AppThemes.getPrimaryColor(context).withValues(alpha: 0.05),
           border: Border(
             bottom: BorderSide(
-              color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+              color: AppThemes.getSecondaryTextColor(
+                context,
+              ).withValues(alpha: 0.1),
               width: 1,
             ),
           ),
@@ -991,7 +1038,9 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: getNotificationColor(notification['type']).withValues(alpha: 0.1),
+                color: getNotificationColor(
+                  notification['type'],
+                ).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
               child: Icon(
@@ -1015,7 +1064,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           notification['title'],
                           style: TextStyle(
                             fontSize: AppConstants.fontSizeMedium,
-                            fontWeight: notification['isRead'] ? FontWeight.w500 : FontWeight.bold,
+                            fontWeight: notification['isRead']
+                                ? FontWeight.w500
+                                : FontWeight.bold,
                             color: AppThemes.getTextColor(context),
                           ),
                         ),
@@ -1051,7 +1102,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     notification['time'],
                     style: TextStyle(
                       fontSize: AppConstants.fontSizeSmall,
-                      color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.7),
+                      color: AppThemes.getSecondaryTextColor(
+                        context,
+                      ).withValues(alpha: 0.7),
                       fontWeight: FontWeight.w400,
                     ),
                   ),

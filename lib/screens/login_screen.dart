@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../constants/app_constants.dart';
 import '../widgets/common/medipol_logo_widget.dart';
 import 'home_screen.dart';
@@ -13,6 +14,34 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _studentIdController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  /// Şifre sıfırlama URL'sini aç / Open password reset URL
+  Future<void> _launchPasswordResetUrl() async {
+    final Uri url = Uri.parse('https://mebis.medipol.edu.tr/PasswordReset');
+    try {
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('URL açılamadı / Could not open URL'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Bir hata oluştu / An error occurred'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +172,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             isPassword: true,
                           ),
 
+                          const SizedBox(height: AppConstants.paddingMedium),
+
+                          // Şifremi unuttum bağlantısı / Forgotten password link
+                          _buildForgottenPasswordLink(),
+
                           const SizedBox(height: 40),
 
                           // Login butonu / Login button
@@ -242,6 +276,47 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Colors.white,
             fontSize: AppConstants.fontSizeLarge,
             fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Şifremi unuttum bağlantısı oluşturucu / Forgotten password link builder
+  Widget _buildForgottenPasswordLink() {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: GestureDetector(
+        onTap: _launchPasswordResetUrl,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppConstants.paddingMedium,
+            vertical: AppConstants.paddingSmall,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.lock_reset,
+                color: Colors.white.withValues(alpha: 0.9),
+                size: 16,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Şifremi Unuttum / Forgotten Password',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontSize: AppConstants.fontSizeSmall,
+                  fontWeight: FontWeight.w500,
+                  decoration: TextDecoration.underline,
+                  decorationColor: Colors.white.withValues(alpha: 0.7),
+                ),
+              ),
+            ],
           ),
         ),
       ),

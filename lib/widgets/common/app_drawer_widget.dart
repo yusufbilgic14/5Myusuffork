@@ -137,7 +137,7 @@ class AppDrawerWidget extends StatelessWidget {
                       // TODO: Cafeteria Menu sayfasına git
                     },
                   ),
-                  
+
                   _buildDrawerItem(
                     icon: Icons.mail,
                     title: 'Message Box',
@@ -213,11 +213,7 @@ class AppDrawerWidget extends StatelessWidget {
     Color? textColor,
   }) {
     return ListTile(
-      leading: Icon(
-        icon,
-        color: textColor ?? Colors.white,
-        size: 24,
-      ),
+      leading: Icon(icon, color: textColor ?? Colors.white, size: 24),
       title: Text(
         title,
         style: TextStyle(
