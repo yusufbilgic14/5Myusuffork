@@ -95,16 +95,16 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   /// Yedek logo widget'ı / Fallback logo widget
   Widget _buildFallbackLogo() {
     return Container(
-      width: 100,
-      height: 100,
+      width: 180,
+      height: 180,
       decoration: BoxDecoration(
         color: AppConstants.primaryColor,
-        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+        borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
       ),
       child: const Icon(
         Icons.school,
         color: Colors.white,
-        size: 48,
+        size: 80,
       ),
     );
   }
@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       child: _buildLogoSection(),
                     ),
                     
-                    SizedBox(height: screenSize.height * 0.08),
+                                         SizedBox(height: screenSize.height * 0.06),
                     
                     // Form kartı / Form card
                     SlideTransition(
@@ -213,45 +213,23 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   Widget _buildLogoSection() {
     return Column(
       children: [
-        // Logo resmi / Logo image
-        Container(
-          width: 140,
-          height: 140,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
-            boxShadow: [
-              BoxShadow(
-                color: AppConstants.primaryColor.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(AppConstants.paddingMedium),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-              child: Image.asset(
-                'assets/images/loginlogo.png',
-                width: 100,
-                height: 100,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  print('=== LOGO ERROR DEBUG ===');
-                  print('Error: $error');
-                  print('StackTrace: $stackTrace');
-                  print('Trying to load: assets/images/loginlogo.png');
-                  print('========================');
-                  return _buildFallbackLogo();
-                },
-              ),
-            ),
-          ),
+        // Logo resmi - Standalone büyük logo / Standalone large logo
+        Image.asset(
+          'assets/images/loginlogo.png',
+          width: 180,
+          height: 180,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            print('=== LOGO ERROR DEBUG ===');
+            print('Error: $error');
+            print('StackTrace: $stackTrace');
+            print('Trying to load: assets/images/loginlogo.png');
+            print('========================');
+            return _buildFallbackLogo();
+          },
         ),
         
-        const SizedBox(height: AppConstants.paddingLarge),
+        const SizedBox(height: AppConstants.paddingXLarge),
         
         // Hoş geldin metni / Welcome text
         Text(
