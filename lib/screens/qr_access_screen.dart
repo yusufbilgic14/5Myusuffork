@@ -69,7 +69,6 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
     });
 
     // Kullanıcıya bilgi ver / Notify user
-    
   }
 
   // Kalan süreyi formatla / Format remaining time
@@ -110,7 +109,9 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
       ),
 
       // Ana sayfa drawer'ı / Main drawer
-      drawer: const AppDrawerWidget(currentPageIndex: AppConstants.navIndexScan),
+      drawer: const AppDrawerWidget(
+        currentPageIndex: AppConstants.navIndexScan,
+      ),
 
       body: SafeArea(
         child: Padding(
@@ -337,8 +338,4 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
       ),
     );
   }
-
-
-
-
 }

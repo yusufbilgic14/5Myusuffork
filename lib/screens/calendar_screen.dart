@@ -6,10 +6,9 @@ import '../widgets/common/app_bar_widget.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 
-
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
-  
+
   @override
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
@@ -122,7 +121,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
       ),
 
       // Ana sayfa drawer'ı / Main drawer
-      drawer: const AppDrawerWidget(currentPageIndex: AppConstants.navIndexCalendar),
+      drawer: const AppDrawerWidget(
+        currentPageIndex: AppConstants.navIndexCalendar,
+      ),
 
       body: Column(
         children: [
@@ -682,6 +683,4 @@ class _CalendarScreenState extends State<CalendarScreen> {
         _selectedDate.month == today.month &&
         _selectedDate.day == today.day;
   }
-
-
 }

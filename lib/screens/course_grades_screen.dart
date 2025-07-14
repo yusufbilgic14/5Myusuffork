@@ -208,7 +208,9 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
     return Scaffold(
       backgroundColor: AppThemes.getBackgroundColor(context),
       appBar: const CommonAppBar(title: 'Ders Notları'),
-      drawer: const AppDrawerWidget(currentPageIndex: -1), // Ders notları sayfası navigasyon dışında / Course grades page is outside navigation
+      drawer: const AppDrawerWidget(
+        currentPageIndex: -1,
+      ), // Ders notları sayfası navigasyon dışında / Course grades page is outside navigation
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -668,8 +670,10 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
     }
 
     return ListView.builder(
-      shrinkWrap: true, // ListView boyutunu içerik kadar sınırla / Limit ListView size to content
-      physics: const NeverScrollableScrollPhysics(), // Ana SingleChildScrollView kullanacağız / Use main SingleChildScrollView
+      shrinkWrap:
+          true, // ListView boyutunu içerik kadar sınırla / Limit ListView size to content
+      physics:
+          const NeverScrollableScrollPhysics(), // Ana SingleChildScrollView kullanacağız / Use main SingleChildScrollView
       padding: const EdgeInsets.symmetric(
         horizontal: AppConstants.paddingMedium,
       ),
@@ -1049,8 +1053,6 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
     }
     return totalCredits;
   }
-
-
 
   /// Notları yenile / Refresh grades
   void _refreshGrades(BuildContext context) {

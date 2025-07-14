@@ -11,7 +11,6 @@ class FeedbackScreen extends StatefulWidget {
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
-
   // Form controllers / Form kontrolleri
   final _formKey = GlobalKey<FormState>();
   final _subjectController = TextEditingController();
@@ -111,8 +110,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     _emailController.dispose();
     super.dispose();
   }
-
-
 
   // Tip seçim widget'ı (Talep/Geri Bildirim) / Type selection widget (Request/Feedback)
   Widget _buildTypeSelection() {
@@ -927,7 +924,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      drawer: const AppDrawerWidget(currentPageIndex: -1), // Feedback sayfası navigasyon dışında / Feedback page is outside navigation
+      drawer: const AppDrawerWidget(
+        currentPageIndex: -1,
+      ), // Feedback sayfası navigasyon dışında / Feedback page is outside navigation
       appBar: AppBar(
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: Colors.white,
@@ -1152,10 +1151,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
       // Alt navigasyon çubuğu / Bottom navigation bar
       bottomNavigationBar: const BottomNavigationWidget(
-        currentIndex: -1, // Feedback sayfası navigasyon dışında / Feedback page is outside navigation
+        currentIndex:
+            -1, // Feedback sayfası navigasyon dışında / Feedback page is outside navigation
       ),
     );
   }
-
-
 }

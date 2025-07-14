@@ -156,7 +156,8 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       id: 'event_1',
       club: _clubs[0],
       title: 'Flutter & Dart Workshop',
-      description: 'Mobil uygulama geliştirme workshop\'u. Başlangıç seviyesinden ileri seviyeye Flutter teknolojisi öğrenin. Katılım ücretsizdir!',
+      description:
+          'Mobil uygulama geliştirme workshop\'u. Başlangıç seviyesinden ileri seviyeye Flutter teknolojisi öğrenin. Katılım ücretsizdir!',
       eventDate: DateTime.now().add(const Duration(days: 3)),
       postDate: DateTime.now().subtract(const Duration(hours: 2)),
       location: 'Bilgisayar Mühendisliği Lab - B201',
@@ -172,7 +173,8 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       id: 'event_2',
       club: _clubs[1],
       title: 'Yapay Zeka ve Etik Münazarası',
-      description: 'AI teknolojilerinin toplumsal etkilerini tartışacağımız münazara etkinliği. Uzman konuşmacılar ve interaktif oturumlar.',
+      description:
+          'AI teknolojilerinin toplumsal etkilerini tartışacağımız münazara etkinliği. Uzman konuşmacılar ve interaktif oturumlar.',
       eventDate: DateTime.now().add(const Duration(days: 5)),
       postDate: DateTime.now().subtract(const Duration(hours: 8)),
       location: 'Konferans Salonu - Ana Kampüs',
@@ -187,7 +189,8 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       id: 'event_3',
       club: _clubs[2],
       title: 'Kampüs Fotoğraf Yarışması',
-      description: 'Medipol kampüsünün en güzel fotoğraflarını çekme yarışması! Kazananlara ödüller ve sürprizler var.',
+      description:
+          'Medipol kampüsünün en güzel fotoğraflarını çekme yarışması! Kazananlara ödüller ve sürprizler var.',
       eventDate: DateTime.now().add(const Duration(days: 7)),
       postDate: DateTime.now().subtract(const Duration(days: 1)),
       location: 'Tüm Kampüs Alanı',
@@ -202,7 +205,8 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       id: 'event_4',
       club: _clubs[3],
       title: 'Kitap Bağışı Kampanyası',
-      description: 'Muhtaç çocuklar için kitap toplama kampanyası. Okuduğunuz kitapları bağışlayın, bilgiyi paylaşın!',
+      description:
+          'Muhtaç çocuklar için kitap toplama kampanyası. Okuduğunuz kitapları bağışlayın, bilgiyi paylaşın!',
       eventDate: DateTime.now().add(const Duration(days: 1)),
       postDate: DateTime.now().subtract(const Duration(hours: 12)),
       location: 'Öğrenci Merkezi Lobi',
@@ -217,7 +221,8 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       id: 'event_5',
       club: _clubs[4],
       title: 'Akustik Müzik Gecesi',
-      description: 'Öğrenci müzisyenlerimizin performanslarıyla unutulmaz bir akşam. Kahve ve tatlılar eşliğinde müzik keyfi.',
+      description:
+          'Öğrenci müzisyenlerimizin performanslarıyla unutulmaz bir akşam. Kahve ve tatlılar eşliğinde müzik keyfi.',
       eventDate: DateTime.now().add(const Duration(days: 10)),
       postDate: DateTime.now().subtract(const Duration(hours: 18)),
       location: 'Kafeterya - Açık Hava Sahnesi',
@@ -240,7 +245,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
         children: [
           // Üst sekme çubuğu / Top tab bar
           _buildTabBar(context),
-          
+
           // İçerik / Content
           Expanded(
             child: TabBarView(
@@ -288,7 +293,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       children: [
         // Arama ve filtreler / Search and filters
         _buildSearchAndFilters(context),
-        
+
         // Etkinlik listesi / Events list
         Expanded(child: _buildEventsList(context)),
       ],
@@ -310,7 +315,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   /// Etkinliklerim sekmesi / My events tab
   Widget _buildMyEventsTab(BuildContext context) {
     final joinedEvents = _eventPosts.where((event) => event.isJoined).toList();
-    
+
     if (joinedEvents.isEmpty) {
       return const Center(
         child: Column(
@@ -415,7 +420,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
             _selectedFilter = selected ? value : 'all';
           });
         },
-        selectedColor: AppThemes.getPrimaryColor(context).withValues(alpha: 0.2),
+        selectedColor: AppThemes.getPrimaryColor(
+          context,
+        ).withValues(alpha: 0.2),
         checkmarkColor: AppThemes.getPrimaryColor(context),
       ),
     );
@@ -434,7 +441,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
             _selectedEventType = selected ? type : null;
           });
         },
-        selectedColor: AppThemes.getPrimaryColor(context).withValues(alpha: 0.2),
+        selectedColor: AppThemes.getPrimaryColor(
+          context,
+        ).withValues(alpha: 0.2),
         checkmarkColor: AppThemes.getPrimaryColor(context),
       ),
     );
@@ -468,9 +477,13 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       }
 
       // Etkinlik türü filtresi / Event type filter
-      bool matchesType = _selectedEventType == null || event.type == _selectedEventType;
+      bool matchesType =
+          _selectedEventType == null || event.type == _selectedEventType;
 
-      return matchesSearch && matchesDate && matchesType && event.eventDate.isAfter(now);
+      return matchesSearch &&
+          matchesDate &&
+          matchesType &&
+          event.eventDate.isAfter(now);
     }).toList();
 
     // Tarihe göre sırala / Sort by date
@@ -516,10 +529,10 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
         children: [
           // Kulüp başlığı / Club header
           _buildEventHeader(context, event),
-          
+
           // Etkinlik içeriği / Event content
           _buildEventContent(context, event),
-          
+
           // Etkileşim butonları / Interaction buttons
           _buildEventActions(context, event),
         ],
@@ -548,9 +561,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               ),
             ),
           ),
-          
+
           const SizedBox(width: AppConstants.paddingMedium),
-          
+
           // Kulüp bilgisi / Club info
           Expanded(
             child: Column(
@@ -586,7 +599,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               ],
             ),
           ),
-          
+
           // Daha fazla seçeneği / More options
           IconButton(
             icon: const Icon(Icons.more_vert),
@@ -600,7 +613,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   /// Etkinlik içeriği / Event content
   Widget _buildEventContent(BuildContext context, EventPost event) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingMedium),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppConstants.paddingMedium,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -613,9 +628,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               color: AppThemes.getTextColor(context),
             ),
           ),
-          
+
           const SizedBox(height: AppConstants.paddingSmall),
-          
+
           // Açıklama / Description
           Text(
             event.description,
@@ -625,14 +640,14 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               height: 1.4,
             ),
           ),
-          
+
           const SizedBox(height: AppConstants.paddingMedium),
-          
+
           // Etkinlik detayları / Event details
           _buildEventDetails(context, event),
-          
+
           const SizedBox(height: AppConstants.paddingMedium),
-          
+
           // Etiketler / Tags
           if (event.tags.isNotEmpty) _buildEventTags(context, event),
         ],
@@ -669,9 +684,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: AppConstants.paddingSmall),
-          
+
           // Konum / Location
           Row(
             children: [
@@ -692,9 +707,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: AppConstants.paddingSmall),
-          
+
           // Katılımcı sayısı / Participant count
           Row(
             children: [
@@ -782,13 +797,13 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               ),
             ],
           ),
-          
+
           const SizedBox(height: AppConstants.paddingSmall),
-          
+
           const Divider(height: 1),
-          
+
           const SizedBox(height: AppConstants.paddingSmall),
-          
+
           // Aksiyon butonları / Action buttons
           Row(
             children: [
@@ -812,7 +827,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                   ),
                 ),
               ),
-              
+
               // Yorum butonu / Comment button
               Expanded(
                 child: TextButton.icon(
@@ -829,7 +844,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                   ),
                 ),
               ),
-              
+
               // Katıl butonu / Join button
               Expanded(
                 child: ElevatedButton.icon(
@@ -882,15 +897,12 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                 borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
               ),
               child: Center(
-                child: Text(
-                  club.logo,
-                  style: const TextStyle(fontSize: 24),
-                ),
+                child: Text(club.logo, style: const TextStyle(fontSize: 24)),
               ),
             ),
-            
+
             const SizedBox(width: AppConstants.paddingMedium),
-            
+
             // Kulüp bilgisi / Club info
             Expanded(
               child: Column(
@@ -935,7 +947,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                 ],
               ),
             ),
-            
+
             // Takip et butonu / Follow button
             ElevatedButton(
               onPressed: () => _followClub(club),
@@ -967,7 +979,15 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     } else if (difference.inDays == 1) {
       return 'Yarın, ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     } else if (difference.inDays < 7) {
-      final days = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+      final days = [
+        'Pazartesi',
+        'Salı',
+        'Çarşamba',
+        'Perşembe',
+        'Cuma',
+        'Cumartesi',
+        'Pazar',
+      ];
       return '${days[date.weekday - 1]}, ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     } else {
       return '${date.day}/${date.month}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
@@ -1004,10 +1024,12 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     setState(() {
       // Gerçek uygulamada API çağrısı olacak / In real app, this would be an API call
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(event.isLiked ? 'Beğeni kaldırıldı' : 'Etkinlik beğenildi'),
+        content: Text(
+          event.isLiked ? 'Beğeni kaldırıldı' : 'Etkinlik beğenildi',
+        ),
         duration: const Duration(seconds: 1),
       ),
     );
@@ -1018,10 +1040,12 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     setState(() {
       // Gerçek uygulamada API çağrısı olacak / In real app, this would be an API call
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(event.isJoined ? 'Etkinlikten çıkıldı' : 'Etkinliğe katıldınız'),
+        content: Text(
+          event.isJoined ? 'Etkinlikten çıkıldı' : 'Etkinliğe katıldınız',
+        ),
         backgroundColor: event.isJoined ? Colors.orange : Colors.green,
         duration: const Duration(seconds: 2),
       ),
@@ -1061,7 +1085,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.2),
+                    color: AppThemes.getSecondaryTextColor(
+                      context,
+                    ).withValues(alpha: 0.2),
                   ),
                 ),
               ),
@@ -1083,7 +1109,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                 ],
               ),
             ),
-            
+
             // Yorumlar listesi / Comments list
             const Expanded(
               child: Center(
@@ -1188,4 +1214,4 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       ),
     );
   }
-} 
+}
