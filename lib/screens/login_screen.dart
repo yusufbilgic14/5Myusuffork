@@ -181,7 +181,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       child: _buildLogoSection(),
                     ),
                     
-                                         SizedBox(height: screenSize.height * 0.06),
                     
                     // Form kartı / Form card
                     SlideTransition(
@@ -216,8 +215,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         // Logo resmi - Standalone büyük logo / Standalone large logo
         Image.asset(
           'assets/images/loginlogo.png',
-          width: 180,
-          height: 180,
+          width: 280,
+          height: 280,
           fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             print('=== LOGO ERROR DEBUG ===');
@@ -229,29 +228,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           },
         ),
         
-        const SizedBox(height: AppConstants.paddingXLarge),
+        
         
         // Hoş geldin metni / Welcome text
-        Text(
-          'Hoş Geldiniz',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: AppConstants.primaryColor,
-            letterSpacing: 0.5,
-          ),
-        ),
         
-        const SizedBox(height: AppConstants.paddingSmall),
-        
-        Text(
-          'Medipol Öğrenci Portalı',
-          style: TextStyle(
-            fontSize: AppConstants.fontSizeLarge,
-            color: Colors.grey.shade600,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
       ],
     );
   }
