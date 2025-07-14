@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:medipolapp/screens/profile_screen.dart';
 import '../../screens/inbox_screen.dart';
 import '../../screens/feedback_screen.dart';
 import '../../screens/course_grades_screen.dart';
@@ -189,6 +190,12 @@ class AppDrawerWidget extends StatelessWidget {
                     title: 'Settings',
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ),
+                      );
                       // TODO: Settings sayfasına git
                     },
                   ),
