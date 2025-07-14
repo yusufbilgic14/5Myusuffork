@@ -165,17 +165,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           const SizedBox(height: AppConstants.paddingXLarge),
 
-                          // Password alanı / Password field
-                          _buildInputField(
-                            label: 'Password',
-                            controller: _passwordController,
-                            isPassword: true,
+                          // Password alanı ve şifremi unuttum linki yan yana
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Password input alanı (genişleyecek)
+                              Expanded(
+                                child: _buildInputField(
+                                  label: 'Password',
+                                  controller: _passwordController,
+                                  isPassword: true,
+                                ),
+                              ),
+                            ],
                           ),
-
-                          const SizedBox(height: AppConstants.paddingMedium),
-
-                          // Şifremi unuttum bağlantısı / Forgotten password link
-                          _buildForgottenPasswordLink(),
 
                           const SizedBox(height: 40),
 
@@ -191,14 +194,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                             },
-                          ),
-
-                          const SizedBox(height: AppConstants.paddingMedium),
-
-                          // Back butonu / Back button
-                          _buildActionButton(
-                            text: 'Back',
-                            onPressed: () => Navigator.pop(context),
                           ),
 
                           const SizedBox(height: AppConstants.paddingLarge),
@@ -224,13 +219,33 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: AppConstants.fontSizeLarge,
-            fontWeight: FontWeight.w500,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: AppConstants.fontSizeLarge,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (isPassword) ...[
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: _launchPasswordResetUrl,
+                child: Text(
+                  '(Forgotten Password?)',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: AppConstants.fontSizeSmall,
+                    fontWeight: FontWeight.w400,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: AppConstants.paddingSmall),
         Container(
@@ -282,46 +297,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  /// Şifremi unuttum bağlantısı oluşturucu / Forgotten password link builder
-  Widget _buildForgottenPasswordLink() {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: GestureDetector(
-        onTap: _launchPasswordResetUrl,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.paddingMedium,
-            vertical: AppConstants.paddingSmall,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.lock_reset,
-                color: Colors.white.withValues(alpha: 0.9),
-                size: 16,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                'Şifremi Unuttum / Forgotten Password',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontSize: AppConstants.fontSizeSmall,
-                  fontWeight: FontWeight.w500,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.white.withValues(alpha: 0.7),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  /// Şifremi unuttum bağlantısı ve butonları kaldırıldı, sadece label yanında küçük link olarak kaldı.
 
   @override
   void dispose() {

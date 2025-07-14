@@ -7,6 +7,7 @@ import '../themes/app_themes.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import '../widgets/common/user_info_widget.dart';
+import '../screens/login_screen.dart'; // LoginScreen importu eklendi
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -236,16 +237,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           _buildDivider(),
           _buildMenuItem(
-            icon: Icons.lock,
-            title: 'Şifre Değiştir',
-            subtitle: 'Hesap güvenliğinizi artırın',
-            onTap: () {
-              // TODO: Şifre değiştirme sayfasına git / Navigate to password change page
-            },
-          ),
-
-          _buildDivider(),
-          _buildMenuItem(
             icon: Icons.notifications,
             title: 'Bildirim Ayarları',
             subtitle: 'Hangi bildirimleri alacağınızı seçin',
@@ -413,7 +404,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                // TODO: Çıkış yap ve giriş ekranına yönlendir / Logout and navigate to login screen
+                // Çıkış yap ve giriş ekranına yönlendir
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
