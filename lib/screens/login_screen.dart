@@ -92,6 +92,23 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     );
   }
 
+  /// Yedek logo widget'ı / Fallback logo widget
+  Widget _buildFallbackLogo() {
+    return Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+        color: AppConstants.primaryColor,
+        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+      ),
+      child: const Icon(
+        Icons.school,
+        color: Colors.white,
+        size: 48,
+      ),
+    );
+  }
+
   /// Giriş işlemi / Login process
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
@@ -198,14 +215,14 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       children: [
         // Logo resmi / Logo image
         Container(
-          width: 120,
-          height: 120,
+          width: 140,
+          height: 140,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
             boxShadow: [
               BoxShadow(
-                                 color: AppConstants.primaryColor.withValues(alpha: 0.1),
+                color: AppConstants.primaryColor.withValues(alpha: 0.1),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
                 spreadRadius: 2,
@@ -217,20 +234,17 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             child: ClipRRect(
               borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
               child: Image.asset(
-                'assets/images/Medipol Logo Login.png',
+                'assets/images/loginlogo.png',
+                width: 100,
+                height: 100,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: AppConstants.primaryColor,
-                      borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-                    ),
-                    child: const Icon(
-                      Icons.school,
-                      color: Colors.white,
-                      size: 48,
-                    ),
-                  );
+                  print('=== LOGO ERROR DEBUG ===');
+                  print('Error: $error');
+                  print('StackTrace: $stackTrace');
+                  print('Trying to load: assets/images/loginlogo.png');
+                  print('========================');
+                  return _buildFallbackLogo();
                 },
               ),
             ),

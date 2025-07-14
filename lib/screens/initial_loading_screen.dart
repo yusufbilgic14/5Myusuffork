@@ -16,7 +16,7 @@ class _InitialLoadingScreenState extends State<InitialLoadingScreen> {
   void initState() {
     super.initState();
     // 3 saniye sonra login ekranına geç / Navigate to login screen after 3 seconds
-    Timer(const Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 2), () {
       if (mounted) {
         Navigator.pushReplacement(
           context,
