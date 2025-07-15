@@ -10,6 +10,7 @@ import '../widgets/common/user_info_widget.dart';
 import '../screens/login_screen.dart'; // LoginScreen importu eklendi
 import 'notification_settings_screen.dart'; // Bildirim ayarları ekranı importu
 import 'help_support_screen.dart'; // Yardım ve Destek ekranı importu
+import 'kampuse_ulasim_screen.dart'; // Kampüse Ulaşım ekranı importu
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -261,6 +262,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => const HelpSupportScreen(),
+                ),
+              );
+            },
+          ),
+          _buildDivider(),
+          _buildMenuItem(
+            icon: Icons.directions_bus,
+            title: 'Kampüse Ulaşım',
+            subtitle: 'Hat ve güzergah bilgileri',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const KampuseUlasimScreen(),
                 ),
               );
             },
