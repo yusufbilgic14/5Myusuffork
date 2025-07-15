@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:medipolapp/screens/profile_screen.dart';
 import '../../screens/inbox_screen.dart';
 import '../../screens/feedback_screen.dart';
 import '../../screens/course_grades_screen.dart';
 import '../../screens/upcoming_events_screen.dart';
+import '../../screens/academic_calendar_screen.dart';
+import '../../screens/cafeteria_menu_screen.dart';
 
 /// Uygulama drawer widget'ı - Tüm sayfalarda kullanılan ana drawer / App drawer widget - Main drawer used across all pages
 class AppDrawerWidget extends StatelessWidget {
@@ -130,11 +133,29 @@ class AppDrawerWidget extends StatelessWidget {
                     },
                   ),
                   _buildDrawerItem(
+                    icon: Icons.date_range,
+                    title: 'Academic Calendar',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AcademicCalendarScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildDrawerItem(
                     icon: Icons.restaurant,
                     title: 'Cafeteria Menu',
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Cafeteria Menu sayfasına git
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CafeteriaMenuScreen(),
+                        ),
+                      );
                     },
                   ),
 
@@ -169,6 +190,12 @@ class AppDrawerWidget extends StatelessWidget {
                     title: 'Settings',
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ProfileScreen(),
+                        ),
+                      );
                       // TODO: Settings sayfasına git
                     },
                   ),
