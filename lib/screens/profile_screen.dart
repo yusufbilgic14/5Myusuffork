@@ -8,6 +8,8 @@ import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import '../widgets/common/user_info_widget.dart';
 import '../screens/login_screen.dart'; // LoginScreen importu eklendi
+import 'notification_settings_screen.dart'; // Bildirim ayarları ekranı importu
+import 'help_support_screen.dart'; // Yardım ve Destek ekranı importu
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -241,7 +243,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: 'Bildirim Ayarları',
             subtitle: 'Hangi bildirimleri alacağınızı seçin',
             onTap: () {
-              // TODO: Bildirim ayarları sayfasına git / Navigate to notification settings page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotificationSettingsScreen(),
+                ),
+              );
             },
           ),
           _buildDivider(),
@@ -250,7 +257,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: 'Yardım ve Destek',
             subtitle: 'SSS ve iletişim bilgileri',
             onTap: () {
-              // TODO: Yardım sayfasına git / Navigate to help page
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HelpSupportScreen(),
+                ),
+              );
             },
           ),
           _buildDivider(),
