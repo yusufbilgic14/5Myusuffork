@@ -47,7 +47,7 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
         ingredients: ['Yumurta', 'Domates', 'Biber', 'Soğan', 'Zeytinyağı'],
         allergens: ['Yumurta'],
         dietaryInfo: [DietaryFilter.vegetarian],
-        image: 'assets/images/menemen.jpg',
+        image: 'assets/images/menemen.jpeg',
       ),
       MenuItem(
         name: 'Peynirli Börek',
@@ -79,7 +79,7 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
         ingredients: ['Un', 'Kıyma', 'Soğan', 'Yoğurt', 'Sarımsak'],
         allergens: ['Gluten', 'Süt Ürünleri'],
         dietaryInfo: [],
-        image: 'assets/images/manti.jpg',
+        image: 'assets/images/manti.jpeg',
       ),
       MenuItem(
         name: 'Izgara Tavuk',
