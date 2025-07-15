@@ -4,31 +4,55 @@ import 'package:url_launcher/url_launcher.dart';
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({Key? key}) : super(key: key);
 
-  void _launchPhone() async {
-    final Uri phoneUri = Uri(scheme: 'tel', path: '4448544');
+  void _launchPhone(String phone) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phone);
     if (await canLaunchUrl(phoneUri)) {
       await launchUrl(phoneUri);
     }
   }
 
-  void _launchMaps() async {
+  void _launchMaps(String address) async {
     final Uri mapsUri = Uri.parse(
-      'https://www.google.com/maps/search/?api=1&query=İstanbul+Medipol+Üniversitesi+Kavacık+Güney+Yerleşkesi+Beykoz+İstanbul',
+      'https://www.google.com/maps/search/?api=1&query=${Uri.encodeComponent(address)}',
     );
     if (await canLaunchUrl(mapsUri)) {
       await launchUrl(mapsUri, mode: LaunchMode.externalApplication);
     }
   }
 
-  void _launchEmail() async {
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: 'destekhizmetleri@medipol.edu.tr',
-      // subject ve body eklenebilir
-    );
+  void _launchEmail(String email) async {
+    final Uri emailUri = Uri(scheme: 'mailto', path: email);
     if (await canLaunchUrl(emailUri)) {
       await launchUrl(emailUri);
     }
+  }
+
+  Widget _buildContactRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    void Function()? onTap,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: const Color(0xFF1E3A8A)),
+        const SizedBox(width: 12),
+        Expanded(
+          child: GestureDetector(
+            onTap: onTap,
+            child: Text(
+              '$label $value',
+              style: TextStyle(
+                fontSize: 16,
+                decoration: onTap != null ? TextDecoration.underline : null,
+                color: onTap != null ? const Color(0xFF1E3A8A) : Colors.black,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -39,7 +63,7 @@ class HelpSupportScreen extends StatelessWidget {
         backgroundColor: const Color(0xFF1E3A8A),
         foregroundColor: Colors.white,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,64 +82,254 @@ class HelpSupportScreen extends StatelessWidget {
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 32),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Kavacık Kuzey Yerleşkesi
+            const Text(
+              'Kavacık Kuzey Yerleşkesi',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E3A8A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Yerleşke; Medipol Üniversitesi Kavacık (Ana Yerleşke Rektörlük)',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 4),
+            _buildContactRow(
+              icon: Icons.phone,
+              label: 'Telefon:',
+              value: '444 85 44',
+              onTap: () => _launchPhone('4448544'),
+            ),
+            _buildContactRow(
+              icon: Icons.print,
+              label: 'Faks (Rektörlük):',
+              value: '0212 531 75 55',
+            ),
+            _buildContactRow(
+              icon: Icons.print,
+              label: 'Faks (Muhasebe):',
+              value: '0212 521 28 52',
+            ),
+            _buildContactRow(
+              icon: Icons.print,
+              label: 'Faks (Fakülteler):',
+              value: '0212 521 23 77',
+            ),
+            _buildContactRow(
+              icon: Icons.email,
+              label: 'Kep Adresi:',
+              value: 'medipoluniversitesi@hs03.kep.tr',
+              onTap: () => _launchEmail('medipoluniversitesi@hs03.kep.tr'),
+            ),
+            _buildContactRow(
+              icon: Icons.location_on,
+              label: 'Adres:',
+              value:
+                  'Kavacık Mah. Ekinciler Cad. No: 19, Kavacık Kavşağı, 34810 Beykoz, İstanbul',
+              onTap: () => _launchMaps(
+                'Kavacık Mah. Ekinciler Cad. No: 19, Kavacık Kavşağı, 34810 Beykoz, İstanbul',
+              ),
+            ),
+            const SizedBox(height: 32),
+            // Haliç Yerleşkesi
+            const Text(
+              'Haliç Yerleşkesi',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E3A8A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Yerleşke; Medipol Üniversitesi Haliç Yerleşkesi',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 4),
+            _buildContactRow(
+              icon: Icons.phone,
+              label: 'Telefon:',
+              value: '444 85 44',
+              onTap: () => _launchPhone('4448544'),
+            ),
+            _buildContactRow(
+              icon: Icons.print,
+              label: 'Faks (Rektörlük):',
+              value: '0212 531 75 55',
+            ),
+            _buildContactRow(
+              icon: Icons.print,
+              label: 'Faks (Muhasebe):',
+              value: '0212 521 28 52',
+            ),
+            _buildContactRow(
+              icon: Icons.print,
+              label: 'Faks (Fakülteler):',
+              value: '0212 521 23 77',
+            ),
+            _buildContactRow(
+              icon: Icons.location_on,
+              label: 'Adres:',
+              value:
+                  'Cibali Mah. Atatürk Bulvarı No: 25, 34083 Fatih, İstanbul',
+              onTap: () => _launchMaps(
+                'Cibali Mah. Atatürk Bulvarı No: 25, 34083 Fatih, İstanbul',
+              ),
+            ),
+            const SizedBox(height: 32),
+            // Bağcılar Yerleşkesi
+            const Text(
+              'Bağcılar Yerleşkesi',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1E3A8A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Yerleşke; Üniversite Hastanesi (Bağcılar Yerleşkesi)',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 4),
+            _buildContactRow(
+              icon: Icons.phone,
+              label: 'Telefon:',
+              value: '444 70 44',
+              onTap: () => _launchPhone('4447044'),
+            ),
+            _buildContactRow(
+              icon: Icons.phone,
+              label: 'Telefon (Dahili):',
+              value: '0212 460 77 77 - (7578)',
+            ),
+            _buildContactRow(
+              icon: Icons.print,
+              label: 'Faks:',
+              value: '0212 521 23 77',
+            ),
+            _buildContactRow(
+              icon: Icons.location_on,
+              label: 'Adres:',
+              value:
+                  'TEM Avrupa Otoyolu Göztepe Çıkışı No: 1, 34214 Bağcılar, İstanbul',
+              onTap: () => _launchMaps(
+                'TEM Avrupa Otoyolu Göztepe Çıkışı No: 1, 34214 Bağcılar, İstanbul',
+              ),
+            ),
+            const SizedBox(height: 32),
+            // Sağlık Uygulama Araştırma Merkezleri
+            ExpansionTile(
+              title: const Text(
+                'Sağlık Uygulama Araştırma Merkezleri',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1E3A8A),
+                ),
+              ),
               children: [
-                const Icon(Icons.phone, color: Color(0xFF1E3A8A)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _launchPhone,
-                    child: const Text(
-                      'Telefon: 444 85 44 ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        decoration: TextDecoration.underline,
-                        color: Color(0xFF1E3A8A),
+                ListTile(
+                  title: const Text(
+                    'Sağlık UA Merkezi Diş Hastanesi',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildContactRow(
+                        icon: Icons.phone,
+                        label: 'Telefon:',
+                        value: '444 63 44',
+                        onTap: () => _launchPhone('4446344'),
                       ),
-                    ),
+                      _buildContactRow(
+                        icon: Icons.print,
+                        label: 'Faks:',
+                        value: '0212 5317555',
+                      ),
+                      _buildContactRow(
+                        icon: Icons.location_on,
+                        label: 'Adres:',
+                        value:
+                            'Unkapanı, Atatürk Bulvarı No:27 34083 Fatih-İstanbul',
+                        onTap: () => _launchMaps(
+                          'Unkapanı, Atatürk Bulvarı No:27 34083 Fatih-İstanbul',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(Icons.email, color: Color(0xFF1E3A8A)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _launchEmail,
-                    child: const Text(
-                      'E-posta: destekhizmetleri@medipol.edu.tr',
-                      style: TextStyle(
-                        fontSize: 16,
-                        decoration: TextDecoration.underline,
-                        color: Color(0xFF1E3A8A),
+                Divider(),
+                ListTile(
+                  title: const Text(
+                    'Sağlık UA Merkezi Vatan Kliniği',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildContactRow(
+                        icon: Icons.phone,
+                        label: 'Telefon:',
+                        value: '0212 631 2050',
+                        onTap: () => _launchPhone('02126312050'),
                       ),
-                    ),
+                      _buildContactRow(
+                        icon: Icons.print,
+                        label: 'Faks:',
+                        value: '0212 5212783',
+                      ),
+                      _buildContactRow(
+                        icon: Icons.language,
+                        label: 'İnternet Sitesi:',
+                        value: 'http://vatan.medipol.edu.tr/',
+                        onTap: () async {
+                          final url = Uri.parse('http://vatan.medipol.edu.tr/');
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          }
+                        },
+                      ),
+                      _buildContactRow(
+                        icon: Icons.location_on,
+                        label: 'Adres:',
+                        value:
+                            'Vatan Cad. Halıcılar Köşkü Sk. No:11 Aksaray, Fatih-İstanbul',
+                        onTap: () => _launchMaps(
+                          'Vatan Cad. Halıcılar Köşkü Sk. No:11 Aksaray, Fatih-İstanbul',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Icon(Icons.location_on, color: Color(0xFF1E3A8A)),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _launchMaps,
-                    child: const Text(
-                      'Adres: İstanbul Medipol Üniversitesi, Kavacık Güney Yerleşkesi, Giriş Katı, Beykoz/İstanbul',
-                      style: TextStyle(
-                        fontSize: 16,
-                        decoration: TextDecoration.underline,
-                        color: Color(0xFF1E3A8A),
+                Divider(),
+                ListTile(
+                  title: const Text(
+                    'Sağlık UA Merkezi Esenler Hastanesi',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildContactRow(
+                        icon: Icons.phone,
+                        label: 'Telefon:',
+                        value: '0212 440 1000',
+                        onTap: () => _launchPhone('02124401000'),
                       ),
-                    ),
+                      _buildContactRow(
+                        icon: Icons.location_on,
+                        label: 'Adres:',
+                        value: 'Birlik Mah. Bahçeler Cd. No:5 ESENLER/İSTANBUL',
+                        onTap: () => _launchMaps(
+                          'Birlik Mah. Bahçeler Cd. No:5 ESENLER/İSTANBUL',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
