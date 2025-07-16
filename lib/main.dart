@@ -1,12 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'providers/theme_provider.dart';
 import 'providers/authentication_provider.dart';
 import 'screens/login_screen.dart';
+import 'screens/initial_loading_screen.dart';
 import 'constants/app_constants.dart';
 
-void main() {
-  runApp(const MyApp());
+/// Ana uygulama başlatma fonksiyonu / Main application startup function
+/// Firebase'i başlatır ve uygulamayı çalıştırır / Initializes Firebase and runs the app
+void main() async {
+  // Flutter widget binding'ini başlat / Initialize Flutter widget binding
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  try {
+    // Firebase'i başlat / Initialize Firebase
+    print('🔥 Firebase initialization starting...');
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('✅ Firebase initialized successfully');
+    
+    // Uygulamayı çalıştır / Run the app
+    runApp(const MyApp());
+  } catch (e) {
+    print('❌ Firebase initialization failed: $e');
+    // Firebase başarısız olsa bile uygulamayı çalıştır / Run app even if Firebase fails
+    runApp(const MyApp());
+  }
 }
 
 class MyApp extends StatelessWidget {

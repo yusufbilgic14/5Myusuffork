@@ -73,6 +73,30 @@ dependencies:
   
   # JSON annotation for data models / Veri modelleri için JSON annotasyonu
   json_annotation: ^4.8.1
+  
+  # Firebase Core - Required for all Firebase services / Tüm Firebase servisleri için gerekli
+  firebase_core: ^2.24.2
+  
+  # Firebase Authentication for user management / Kullanıcı yönetimi için Firebase Authentication
+  firebase_auth: ^4.15.3
+  
+  # Cloud Firestore for real-time database / Gerçek zamanlı veritabanı için Cloud Firestore
+  cloud_firestore: ^4.13.6
+  
+  # Firebase Storage for file uploads / Dosya yüklemeleri için Firebase Storage
+  firebase_storage: ^11.6.0
+  
+  # Firebase Analytics for usage tracking / Kullanım takibi için Firebase Analytics
+  firebase_analytics: ^10.7.4
+  
+  # Firebase Crashlytics for crash reporting / Hata raporlama için Firebase Crashlytics
+  firebase_crashlytics: ^3.4.9
+  
+  # Firebase Remote Config for dynamic configuration / Dinamik konfigürasyon için Firebase Remote Config
+  firebase_remote_config: ^4.3.8
+  
+  # Firebase Cloud Messaging for push notifications / Push bildirimleri için Firebase Cloud Messaging
+  firebase_messaging: ^14.7.10
 
 dev_dependencies:
   flutter_test:
