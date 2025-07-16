@@ -13,10 +13,13 @@ void main() {
   testWidgets('Medipol app starts with loading screen', (
     WidgetTester tester,
   ) async {
+    // Uygulamamızı oluştur ve bir frame tetikle
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MedipolApp());
+    await tester.pumpWidget(const MyApp());
 
+    // Uygulamanın başlangıç yükleme ekranıyla başladığını doğrula
     // Verify that our app starts with the initial loading screen
+    // Her zaman mevcut olması gereken telif hakkı metnini kontrol et
     // Check for copyright text which should always be present
     expect(find.text('Copyrighted 2025® Tüm Hakları Saklıdır'), findsOneWidget);
 

@@ -61,6 +61,18 @@ dependencies:
   
   # URL launcher for external links (forgotten password)
   url_launcher: ^6.2.2
+  
+  # Microsoft OAuth authentication using MSAL / MSAL kullanarak Microsoft OAuth kimlik doğrulaması
+  msal_auth: ^3.2.4
+  
+  # Secure storage for authentication tokens / Kimlik doğrulama token'ları için güvenli depolama
+  flutter_secure_storage: ^9.2.2
+  
+  # HTTP client for API requests / API istekleri için HTTP istemcisi
+  http: ^1.1.0
+  
+  # JSON annotation for data models / Veri modelleri için JSON annotasyonu
+  json_annotation: ^4.8.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +84,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  
+  # JSON serialization build runner / JSON serileştirme build runner
+  build_runner: ^2.4.7
+  json_serializable: ^6.7.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -86,8 +102,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/
     - assets/images/
-    - assets/images/loginlogo.png
+    - assets/msal_config.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

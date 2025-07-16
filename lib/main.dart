@@ -1,34 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/theme_provider.dart';
-import 'themes/app_themes.dart';
-import 'screens/initial_loading_screen.dart';
+import 'providers/authentication_provider.dart';
+import 'screens/login_screen.dart';
+import 'constants/app_constants.dart';
 
 void main() {
-  runApp(const MedipolApp());
+  runApp(const MyApp());
 }
 
-class MedipolApp extends StatelessWidget {
-  const MedipolApp({super.key});
-   // deneme 1
-  // Uygulamanın ana widget'ı / Main application widget
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ThemeProvider()..initializeTheme(),
+    return MultiProvider(
+      providers: [
+        // Tema sağlayıcı / Theme provider
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
+        ),
+        // Kimlik doğrulama sağlayıcı / Authentication provider
+        ChangeNotifierProvider(
+          create: (context) => AuthenticationProvider(),
+        ),
+      ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
           return MaterialApp(
             title: 'Medipol Üniversitesi',
-            debugShowCheckedModeBanner:
-                false, // Debug banner'ını kaldır / Remove debug banner
-            theme: AppThemes.lightTheme,
-            darkTheme: AppThemes.darkTheme,
-            themeMode: themeProvider.isDarkMode
-                ? ThemeMode.dark
-                : ThemeMode.light,
-            home:
-                const InitialLoadingScreen(), // Yükleme ekranından başla / Start with loading screen
+            theme: themeProvider.currentTheme,
+            home: const LoginScreen(),
+            debugShowCheckedModeBanner: false,
+            // Genel renkler / Global colors
+            color: AppConstants.primaryColor,
           );
         },
       ),

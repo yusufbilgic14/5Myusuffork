@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
+import '../providers/authentication_provider.dart';
 import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -227,10 +229,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             return _buildFallbackLogo();
           },
         ),
-        
-        
-        
-        // Hoş geldin metni / Welcome text
+      
         
       ],
     );
@@ -288,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 label: 'Öğrenci Numarası',
                 hint: '2024520001',
                 icon: Icons.person_outline,
-                textInputType: TextInputType.number,
+                textInputType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Lütfen öğrenci numaranızı girin';
@@ -348,6 +347,41 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               
               // Giriş butonu / Login button
               _buildModernButton(),
+              
+              const SizedBox(height: AppConstants.paddingLarge),
+              
+              // Ayırıcı çizgi / Divider
+              Row(
+                children: [
+                  Expanded(
+                    child: Divider(
+                      color: Colors.grey.shade300,
+                      thickness: 1,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingMedium),
+                    child: Text(
+                      'veya',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: AppConstants.fontSizeSmall,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      color: Colors.grey.shade300,
+                      thickness: 1,
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: AppConstants.paddingLarge),
+              
+              // Microsoft OAuth giriş butonu / Microsoft OAuth login button
+              _buildMicrosoftLoginButton(),
             ],
           ),
         ),
@@ -481,6 +515,94 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               ),
       ),
     );
+  }
+
+  /// Microsoft OAuth giriş butonu / Microsoft OAuth login button
+  Widget _buildMicrosoftLoginButton() {
+    return Consumer<AuthenticationProvider>(
+      builder: (context, authProvider, child) {
+        return SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: OutlinedButton.icon(
+            onPressed: authProvider.isLoading ? null : () => _handleMicrosoftLogin(authProvider),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFF0078D4), // Microsoft blue color
+              side: const BorderSide(color: Color(0xFF0078D4), width: 2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+              ),
+              backgroundColor: Colors.white,
+            ),
+            icon: authProvider.isLoading 
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0078D4)),
+                    ),
+                  )
+                : Image.asset(
+                    'assets/images/microsoft_logo.png', // Microsoft logosu / Microsoft logo
+                    width: 20,
+                    height: 20,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.business,
+                        size: 20,
+                        color: Color(0xFF0078D4),
+                      );
+                    },
+                  ),
+            label: Text(
+              authProvider.isLoading 
+                  ? 'Giriş yapılıyor...' 
+                  : 'Microsoft ile Giriş Yap',
+              style: const TextStyle(
+                fontSize: AppConstants.fontSizeLarge,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0078D4),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Microsoft OAuth giriş işlemi / Microsoft OAuth login process
+  Future<void> _handleMicrosoftLogin(AuthenticationProvider authProvider) async {
+    try {
+      final success = await authProvider.signInWithMicrosoft();
+      
+      if (success && mounted) {
+        // Başarılı giriş, ana sayfaya yönlendir / Successful login, navigate to home
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: AppConstants.animationNormal,
+          ),
+        );
+      } else if (mounted && authProvider.hasError) {
+        // Hata durumunda kullanıcıya bilgi ver / Show error to user
+        _showSnackBar(
+          authProvider.errorMessage ?? 'Microsoft giriş hatası / Microsoft sign in error',
+          isError: true,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar(
+          'Microsoft giriş işlemi başarısız / Microsoft sign in failed: $e',
+          isError: true,
+        );
+      }
+    }
   }
 
   /// Alt bölüm widget'ı / Footer section widget

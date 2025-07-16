@@ -33,6 +33,27 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="medipolapp" android:host="callback" />
+            </intent-filter>
+        </activity>
+        
+        <!-- MSAL authentication activity for Microsoft OAuth -->
+        <!-- Note: You need to generate BASE64_ENCODED_PACKAGE_SIGNATURE using: -->
+        <!-- keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore -storepass android -keypass android | openssl sha1 -binary | openssl base64 -->
+        <activity android:name="com.microsoft.identity.client.BrowserTabActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="msauth"
+                    android:host="com.example.medipolapp"
+                    android:path="/3ZLW/TAqPvR43Zh79ejFQDOdka8=" />
+            </intent-filter>
         </activity>
         <!-- Google Maps API Key -->
         <meta-data
