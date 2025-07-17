@@ -61,6 +61,42 @@ dependencies:
   
   # URL launcher for external links (forgotten password)
   url_launcher: ^6.2.2
+  
+  # Microsoft OAuth authentication using MSAL / MSAL kullanarak Microsoft OAuth kimlik doğrulaması
+  msal_auth: ^3.2.4
+  
+  # Secure storage for authentication tokens / Kimlik doğrulama token'ları için güvenli depolama
+  flutter_secure_storage: ^9.2.2
+  
+  # HTTP client for API requests / API istekleri için HTTP istemcisi
+  http: ^1.1.0
+  
+  # JSON annotation for data models / Veri modelleri için JSON annotasyonu
+  json_annotation: ^4.8.1
+  
+  # Firebase Core - Required for all Firebase services / Tüm Firebase servisleri için gerekli
+  firebase_core: ^2.24.2
+  
+  # Firebase Authentication for user management / Kullanıcı yönetimi için Firebase Authentication
+  firebase_auth: ^4.15.3
+  
+  # Cloud Firestore for real-time database / Gerçek zamanlı veritabanı için Cloud Firestore
+  cloud_firestore: ^4.13.6
+  
+  # Firebase Storage for file uploads / Dosya yüklemeleri için Firebase Storage
+  firebase_storage: ^11.6.0
+  
+  # Firebase Analytics for usage tracking / Kullanım takibi için Firebase Analytics
+  firebase_analytics: ^10.7.4
+  
+  # Firebase Crashlytics for crash reporting / Hata raporlama için Firebase Crashlytics
+  firebase_crashlytics: ^3.4.9
+  
+  # Firebase Remote Config for dynamic configuration / Dinamik konfigürasyon için Firebase Remote Config
+  firebase_remote_config: ^4.3.8
+  
+  # Firebase Cloud Messaging for push notifications / Push bildirimleri için Firebase Cloud Messaging
+  firebase_messaging: ^14.7.10
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +108,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  
+  # JSON serialization build runner / JSON serileştirme build runner
+  build_runner: ^2.4.7
+  json_serializable: ^6.7.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -86,8 +126,9 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - assets/
     - assets/images/
-    - assets/images/loginlogo.png
+    - assets/msal_config.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

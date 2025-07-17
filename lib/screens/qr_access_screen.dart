@@ -270,11 +270,11 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
 
               // Açıklama metni / Explanation text
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(12),
@@ -282,13 +282,13 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
-                    const SizedBox(width: 12),
+                    Icon(Icons.info_outline, color: Colors.blue[700], size: 18),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Bu QR kodu kampüs giriş tarayıcılarında kullanın. Güvenlik için kod otomatik olarak yenilenir.',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 12,
                           color: Colors.blue[700],
                           height: 1.4,
                         ),
@@ -299,7 +299,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                 ),
               ),
 
-              const Spacer(),
+              const SizedBox(height: 15),
 
               // Alt kullanım bilgisi / Bottom usage info
               Container(
