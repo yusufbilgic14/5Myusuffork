@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import 'qr_scanner_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class QRAccessScreen extends StatefulWidget {
   const QRAccessScreen({super.key});
@@ -87,9 +88,9 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: AppConstants.textColorLight,
         elevation: 0,
-        title: const Text(
-          'QR Access',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.qrAccess,
+          style: const TextStyle(
             fontSize: AppConstants.fontSizeXLarge,
             fontWeight: FontWeight.w600,
           ),

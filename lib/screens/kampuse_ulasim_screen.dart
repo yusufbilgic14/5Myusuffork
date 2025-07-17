@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class KampuseUlasimScreen extends StatelessWidget {
   const KampuseUlasimScreen({Key? key}) : super(key: key);
@@ -94,7 +95,7 @@ class KampuseUlasimScreen extends StatelessWidget {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kampüse Ulaşım'),
+        title: Text(AppLocalizations.of(context)!.campusTransport),
         backgroundColor: const Color(0xFF1E3A8A),
         foregroundColor: Colors.white,
       ),
@@ -116,15 +117,15 @@ class KampuseUlasimScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Aşağıdaki hat ve güzergahlar, İstanbul Medipol Üniversitesi Kavacık Güney ve Kuzey Kampüsleri’ne ulaşım içindir.',
-                    style: TextStyle(fontSize: 16),
+                  Text(
+                    AppLocalizations.of(context)!.campusTransportDesc,
+                    style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 24),
                   ExpansionTile(
-                    title: const Text(
-                      'Avrupa Yakası',
-                      style: TextStyle(
+                    title: Text(
+                      AppLocalizations.of(context)!.europeanSide,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -133,9 +134,9 @@ class KampuseUlasimScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   ExpansionTile(
-                    title: const Text(
-                      'Anadolu Yakası',
-                      style: TextStyle(
+                    title: Text(
+                      AppLocalizations.of(context)!.anatolianSide,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

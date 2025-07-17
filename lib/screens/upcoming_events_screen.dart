@@ -4,6 +4,7 @@ import '../themes/app_themes.dart';
 import '../widgets/common/app_bar_widget.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
+import '../l10n/app_localizations.dart';
 
 // Veri modelleri / Data models
 class UniversityClub {
@@ -239,7 +240,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppThemes.getBackgroundColor(context),
-      appBar: const CommonAppBar(title: 'Upcoming Events'),
+      appBar: CommonAppBar(title: AppLocalizations.of(context)!.upcomingEvents),
       drawer: const AppDrawerWidget(currentPageIndex: -1),
       body: Column(
         children: [
@@ -278,10 +279,19 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
         labelColor: AppThemes.getPrimaryColor(context),
         unselectedLabelColor: AppThemes.getSecondaryTextColor(context),
         indicatorColor: AppThemes.getPrimaryColor(context),
-        tabs: const [
-          Tab(icon: Icon(Icons.event), text: 'Etkinlikler'),
-          Tab(icon: Icon(Icons.groups), text: 'Kulüpler'),
-          Tab(icon: Icon(Icons.bookmark), text: 'Etkinliklerim'),
+        tabs: [
+          Tab(
+            icon: const Icon(Icons.event),
+            text: AppLocalizations.of(context)!.events,
+          ),
+          Tab(
+            icon: const Icon(Icons.groups),
+            text: AppLocalizations.of(context)!.clubs,
+          ),
+          Tab(
+            icon: const Icon(Icons.bookmark),
+            text: AppLocalizations.of(context)!.myEvents,
+          ),
         ],
       ),
     );

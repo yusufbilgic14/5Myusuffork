@@ -5,6 +5,8 @@ import '../constants/app_constants.dart';
 import '../widgets/common/app_bar_widget.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
+import '../themes/app_themes.dart';
+import '../l10n/app_localizations.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -23,9 +25,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
   final List<Map<String, dynamic>> _courses = [
     {
       'code': 'CS101',
-      'title': 'Visual Programming',
+      'title':
+          AppLocalizations.of(context)?.courseVisualProgramming ??
+          'Visual Programming',
       'room': '3B06',
-      'instructor': 'Dr. Ahmet Yılmaz',
+      'instructor':
+          AppLocalizations.of(context)?.instructorAhmetYilmaz ??
+          'Dr. Ahmet Yılmaz',
       'startTime': '08:00',
       'endTime': '10:00',
       'startHour': 8,
@@ -33,9 +39,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
     },
     {
       'code': 'CS202',
-      'title': 'Data Structures',
+      'title':
+          AppLocalizations.of(context)?.courseDataStructures ??
+          'Data Structures',
       'room': '2A15',
-      'instructor': 'Prof. Fatma Kaya',
+      'instructor':
+          AppLocalizations.of(context)?.instructorFatmaKaya ??
+          'Prof. Fatma Kaya',
       'startTime': '10:15',
       'endTime': '12:15',
       'startHour': 10,
@@ -43,9 +53,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
     },
     {
       'code': 'MTH301',
-      'title': 'Discrete Mathematics',
+      'title':
+          AppLocalizations.of(context)?.courseDiscreteMathematics ??
+          'Discrete Mathematics',
       'room': '1C22',
-      'instructor': 'Dr. Mehmet Özkan',
+      'instructor':
+          AppLocalizations.of(context)?.instructorMehmetOzkan ??
+          'Dr. Mehmet Özkan',
       'startTime': '13:30',
       'endTime': '15:30',
       'startHour': 13,
@@ -53,9 +67,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
     },
     {
       'code': 'ENG201',
-      'title': 'Technical English',
+      'title':
+          AppLocalizations.of(context)?.courseTechnicalEnglish ??
+          'Technical English',
       'room': '4A08',
-      'instructor': 'Ms. Sarah Johnson',
+      'instructor':
+          AppLocalizations.of(context)?.instructorSarahJohnson ??
+          'Ms. Sarah Johnson',
       'startTime': '16:00',
       'endTime': '17:30',
       'startHour': 16,
@@ -81,27 +99,25 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
     // Eğer locale henüz yüklenmemişse loading göster / Show loading if locale not loaded yet
     if (!_isLocaleInitialized) {
       return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF1E3A8A),
-          foregroundColor: Colors.white,
+          backgroundColor: theme.colorScheme.primary,
+          foregroundColor: theme.colorScheme.onPrimary,
           elevation: 0,
-          title: const Text('Calendar'),
+          title: Text(AppLocalizations.of(context)!.calendar),
           centerTitle: true,
         ),
-        body: const Center(
-          child: CircularProgressIndicator(color: Color(0xFF1E3A8A)),
-        ),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
     return Scaffold(
       key: _scaffoldKey,
-
-      // Navy renkli AppBar / Navy colored AppBar
       appBar: CommonAppBar(
-        title: DateFormat('MMMM yyyy', 'tr_TR').format(_selectedDate),
+        title: DateFormat('MMMM yyyy', locale).format(_selectedDate),
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
@@ -111,6 +127,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
             icon: Icon(
               _isGridView ? Icons.view_timeline : Icons.calendar_view_month,
             ),
+            tooltip: _isGridView
+                ? AppLocalizations.of(context)!.timelineView
+                : AppLocalizations.of(context)!.monthView,
             onPressed: () {
               setState(() {
                 _isGridView = !_isGridView;
@@ -119,44 +138,41 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
         ],
       ),
-
-      // Ana sayfa drawer'ı / Main drawer
       drawer: const AppDrawerWidget(
         currentPageIndex: AppConstants.navIndexCalendar,
       ),
-
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Column(
         children: [
-          // Yatay tarih seçici (sadece timeline view'da) / Horizontal date picker (only in timeline view)
-          if (!_isGridView) _buildHorizontalDatePicker(),
-
-          // Ana takvim görünümü / Main calendar view
+          if (!_isGridView) _buildHorizontalDatePicker(theme),
           Expanded(
-            child: _isGridView ? _buildGridView() : _buildTimelineView(),
+            child: _isGridView
+                ? _buildGridView(theme)
+                : _buildTimelineView(theme),
           ),
         ],
       ),
-
-      // Alt navigasyon çubuğu / Bottom navigation bar
       bottomNavigationBar: const BottomNavigationWidget(
         currentIndex: AppConstants.navIndexCalendar,
       ),
     );
   }
 
-  // Yatay tarih seçici widget'ı / Horizontal date picker widget
-  Widget _buildHorizontalDatePicker() {
+  Widget _buildHorizontalDatePicker(ThemeData theme) {
     final today = DateTime.now();
     final startOfWeek = _selectedDate.subtract(
       Duration(days: _selectedDate.weekday - 1),
     );
-
     return Container(
       height: 100,
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      decoration: BoxDecoration(
+        color: theme.cardColor,
         boxShadow: [
-          BoxShadow(color: Colors.black12, offset: Offset(0, 2), blurRadius: 4),
+          BoxShadow(
+            color: theme.shadowColor.withOpacity(0.08),
+            offset: const Offset(0, 2),
+            blurRadius: 4,
+          ),
         ],
       ),
       child: ListView.builder(
@@ -171,7 +187,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
           final isToday =
               DateFormat('yyyy-MM-dd').format(date) ==
               DateFormat('yyyy-MM-dd').format(today);
-
           return GestureDetector(
             onTap: () {
               setState(() {
@@ -183,11 +198,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
               margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 16),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppConstants.primaryColor
+                    ? theme.colorScheme.primary
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
                 border: isToday && !isSelected
-                    ? Border.all(color: AppConstants.primaryColor, width: 1)
+                    ? Border.all(color: theme.colorScheme.primary, width: 1)
                     : isSelected
                     ? null
                     : Border.all(color: Colors.transparent, width: 1),
@@ -199,10 +214,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     DateFormat('E', 'tr_TR').format(date).toUpperCase(),
                     style: TextStyle(
                       color: isSelected
-                          ? AppConstants.textColorLight
+                          ? theme.colorScheme.onPrimary
                           : isToday
-                          ? AppConstants.primaryColor
-                          : Colors.grey[600],
+                          ? theme.colorScheme.primary
+                          : theme.textTheme.bodyLarge?.color,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -212,10 +227,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     date.day.toString(),
                     style: TextStyle(
                       color: isSelected
-                          ? AppConstants.textColorLight
+                          ? theme.colorScheme.onPrimary
                           : isToday
-                          ? AppConstants.primaryColor
-                          : AppConstants.textColorDark,
+                          ? theme.colorScheme.primary
+                          : theme.textTheme.bodyLarge?.color,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -229,61 +244,47 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  // Dikey zaman çizelgesi görünümü / Vertical timeline view
-  Widget _buildTimelineView() {
+  Widget _buildTimelineView(ThemeData theme) {
+    if (_courses.isEmpty) {
+      return Center(child: Text(AppLocalizations.of(context)!.noCoursesToday));
+    }
     return Container(
-      color: Colors.grey[50],
+      color: theme.cardColor,
       child: SingleChildScrollView(
         child: Stack(
           children: [
             Column(
               children: [
-                // Saat dilimleri / Time slots
                 ...List.generate(15, (index) {
-                  final hour =
-                      7 + index; // 07:00'dan başlayarak / Starting from 07:00
-                  return _buildTimeSlot(hour);
+                  final hour = 7 + index;
+                  return _buildTimeSlot(hour, theme);
                 }),
               ],
             ),
-
-            // Ders kartları (tüm zaman çizelgesi üzerinde pozisyonlanmış) / Course cards positioned over entire timeline
-            ..._buildAllCourseCards(),
-
-            // Eğer bugünü görüntülüyorsak "Şimdi" göstergesini ekle / Add "Now" indicator if viewing today
-            // if (_isViewingToday()) _buildNowIndicator(),
+            ..._buildAllCourseCards(theme),
           ],
         ),
       ),
     );
   }
 
-  // Grid takvim görünümü / Grid calendar view
-  Widget _buildGridView() {
+  Widget _buildGridView(ThemeData theme) {
     return Container(
-      color: Colors.grey[50],
+      color: theme.cardColor,
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          // Ay navigasyonu / Month navigation
-          _buildMonthNavigation(),
-
+          _buildMonthNavigation(theme),
           const SizedBox(height: 16),
-
-          // Haftanın günleri başlıkları / Days of week headers
-          _buildWeekdayHeaders(),
-
+          _buildWeekdayHeaders(theme),
           const SizedBox(height: 8),
-
-          // Takvim grid'i / Calendar grid
-          Expanded(child: _buildCalendarGrid()),
+          Expanded(child: _buildCalendarGrid(theme)),
         ],
       ),
     );
   }
 
-  // Ay navigasyonu / Month navigation
-  Widget _buildMonthNavigation() {
+  Widget _buildMonthNavigation(ThemeData theme) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -298,14 +299,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
             });
           },
           icon: const Icon(Icons.chevron_left),
-          color: AppConstants.primaryColor,
+          color: theme.colorScheme.primary,
         ),
         Text(
           DateFormat('MMMM yyyy', 'tr_TR').format(_selectedDate),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: AppConstants.primaryColor,
+            color: theme.colorScheme.primary,
           ),
         ),
         IconButton(
@@ -319,16 +320,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
             });
           },
           icon: const Icon(Icons.chevron_right),
-          color: AppConstants.primaryColor,
+          color: theme.colorScheme.primary,
         ),
       ],
     );
   }
 
-  // Haftanın günleri başlıkları / Days of week headers
-  Widget _buildWeekdayHeaders() {
-    final weekdays = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
-
+  Widget _buildWeekdayHeaders(ThemeData theme) {
+    final weekdays = [
+      AppLocalizations.of(context)!.mondayShort,
+      AppLocalizations.of(context)!.tuesdayShort,
+      AppLocalizations.of(context)!.wednesdayShort,
+      AppLocalizations.of(context)!.thursdayShort,
+      AppLocalizations.of(context)!.fridayShort,
+      AppLocalizations.of(context)!.saturdayShort,
+      AppLocalizations.of(context)!.sundayShort,
+    ];
     return Row(
       children: weekdays
           .map(
@@ -341,7 +348,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.grey[600],
+                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                   ),
                 ),
               ),
@@ -351,8 +358,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  // Takvim grid'i / Calendar grid
-  Widget _buildCalendarGrid() {
+  Widget _buildCalendarGrid(ThemeData theme) {
     final firstDayOfMonth = DateTime(
       _selectedDate.year,
       _selectedDate.month,
@@ -363,13 +369,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
       _selectedDate.month + 1,
       0,
     );
-    final firstDayWeekday = (firstDayOfMonth.weekday - 1) % 7; // Pazartesi = 0
+    final firstDayWeekday = (firstDayOfMonth.weekday - 1) % 7;
     final daysInMonth = lastDayOfMonth.day;
-
-    // Takvim için toplam hücre sayısı / Total cells needed for calendar
     final totalCells = (firstDayWeekday + daysInMonth);
     final rows = (totalCells / 7).ceil();
-
     return GridView.builder(
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
@@ -378,13 +381,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
       itemCount: rows * 7,
       itemBuilder: (context, index) {
         final dayIndex = index - firstDayWeekday + 1;
-
-        // Boş hücreler (ay başından önce) / Empty cells before month start
         if (index < firstDayWeekday) {
           return Container();
         }
-
-        // Geçerli ay günleri / Valid days of current month
         if (dayIndex <= daysInMonth) {
           final date = DateTime(
             _selectedDate.year,
@@ -394,26 +393,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
           final isToday = _isToday(date);
           final isSelected = _isSameDay(date, _selectedDate);
           final hasEvents = _hasEventsOnDate(date);
-
           return GestureDetector(
             onTap: () {
               setState(() {
                 _selectedDate = date;
-                _isGridView =
-                    false; // Grid'den timeline'a geç / Switch from grid to timeline
+                _isGridView = false;
               });
             },
             child: Container(
               margin: const EdgeInsets.all(2),
               decoration: BoxDecoration(
                 color: isSelected
-                    ? AppConstants.primaryColor
+                    ? theme.colorScheme.primary
                     : isToday
-                    ? AppConstants.primaryColor.withValues(alpha: 0.1)
+                    ? theme.colorScheme.primary.withOpacity(0.1)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(8),
                 border: isToday && !isSelected
-                    ? Border.all(color: AppConstants.primaryColor, width: 1)
+                    ? Border.all(color: theme.colorScheme.primary, width: 1)
                     : null,
               ),
               child: Column(
@@ -425,10 +422,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: isSelected
-                          ? Colors.white
+                          ? theme.colorScheme.onPrimary
                           : isToday
-                          ? AppConstants.primaryColor
-                          : AppConstants.textColorDark,
+                          ? theme.colorScheme.primary
+                          : theme.textTheme.bodyLarge?.color,
                     ),
                   ),
                   if (hasEvents) ...[
@@ -438,8 +435,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       height: 6,
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? Colors.white
-                            : AppConstants.primaryColor,
+                            ? theme.colorScheme.onPrimary
+                            : theme.colorScheme.primary,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -449,58 +446,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
           );
         }
-
-        // Ay sonundan sonraki boş hücreler / Empty cells after month end
         return Container();
       },
     );
   }
 
-  // Bugün mü kontrol et / Check if today
-  bool _isToday(DateTime date) {
-    final today = DateTime.now();
-    return date.year == today.year &&
-        date.month == today.month &&
-        date.day == today.day;
-  }
-
-  // Aynı gün mü kontrol et / Check if same day
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
-  // Tarihte etkinlik var mı kontrol et / Check if date has events
-  bool _hasEventsOnDate(DateTime date) {
-    // Basit örnek: hafta içi günlerde ders var varsayımı / Simple example: assume courses on weekdays
-    return date.weekday >= 1 && date.weekday <= 5;
-  }
-
-  // Tüm ders kartlarını oluştur / Build all course cards
-  List<Widget> _buildAllCourseCards() {
+  List<Widget> _buildAllCourseCards(ThemeData theme) {
     return _courses.map((course) {
       final startHour = course['startHour'] as int;
       final duration = (course['duration'] as num).toDouble();
-
-      // Dersin başlangıç pozisyonunu hesapla / Calculate course start position
-      final topPosition =
-          (startHour - 7) * 60.0 + 6; // 7 saatten itibaren, 6px üst padding
-      final cardHeight =
-          duration * 60.0 - 12; // Duration * 60px per hour, minus padding
-
+      final topPosition = (startHour - 7) * 60.0 + 6;
+      final cardHeight = duration * 60.0 - 12;
       return Positioned(
-        left: 68, // Saat etiketinden sonra / After time label
+        left: 68,
         right: 8,
         top: topPosition,
         child: Container(
           height: cardHeight,
           decoration: BoxDecoration(
-            color: const Color(0xFF1E3A8A),
+            color: theme.colorScheme.primary,
             borderRadius: BorderRadius.circular(8),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
+                color: theme.shadowColor.withOpacity(0.1),
                 offset: const Offset(0, 2),
                 blurRadius: 4,
               ),
@@ -511,55 +479,59 @@ class _CalendarScreenState extends State<CalendarScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // Ders kodu ve başlığı / Course code and title
               Text(
                 '${course['code']} - ${course['title']}',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: theme.colorScheme.onPrimary,
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-
-              // Oda bilgisi / Room information
               Row(
                 children: [
-                  const Icon(Icons.room, color: Colors.white, size: 14),
+                  Icon(
+                    Icons.room,
+                    color: theme.colorScheme.onPrimary,
+                    size: 14,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     course['room'],
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: theme.colorScheme.onPrimary,
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
-
-              // Öğretmen bilgisi / Instructor information
               Row(
                 children: [
-                  const Icon(Icons.person, color: Colors.white, size: 14),
+                  Icon(
+                    Icons.person,
+                    color: theme.colorScheme.onPrimary,
+                    size: 14,
+                  ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
                       course['instructor'],
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimary,
+                        fontSize: 10,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
-
-              // Saat bilgisi / Time information
               Text(
                 '${course['startTime']} - ${course['endTime']}',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: theme.colorScheme.onPrimary,
                   fontSize: 10,
                   fontWeight: FontWeight.w400,
                 ),
@@ -571,38 +543,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }).toList();
   }
 
-  // Saat dilimi widget'ı / Time slot widget
-  Widget _buildTimeSlot(int hour) {
+  Widget _buildTimeSlot(int hour, ThemeData theme) {
     final timeString = '${hour.toString().padLeft(2, '0')}:00';
-
     return Container(
       height: 60,
       child: Row(
         children: [
-          // Saat etiketi / Time label
           Container(
             width: 60,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               timeString,
               style: TextStyle(
-                color: Colors.grey[600],
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-
-          // Dikey ayırıcı çizgi / Vertical divider line
-          Container(width: 1, height: 60, color: Colors.grey[300]),
-
-          // Ders kartları alanı / Course cards area
+          Container(width: 1, height: 60, color: theme.dividerColor),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(color: Colors.grey[200]!, width: 1),
+                  bottom: BorderSide(color: theme.dividerColor, width: 1),
                 ),
               ),
             ),
@@ -613,7 +578,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   // "Şimdi" göstergesi / "Now" indicator
-  Widget _buildNowIndicator() {
+  Widget _buildNowIndicator(ThemeData theme) {
     // Sadece bugünü görüntülüyorsak göster / Only show if viewing today
     if (!_isViewingToday()) {
       return const SizedBox.shrink();
@@ -640,11 +605,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
       child: Container(
         height: 2,
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: theme.colorScheme.error,
           borderRadius: BorderRadius.circular(1),
           boxShadow: [
             BoxShadow(
-              color: Colors.red.withValues(alpha: 0.3),
+              color: theme.colorScheme.error.withOpacity(0.3),
               blurRadius: 2,
               spreadRadius: 1,
             ),
@@ -655,8 +620,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
             Container(
               width: 8,
               height: 8,
-              decoration: const BoxDecoration(
-                color: Colors.red,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.error,
                 shape: BoxShape.circle,
               ),
             ),
@@ -664,7 +629,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: Container(
                 height: 2,
                 decoration: BoxDecoration(
-                  color: Colors.red,
+                  color: theme.colorScheme.error,
                   borderRadius: BorderRadius.circular(1),
                 ),
               ),
@@ -682,5 +647,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return _selectedDate.year == today.year &&
         _selectedDate.month == today.month &&
         _selectedDate.day == today.day;
+  }
+
+  // Bugün mü kontrol et / Check if today
+  bool _isToday(DateTime date) {
+    final today = DateTime.now();
+    return date.year == today.year &&
+        date.month == today.month &&
+        date.day == today.day;
+  }
+
+  // Aynı gün mü kontrol et / Check if same day
+  bool _isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  // Tarihte etkinlik var mı kontrol et / Check if date has events
+  bool _hasEventsOnDate(DateTime date) {
+    // Basit örnek: hafta içi günlerde ders var varsayımı / Simple example: assume courses on weekdays
+    return date.weekday >= 1 && date.weekday <= 5;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_constants.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
+import '../l10n/app_localizations.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -112,16 +113,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   // Tip seçim widget'ı (Talep/Geri Bildirim) / Type selection widget (Request/Feedback)
-  Widget _buildTypeSelection() {
+  Widget _buildTypeSelection(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Ne yapmak istiyorsunuz?',
+        Text(
+          AppLocalizations.of(context)!.what_do_you_want_to_do,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E3A8A),
+            color: theme.colorScheme.primary,
           ),
         ),
         const SizedBox(height: 12),
@@ -142,21 +143,19 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     color: _selectedType == 'talep'
-                        ? const Color(0xFF1E3A8A)
-                        : Colors.white,
+                        ? theme.colorScheme.primary
+                        : theme.cardColor,
                     border: Border.all(
                       color: _selectedType == 'talep'
-                          ? const Color(0xFF1E3A8A)
-                          : Colors.grey[300]!,
+                          ? theme.colorScheme.primary
+                          : theme.dividerColor,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: _selectedType == 'talep'
                         ? [
                             BoxShadow(
-                              color: const Color(
-                                0xFF1E3A8A,
-                              ).withValues(alpha: 0.3),
+                              color: theme.colorScheme.primary.withOpacity(0.3),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
@@ -169,17 +168,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       Icon(
                         Icons.request_page,
                         color: _selectedType == 'talep'
-                            ? Colors.white
-                            : const Color(0xFF1E3A8A),
+                            ? theme.colorScheme.onPrimary
+                            : theme.colorScheme.primary,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Talep',
+                        AppLocalizations.of(context)!.request,
                         style: TextStyle(
                           color: _selectedType == 'talep'
-                              ? Colors.white
-                              : const Color(0xFF1E3A8A),
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.primary,
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
@@ -203,21 +202,19 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     color: _selectedType == 'geri_bildirim'
-                        ? const Color(0xFF1E3A8A)
-                        : Colors.white,
+                        ? theme.colorScheme.primary
+                        : theme.cardColor,
                     border: Border.all(
                       color: _selectedType == 'geri_bildirim'
-                          ? const Color(0xFF1E3A8A)
-                          : Colors.grey[300]!,
+                          ? theme.colorScheme.primary
+                          : theme.dividerColor,
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: _selectedType == 'geri_bildirim'
                         ? [
                             BoxShadow(
-                              color: const Color(
-                                0xFF1E3A8A,
-                              ).withValues(alpha: 0.3),
+                              color: theme.colorScheme.primary.withOpacity(0.3),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
@@ -230,17 +227,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       Icon(
                         Icons.feedback,
                         color: _selectedType == 'geri_bildirim'
-                            ? Colors.white
-                            : const Color(0xFF1E3A8A),
+                            ? theme.colorScheme.onPrimary
+                            : theme.colorScheme.primary,
                         size: 20,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Geri Bildirim',
+                        AppLocalizations.of(context)!.feedback,
                         style: TextStyle(
                           color: _selectedType == 'geri_bildirim'
-                              ? Colors.white
-                              : const Color(0xFF1E3A8A),
+                              ? theme.colorScheme.onPrimary
+                              : theme.colorScheme.primary,
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
                         ),
@@ -257,7 +254,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   // Kategori seçim widget'ı / Category selection widget
-  Widget _buildCategorySelection() {
+  Widget _buildCategorySelection(ThemeData theme) {
     if (_selectedType.isEmpty) {
       return const SizedBox.shrink(); // Tip seçilmemişse gösterme / Don't show if type not selected
     }
@@ -266,18 +263,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         ? _talepCategories
         : _geriBildirimCategories;
     final title = _selectedType == 'talep'
-        ? 'Talep Kategorisi Seçin'
-        : 'Geri Bildirim Kategorisi Seçin';
+        ? AppLocalizations.of(context)!.select_request_category
+        : AppLocalizations.of(context)!.select_feedback_category;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E3A8A),
+            color: theme.colorScheme.primary,
           ),
         ),
         const SizedBox(height: 12),
@@ -298,20 +295,20 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF1E3A8A) : Colors.white,
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.cardColor,
                   border: Border.all(
                     color: isSelected
-                        ? AppConstants.primaryColor
-                        : Colors.grey[300]!,
+                        ? theme.colorScheme.primary
+                        : theme.dividerColor,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: const Color(
-                              0xFF1E3A8A,
-                            ).withValues(alpha: 0.3),
+                            color: theme.colorScheme.primary.withOpacity(0.3),
                             offset: const Offset(0, 2),
                             blurRadius: 8,
                           ),
@@ -323,14 +320,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   children: [
                     Icon(
                       category['icon'],
-                      color: isSelected ? Colors.white : category['color'],
+                      color: isSelected
+                          ? theme.colorScheme.onPrimary
+                          : category['color'],
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       category['name'],
                       style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
+                        color: isSelected
+                            ? theme.colorScheme.onPrimary
+                            : theme.textTheme.bodyMedium?.color,
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
                       ),
@@ -346,46 +347,46 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   // Uygulama puanlama tıklama metni widget'ı / App rating clickable text widget
-  Widget _buildAppRatingText() {
+  Widget _buildAppRatingText(ThemeData theme) {
     return GestureDetector(
       onTap: () {
         // TODO: App Store veya Play Store'a yönlendir / Redirect to App Store or Play Store
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Uygulama mağazasına yönlendirileceksiniz...'),
-            backgroundColor: Color(0xFF1E3A8A),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.redirect_to_app_store),
+            backgroundColor: theme.colorScheme.primary,
+            duration: const Duration(seconds: 2),
           ),
         );
       },
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E3A8A).withValues(alpha: 0.1),
+          color: theme.colorScheme.primary.withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: const Color(0xFF1E3A8A).withValues(alpha: 0.3),
+            color: theme.colorScheme.primary.withOpacity(0.3),
             width: 1,
           ),
         ),
         child: Row(
           children: [
-            const Icon(Icons.star_rate, color: Color(0xFF1E3A8A), size: 24),
+            Icon(Icons.star_rate, color: theme.colorScheme.primary, size: 24),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Text(
-                'Uygulamayı puanlamak ve yorum yapmak için tıklayınız',
+                AppLocalizations.of(context)!.rate_and_comment_app,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF1E3A8A),
+                  color: theme.colorScheme.primary,
                   decoration: TextDecoration.underline,
                 ),
               ),
             ),
-            const Icon(
+            Icon(
               Icons.arrow_forward_ios,
-              color: Color(0xFF1E3A8A),
+              color: theme.colorScheme.primary,
               size: 16,
             ),
           ],
@@ -395,7 +396,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   // Form alanları widget'ı / Form fields widget
-  Widget _buildFormFields() {
+  Widget _buildFormFields(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -403,23 +404,25 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         if (_selectedType != 'talep') ...[
           Row(
             children: [
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Anonim Geri Bildirim',
+                      AppLocalizations.of(context)!.anonymous_feedback,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF1E3A8A),
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     Text(
-                      'Kimliğim gizli kalsın, anonim olarak geri bildirim göndermek istiyorum.',
+                      AppLocalizations.of(context)!.keep_my_identity_private,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey,
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                          0.7,
+                        ),
                         height: 1.2,
                       ),
                     ),
@@ -437,33 +440,36 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     }
                   });
                 },
-                activeColor: const Color(0xFF1E3A8A),
+                activeColor: theme.colorScheme.primary,
               ),
             ],
           ),
           const SizedBox(height: 20), // Spacing after anonymous section
         ],
         // Departman seçimi / Department selection
-        const Text(
-          'İlgili Departman',
+        Text(
+          AppLocalizations.of(context)!.relevant_department,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E3A8A),
+            color: theme.colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: _selectedDepartment.isEmpty ? null : _selectedDepartment,
           decoration: InputDecoration(
-            hintText: 'Departman seçin',
+            hintText: AppLocalizations.of(context)!.select_department,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary,
+                width: 2,
+              ),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -480,7 +486,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           },
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Lütfen bir departman seçin';
+              return AppLocalizations.of(context)!.please_select_department;
             }
             return null;
           },
@@ -489,12 +495,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         const SizedBox(height: 20),
 
         // Öncelik seviyesi / Priority level
-        const Text(
-          'Öncelik Seviyesi',
+        Text(
+          AppLocalizations.of(context)!.priority_level,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E3A8A),
+            color: theme.colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
@@ -520,7 +526,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 2),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
-                    color: isSelected ? color : Colors.white,
+                    color: isSelected ? color : theme.cardColor,
                     border: Border.all(color: color, width: 2),
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -528,7 +534,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     priority,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : color,
+                      color: isSelected ? theme.colorScheme.onPrimary : color,
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                     ),
@@ -543,12 +549,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
         // E-posta adresi (anonim değilse veya talep türü seçildiyse) / Email address (if not anonymous or request type selected)
         if (!_isAnonymous || _selectedType == 'talep') ...[
-          const Text(
-            'E-posta Adresi',
+          Text(
+            AppLocalizations.of(context)!.email_address,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1E3A8A),
+              color: theme.colorScheme.primary,
             ),
           ),
           const SizedBox(height: 8),
@@ -556,16 +562,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              hintText: 'ornek@medipol.edu.tr',
-              prefixIcon: const Icon(Icons.email),
+              hintText: AppLocalizations.of(context)!.example_email,
+              prefixIcon: Icon(Icons.email, color: theme.iconTheme.color),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
+                borderSide: BorderSide(color: theme.dividerColor),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: Color(0xFF1E3A8A),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary,
                   width: 2,
                 ),
               ),
@@ -577,10 +583,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             validator: (!_isAnonymous || _selectedType == 'talep')
                 ? (value) {
                     if (value == null || value.isEmpty) {
-                      return 'E-posta adresi gerekli';
+                      return AppLocalizations.of(
+                        context,
+                      )!.email_address_required;
                     }
                     if (!value.contains('@')) {
-                      return 'Geçerli bir e-posta adresi girin';
+                      return AppLocalizations.of(context)!.valid_email_address;
                     }
                     return null;
                   }
@@ -590,27 +598,30 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         ],
 
         // Konu / Subject
-        const Text(
-          'Konu',
+        Text(
+          AppLocalizations.of(context)!.subject,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E3A8A),
+            color: theme.colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _subjectController,
           decoration: InputDecoration(
-            hintText: 'Geri bildirim konusu',
-            prefixIcon: const Icon(Icons.subject),
+            hintText: AppLocalizations.of(context)!.feedback_subject,
+            prefixIcon: Icon(Icons.subject, color: theme.iconTheme.color),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary,
+                width: 2,
+              ),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -619,10 +630,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Konu gerekli';
+              return AppLocalizations.of(context)!.subject_required;
             }
             if (value.length < 5) {
-              return 'Konu en az 5 karakter olmalı';
+              return AppLocalizations.of(context)!.subject_min_length;
             }
             return null;
           },
@@ -631,12 +642,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         const SizedBox(height: 20),
 
         // Mesaj / Message
-        const Text(
-          'Detaylı Açıklama',
+        Text(
+          AppLocalizations.of(context)!.detailed_description,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E3A8A),
+            color: theme.colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
@@ -645,24 +656,30 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           maxLines: 6,
           maxLength: 1000,
           decoration: InputDecoration(
-            hintText: 'Geri bildiriminizi detaylı olarak açıklayın...',
+            hintText: AppLocalizations.of(context)!.describe_your_feedback,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey[300]!),
+              borderSide: BorderSide(color: theme.dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF1E3A8A), width: 2),
+              borderSide: BorderSide(
+                color: theme.colorScheme.primary,
+                width: 2,
+              ),
             ),
             contentPadding: const EdgeInsets.all(16),
-            counterStyle: TextStyle(color: Colors.grey[600], fontSize: 12),
+            counterStyle: TextStyle(
+              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+              fontSize: 12,
+            ),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Açıklama gerekli';
+              return AppLocalizations.of(context)!.description_required;
             }
             if (value.length < 20) {
-              return 'Açıklama en az 20 karakter olmalı';
+              return AppLocalizations.of(context)!.description_min_length;
             }
             return null;
           },
@@ -671,22 +688,22 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         const SizedBox(height: 20),
 
         // Dosya ekleme bölümü / File attachment section
-        _buildFileAttachment(),
+        _buildFileAttachment(theme),
       ],
     );
   }
 
   // Dosya ekleme widget'ı / File attachment widget
-  Widget _buildFileAttachment() {
+  Widget _buildFileAttachment(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Fotoğraf veya Belge Ekle',
+        Text(
+          AppLocalizations.of(context)!.add_photo_or_document,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Color(0xFF1E3A8A),
+            color: theme.colorScheme.primary,
           ),
         ),
         const SizedBox(height: 8),
@@ -698,9 +715,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[50],
+              color: theme.cardColor,
               border: Border.all(
-                color: Colors.grey[300]!,
+                color: theme.dividerColor,
                 width: 2,
                 style: BorderStyle.solid,
               ),
@@ -711,20 +728,23 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 Icon(
                   Icons.cloud_upload_outlined,
                   size: 40,
-                  color: Colors.grey[600],
+                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Dosya seçmek için tıklayın',
+                  AppLocalizations.of(context)!.click_to_select_file,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
-                  'JPG, PNG, PDF (Maksimum 10MB)',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                  AppLocalizations.of(context)!.file_types_max_size,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+                  ),
                 ),
               ],
             ),
@@ -737,21 +757,21 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E3A8A).withValues(alpha: 0.05),
+              color: theme.colorScheme.primary.withOpacity(0.05),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: const Color(0xFF1E3A8A).withValues(alpha: 0.2),
+                color: theme.colorScheme.primary.withOpacity(0.2),
               ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Seçilen Dosyalar:',
+                Text(
+                  AppLocalizations.of(context)!.selected_files,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF1E3A8A),
+                    color: theme.colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -765,24 +785,24 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         Icon(
                           _getFileIcon(fileName),
                           size: 16,
-                          color: const Color(0xFF1E3A8A),
+                          color: theme.colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             fileName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: Color(0xFF1E3A8A),
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                         ),
                         GestureDetector(
                           onTap: () => _removeFile(index),
-                          child: const Icon(
+                          child: Icon(
                             Icons.close,
                             size: 18,
-                            color: Colors.red,
+                            color: theme.colorScheme.error,
                           ),
                         ),
                       ],
@@ -807,8 +827,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$fileName dosyası eklendi'),
-        backgroundColor: Colors.green,
+        content: Text('${AppLocalizations.of(context)!.file_added} $fileName'),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         duration: const Duration(seconds: 2),
       ),
     );
@@ -821,8 +841,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       _attachedFiles.removeAt(index);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$fileName dosyası kaldırıldı'),
-          backgroundColor: Colors.orange,
+          content: Text(
+            '${AppLocalizations.of(context)!.file_removed} $fileName',
+          ),
+          backgroundColor:
+              Theme.of(context).colorScheme.tertiary ??
+              Theme.of(context).colorScheme.secondary,
           duration: const Duration(seconds: 2),
         ),
       );
@@ -855,9 +879,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
     if (_selectedType.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Lütfen talep veya geri bildirim türünü seçin'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(
+              context,
+            )!.please_select_feedback_or_request_type,
+          ),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -868,10 +896,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         SnackBar(
           content: Text(
             _selectedType == 'talep'
-                ? 'Lütfen bir talep kategorisi seçin'
-                : 'Lütfen bir geri bildirim kategorisi seçin',
+                ? AppLocalizations.of(context)!.please_select_request_category
+                : AppLocalizations.of(context)!.please_select_feedback_category,
           ),
-          backgroundColor: Colors.red,
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -891,12 +919,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     // Başarı mesajı göster / Show success message
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Geri bildiriminiz başarıyla gönderildi! Teşekkür ederiz.',
+            AppLocalizations.of(context)!.your_feedback_submitted_successfully,
           ),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 3),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          duration: const Duration(seconds: 3),
         ),
       );
 
@@ -922,24 +950,25 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: theme.scaffoldBackgroundColor,
       drawer: const AppDrawerWidget(
         currentPageIndex: -1,
       ), // Feedback sayfası navigasyon dışında / Feedback page is outside navigation
       appBar: AppBar(
-        backgroundColor: AppConstants.primaryColor,
-        foregroundColor: Colors.white,
-        title: const Text(
-          'Talep-Geri Bildirim',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: theme.colorScheme.onPrimary,
+        title: Text(
+          AppLocalizations.of(context)!.feedback,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
         actions: [
           IconButton(
             onPressed: _clearForm,
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Formu Temizle',
+            icon: Icon(Icons.refresh, color: theme.iconTheme.color),
+            tooltip: AppLocalizations.of(context)!.clear_form,
           ),
         ],
       ),
@@ -955,11 +984,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.1),
+                      color: theme.shadowColor.withOpacity(0.08),
                       offset: const Offset(0, 2),
                       blurRadius: 8,
                     ),
@@ -968,30 +997,36 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
                         Icon(
                           Icons.feedback,
-                          color: Color(0xFF1E3A8A),
+                          color: theme.colorScheme.primary,
                           size: 28,
                         ),
-                        SizedBox(width: 12),
+                        const SizedBox(width: 12),
                         Text(
-                          'Görüşleriniz Bizim İçin Değerli',
+                          AppLocalizations.of(
+                            context,
+                          )!.your_feedback_is_valuable,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E3A8A),
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Medipol uygulamasını daha iyi hale getirmek için görüşlerinizi ve önerilerinizi bizimle paylaşın.',
+                      AppLocalizations.of(
+                        context,
+                      )!.share_your_opinions_and_suggestions_for_better_app,
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                          0.7,
+                        ),
                         height: 1.4,
                       ),
                     ),
@@ -1002,7 +1037,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               const SizedBox(height: 24),
 
               // Uygulama puanlama metni / App rating text
-              _buildAppRatingText(),
+              _buildAppRatingText(theme),
 
               const SizedBox(height: 24),
 
@@ -1011,17 +1046,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.1),
+                      color: theme.shadowColor.withOpacity(0.08),
                       offset: const Offset(0, 2),
                       blurRadius: 8,
                     ),
                   ],
                 ),
-                child: _buildTypeSelection(),
+                child: _buildTypeSelection(theme),
               ),
 
               // Kategori seçimi - sadece tip seçildiyse göster / Category selection - only show if type is selected
@@ -1031,17 +1066,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: theme.cardColor,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withValues(alpha: 0.1),
+                        color: theme.shadowColor.withOpacity(0.08),
                         offset: const Offset(0, 2),
                         blurRadius: 8,
                       ),
                     ],
                   ),
-                  child: _buildCategorySelection(),
+                  child: _buildCategorySelection(theme),
                 ),
               ],
 
@@ -1052,17 +1087,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.1),
+                      color: theme.shadowColor.withOpacity(0.08),
                       offset: const Offset(0, 2),
                       blurRadius: 8,
                     ),
                   ],
                 ),
-                child: _buildFormFields(),
+                child: _buildFormFields(theme),
               ),
 
               const SizedBox(height: 24),
@@ -1077,16 +1112,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     child: OutlinedButton(
                       onPressed: _isSubmitting ? null : _clearForm,
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF1E3A8A)),
+                        side: BorderSide(color: theme.colorScheme.primary),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Temizle',
+                      child: Text(
+                        AppLocalizations.of(context)!.clear,
                         style: TextStyle(
-                          color: Color(0xFF1E3A8A),
+                          color: theme.colorScheme.primary,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -1099,8 +1134,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     child: ElevatedButton(
                       onPressed: _isSubmitting ? null : _submitFeedback,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppConstants.primaryColor,
-                        foregroundColor: Colors.white,
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -1108,10 +1143,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         elevation: 2,
                       ),
                       child: _isSubmitting
-                          ? const Row(
+                          ? Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
@@ -1121,21 +1156,23 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                     ),
                                   ),
                                 ),
-                                SizedBox(width: 12),
+                                const SizedBox(width: 12),
                                 Text(
-                                  'Gönderiliyor...',
+                                  AppLocalizations.of(context)!.submitting,
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
+                                    color: theme.colorScheme.onPrimary,
                                   ),
                                 ),
                               ],
                             )
-                          : const Text(
-                              'Geri Bildirim Gönder',
+                          : Text(
+                              AppLocalizations.of(context)!.send_feedback,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                color: theme.colorScheme.onPrimary,
                               ),
                             ),
                     ),

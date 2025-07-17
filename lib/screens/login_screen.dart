@@ -3,7 +3,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../providers/authentication_provider.dart';
+import '../providers/language_provider.dart';
 import 'home_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,14 +14,15 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   final _studentIdController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  
+
   bool _isPasswordVisible = false;
   bool _isLoading = false;
-  
+
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late Animation<double> _fadeAnimation;
@@ -28,34 +31,27 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    
+
     // Animasyon kontrolcülerini başlat / Initialize animation controllers
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _fadeController,
-      curve: Curves.easeInOut,
-    ));
-    
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _slideController,
-      curve: Curves.easeOutCubic,
-    ));
-    
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+          CurvedAnimation(parent: _slideController, curve: Curves.easeOutCubic),
+        );
+
     // Animasyonları başlat / Start animations
     _fadeController.forward();
     _slideController.forward();
@@ -103,35 +99,32 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         color: AppConstants.primaryColor,
         borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
       ),
-      child: const Icon(
-        Icons.school,
-        color: Colors.white,
-        size: 80,
-      ),
+      child: const Icon(Icons.school, color: Colors.white, size: 80),
     );
   }
 
   /// Giriş işlemi / Login process
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() {
       _isLoading = true;
     });
-    
+
     // Simülasyon için kısa bekleme / Short wait for simulation
     await Future.delayed(const Duration(seconds: 1));
-    
+
     setState(() {
       _isLoading = false;
     });
-    
+
     // Ana sayfaya yönlendir / Navigate to home page
     if (mounted) {
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const HomeScreen(),
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -146,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     final screenSize = MediaQuery.of(context).size;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     final safeAreaTop = MediaQuery.of(context).padding.top;
-    
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       resizeToAvoidBottomInset: true,
@@ -158,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             colors: [
               Colors.grey.shade50,
               Colors.white,
-                             AppConstants.primaryColor.withValues(alpha: 0.05),
+              AppConstants.primaryColor.withValues(alpha: 0.05),
             ],
           ),
         ),
@@ -182,8 +175,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       opacity: _fadeAnimation,
                       child: _buildLogoSection(),
                     ),
-                    
-                    
+
                     // Form kartı / Form card
                     SlideTransition(
                       position: _slideAnimation,
@@ -192,9 +184,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                         child: _buildLoginCard(),
                       ),
                     ),
-                    
+
                     const SizedBox(height: AppConstants.paddingXLarge),
-                    
+
                     // Alt bölüm / Footer section
                     FadeTransition(
                       opacity: _fadeAnimation,
@@ -212,6 +204,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
   /// Logo bölümü widget'ı / Logo section widget
   Widget _buildLogoSection() {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return Column(
       children: [
         // Logo resmi - Standalone büyük logo / Standalone large logo
@@ -229,14 +222,54 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             return _buildFallbackLogo();
           },
         ),
-      
-        
+        const SizedBox(height: 12),
+        // Dil seçimi bayrakları / Language selection flags
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildFlagButton(
+              imagePath: 'assets/images/turkey.png',
+              isSelected: languageProvider.locale.languageCode == 'tr',
+              onTap: () => languageProvider.setLocale(const Locale('tr')),
+            ),
+            const SizedBox(width: 12),
+            _buildFlagButton(
+              imagePath: 'assets/images/uk.png',
+              isSelected: languageProvider.locale.languageCode == 'en',
+              onTap: () => languageProvider.setLocale(const Locale('en')),
+            ),
+          ],
+        ),
       ],
+    );
+  }
+
+  Widget _buildFlagButton({
+    required String imagePath,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.transparent,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Image.asset(imagePath, width: 38, height: 28, fit: BoxFit.cover),
+      ),
     );
   }
 
   /// Giriş kartı widget'ı / Login card widget
   Widget _buildLoginCard() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       constraints: const BoxConstraints(maxWidth: 400),
@@ -245,7 +278,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
         boxShadow: [
           BoxShadow(
-                         color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withOpacity(0.08),
             blurRadius: 25,
             offset: const Offset(0, 15),
             spreadRadius: 0,
@@ -261,66 +294,58 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             children: [
               // Başlık / Title
               Text(
-                'Giriş Yap',
+                l10n.loginTitle,
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeXXLarge,
                   fontWeight: FontWeight.bold,
                   color: AppConstants.primaryColor,
                 ),
               ),
-              
               const SizedBox(height: AppConstants.paddingMedium),
-              
               Text(
-                'Öğrenci bilgilerinizle giriş yapın',
+                l10n.loginSubtitle,
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeMedium,
                   color: Colors.grey.shade600,
                 ),
               ),
-              
               const SizedBox(height: AppConstants.paddingXLarge),
-              
               // Öğrenci numarası alanı / Student ID field
               _buildModernTextField(
                 controller: _studentIdController,
-                label: 'Öğrenci Numarası',
+                label: l10n.studentId,
                 hint: '2024520001',
                 icon: Icons.person_outline,
                 textInputType: TextInputType.text,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Lütfen öğrenci numaranızı girin';
+                    return l10n.invalidStudentId;
                   }
                   if (value.length < 6) {
-                    return 'Geçerli bir öğrenci numarası girin';
+                    return l10n.invalidStudentId;
                   }
                   return null;
                 },
               ),
-              
               const SizedBox(height: AppConstants.paddingLarge),
-              
               // Şifre alanı / Password field
               _buildModernTextField(
                 controller: _passwordController,
-                label: 'Şifre',
-                hint: 'Şifrenizi girin',
+                label: l10n.password,
+                hint: l10n.password,
                 icon: Icons.lock_outline,
                 isPassword: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Lütfen şifrenizi girin';
+                    return l10n.invalidPassword;
                   }
                   if (value.length < 3) {
-                    return 'Şifre en az 3 karakter olmalıdır';
+                    return l10n.invalidPassword;
                   }
                   return null;
                 },
               ),
-              
               const SizedBox(height: AppConstants.paddingMedium),
-              
               // Şifremi unuttum linki / Forgot password link
               Align(
                 alignment: Alignment.centerRight,
@@ -333,7 +358,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     ),
                   ),
                   child: Text(
-                    'Şifremi Unuttum',
+                    l10n.forgotPassword,
                     style: TextStyle(
                       color: AppConstants.primaryColor,
                       fontSize: AppConstants.fontSizeMedium,
@@ -342,27 +367,22 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   ),
                 ),
               ),
-              
               const SizedBox(height: AppConstants.paddingXLarge),
-              
               // Giriş butonu / Login button
-              _buildModernButton(),
-              
+              _buildModernButton(l10n),
               const SizedBox(height: AppConstants.paddingLarge),
-              
               // Ayırıcı çizgi / Divider
               Row(
                 children: [
                   Expanded(
-                    child: Divider(
-                      color: Colors.grey.shade300,
-                      thickness: 1,
-                    ),
+                    child: Divider(color: Colors.grey.shade300, thickness: 1),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppConstants.paddingMedium),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.paddingMedium,
+                    ),
                     child: Text(
-                      'veya',
+                      l10n.or,
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: AppConstants.fontSizeSmall,
@@ -370,18 +390,13 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     ),
                   ),
                   Expanded(
-                    child: Divider(
-                      color: Colors.grey.shade300,
-                      thickness: 1,
-                    ),
+                    child: Divider(color: Colors.grey.shade300, thickness: 1),
                   ),
                 ],
               ),
-              
               const SizedBox(height: AppConstants.paddingLarge),
-              
               // Microsoft OAuth giriş butonu / Microsoft OAuth login button
-              _buildMicrosoftLoginButton(),
+              _buildMicrosoftLoginButton(l10n),
             ],
           ),
         ),
@@ -410,9 +425,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             color: AppConstants.primaryColor,
           ),
         ),
-        
+
         const SizedBox(height: AppConstants.paddingSmall),
-        
+
         TextFormField(
           controller: controller,
           obscureText: isPassword && !_isPasswordVisible,
@@ -428,15 +443,17 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               color: Colors.grey.shade400,
               fontWeight: FontWeight.normal,
             ),
-                         prefixIcon: Icon(
-               icon,
-               color: AppConstants.primaryColor.withValues(alpha: 0.7),
-               size: 22,
-             ),
+            prefixIcon: Icon(
+              icon,
+              color: AppConstants.primaryColor.withValues(alpha: 0.7),
+              size: 22,
+            ),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
-                      _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                      _isPasswordVisible
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                       color: AppConstants.primaryColor.withValues(alpha: 0.7),
                       size: 22,
                     ),
@@ -459,7 +476,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-              borderSide: BorderSide(color: AppConstants.primaryColor, width: 2),
+              borderSide: BorderSide(
+                color: AppConstants.primaryColor,
+                width: 2,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
@@ -480,7 +500,7 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 
   /// Modern buton oluşturucu / Modern button builder
-  Widget _buildModernButton() {
+  Widget _buildModernButton(AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
       height: 56,
@@ -494,7 +514,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
           ),
-                     disabledBackgroundColor: AppConstants.primaryColor.withValues(alpha: 0.7),
+          disabledBackgroundColor: AppConstants.primaryColor.withValues(
+            alpha: 0.7,
+          ),
         ),
         child: _isLoading
             ? const SizedBox(
@@ -505,8 +527,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : const Text(
-                'Giriş Yap',
+            : Text(
+                l10n.loginButton,
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeLarge,
                   fontWeight: FontWeight.w600,
@@ -518,14 +540,16 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 
   /// Microsoft OAuth giriş butonu / Microsoft OAuth login button
-  Widget _buildMicrosoftLoginButton() {
+  Widget _buildMicrosoftLoginButton(AppLocalizations l10n) {
     return Consumer<AuthenticationProvider>(
       builder: (context, authProvider, child) {
         return SizedBox(
           width: double.infinity,
           height: 56,
           child: OutlinedButton.icon(
-            onPressed: authProvider.isLoading ? null : () => _handleMicrosoftLogin(authProvider),
+            onPressed: authProvider.isLoading
+                ? null
+                : () => _handleMicrosoftLogin(authProvider),
             style: OutlinedButton.styleFrom(
               foregroundColor: const Color(0xFF0078D4), // Microsoft blue color
               side: const BorderSide(color: Color(0xFF0078D4), width: 2),
@@ -534,13 +558,15 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               ),
               backgroundColor: Colors.white,
             ),
-            icon: authProvider.isLoading 
+            icon: authProvider.isLoading
                 ? const SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF0078D4)),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF0078D4),
+                      ),
                     ),
                   )
                 : Image.asset(
@@ -556,9 +582,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                     },
                   ),
             label: Text(
-              authProvider.isLoading 
-                  ? 'Giriş yapılıyor...' 
-                  : 'Microsoft ile Giriş Yap',
+              authProvider.isLoading
+                  ? 'Giriş yapılıyor...'
+                  : l10n.loginWithMicrosoft,
               style: const TextStyle(
                 fontSize: AppConstants.fontSizeLarge,
                 fontWeight: FontWeight.w600,
@@ -572,26 +598,31 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 
   /// Microsoft OAuth giriş işlemi / Microsoft OAuth login process
-  Future<void> _handleMicrosoftLogin(AuthenticationProvider authProvider) async {
+  Future<void> _handleMicrosoftLogin(
+    AuthenticationProvider authProvider,
+  ) async {
     try {
       final success = await authProvider.signInWithMicrosoft();
-      
+
       if (success && mounted) {
         // Başarılı giriş, ana sayfaya yönlendir / Successful login, navigate to home
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const HomeScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
             transitionDuration: AppConstants.animationNormal,
           ),
         );
       } else if (mounted && authProvider.hasError) {
         // Hata durumunda kullanıcıya bilgi ver / Show error to user
         _showSnackBar(
-          authProvider.errorMessage ?? 'Microsoft giriş hatası / Microsoft sign in error',
+          authProvider.errorMessage ??
+              'Microsoft giriş hatası / Microsoft sign in error',
           isError: true,
         );
       }
@@ -617,9 +648,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             fontWeight: FontWeight.w500,
           ),
         ),
-        
+
         const SizedBox(height: AppConstants.paddingSmall),
-        
+
         Text(
           'Öğrenci Bilgi Sistemi',
           style: TextStyle(

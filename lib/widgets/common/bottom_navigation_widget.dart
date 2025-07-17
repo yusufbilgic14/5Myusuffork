@@ -28,7 +28,7 @@ class BottomNavigationWidget extends StatelessWidget {
               return _buildBottomNavItem(
                 context,
                 NavigationState.getPageIcon(page),
-                NavigationState.getPageLabel(page),
+                NavigationState.getPageLabel(context, page),
                 page.navIndex,
               );
             }).toList(),

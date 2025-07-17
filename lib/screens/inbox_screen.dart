@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 class InboxScreen extends StatefulWidget {
   final int? selectedMessageId; // Seçili mesaj ID'si / Selected message ID
@@ -164,9 +165,9 @@ Protokol Birimi''',
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Gelen Kutusu',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.inbox,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -222,7 +223,7 @@ Protokol Birimi''',
                       child: Row(
                         children: [
                           Text(
-                            '${_messages.length} mesaj',
+                            '${_messages.length} ${AppLocalizations.of(context)!.messages}',
                             style: TextStyle(
                               fontSize: 10,
                               color: Colors.grey[600],
@@ -231,7 +232,7 @@ Protokol Birimi''',
                           ),
                           const Spacer(),
                           Text(
-                            '${_messages.where((m) => !m['isRead']).length} okunmamış',
+                            '${_messages.where((m) => !m['isRead']).length} ${AppLocalizations.of(context)!.unread}',
                             style: const TextStyle(
                               fontSize: 10,
                               color: Color(0xFF1E3A8A),
@@ -412,7 +413,7 @@ Protokol Birimi''',
                         },
                         icon: const Icon(Icons.arrow_back),
                         color: const Color(0xFF1E3A8A),
-                        tooltip: 'Geri',
+                        tooltip: AppLocalizations.of(context)!.back,
                       ),
                       Expanded(
                         child: Text(
@@ -531,7 +532,7 @@ Protokol Birimi''',
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                'Ek Dosyalar (${message['attachments'].length})',
+                                '${AppLocalizations.of(context)!.attachments} (${message['attachments'].length})',
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -613,7 +614,7 @@ Protokol Birimi''',
                       // TODO: Yanıtla functionality
                     },
                     icon: const Icon(Icons.reply, size: 16),
-                    label: const Text('Yanıtla'),
+                    label: Text(AppLocalizations.of(context)!.reply),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1E3A8A),
                       foregroundColor: Colors.white,
@@ -629,7 +630,7 @@ Protokol Birimi''',
                       // TODO: İlet functionality
                     },
                     icon: const Icon(Icons.forward, size: 16),
-                    label: const Text('İlet'),
+                    label: Text(AppLocalizations.of(context)!.forward),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF1E3A8A),
                       side: const BorderSide(color: Color(0xFF1E3A8A)),
@@ -646,7 +647,7 @@ Protokol Birimi''',
                     },
                     icon: const Icon(Icons.delete_outline),
                     color: Colors.red[600],
-                    tooltip: 'Sil',
+                    tooltip: AppLocalizations.of(context)!.delete,
                   ),
                 ],
               ),
