@@ -25,13 +25,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   final List<Map<String, dynamic>> _courses = [
     {
       'code': 'CS101',
-      'title':
-          AppLocalizations.of(context)?.courseVisualProgramming ??
-          'Visual Programming',
+      'title': 'courseVisualProgramming',
       'room': '3B06',
-      'instructor':
-          AppLocalizations.of(context)?.instructorAhmetYilmaz ??
-          'Dr. Ahmet Yılmaz',
+      'instructor': 'instructorAhmetYilmaz',
       'startTime': '08:00',
       'endTime': '10:00',
       'startHour': 8,
@@ -39,13 +35,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     },
     {
       'code': 'CS202',
-      'title':
-          AppLocalizations.of(context)?.courseDataStructures ??
-          'Data Structures',
+      'title': 'courseDataStructures',
       'room': '2A15',
-      'instructor':
-          AppLocalizations.of(context)?.instructorFatmaKaya ??
-          'Prof. Fatma Kaya',
+      'instructor': 'instructorFatmaKaya',
       'startTime': '10:15',
       'endTime': '12:15',
       'startHour': 10,
@@ -53,13 +45,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     },
     {
       'code': 'MTH301',
-      'title':
-          AppLocalizations.of(context)?.courseDiscreteMathematics ??
-          'Discrete Mathematics',
+      'title': 'courseDiscreteMathematics',
       'room': '1C22',
-      'instructor':
-          AppLocalizations.of(context)?.instructorMehmetOzkan ??
-          'Dr. Mehmet Özkan',
+      'instructor': 'instructorMehmetOzkan',
       'startTime': '13:30',
       'endTime': '15:30',
       'startHour': 13,
@@ -67,13 +55,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     },
     {
       'code': 'ENG201',
-      'title':
-          AppLocalizations.of(context)?.courseTechnicalEnglish ??
-          'Technical English',
+      'title': 'courseTechnicalEnglish',
       'room': '4A08',
-      'instructor':
-          AppLocalizations.of(context)?.instructorSarahJohnson ??
-          'Ms. Sarah Johnson',
+      'instructor': 'instructorSarahJohnson',
       'startTime': '16:00',
       'endTime': '17:30',
       'startHour': 16,
@@ -480,7 +464,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
-                '${course['code']} - ${course['title']}',
+                '${course['code']} - ${_localizedCourseTitle(context, course['title'])}',
                 style: TextStyle(
                   color: theme.colorScheme.onPrimary,
                   fontSize: 12,
@@ -517,7 +501,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      course['instructor'],
+                      _localizedInstructor(context, course['instructor']),
                       style: TextStyle(
                         color: theme.colorScheme.onPrimary,
                         fontSize: 10,
@@ -541,6 +525,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
       );
     }).toList();
+  }
+
+  String _localizedCourseTitle(BuildContext context, String key) {
+    switch (key) {
+      case 'courseVisualProgramming':
+        return AppLocalizations.of(context)!.courseVisualProgramming;
+      case 'courseDataStructures':
+        return AppLocalizations.of(context)!.courseDataStructures;
+      case 'courseDiscreteMathematics':
+        return AppLocalizations.of(context)!.courseDiscreteMathematics;
+      case 'courseTechnicalEnglish':
+        return AppLocalizations.of(context)!.courseTechnicalEnglish;
+      default:
+        return key;
+    }
+  }
+
+  String _localizedInstructor(BuildContext context, String key) {
+    switch (key) {
+      case 'instructorAhmetYilmaz':
+        return AppLocalizations.of(context)!.instructorAhmetYilmaz;
+      case 'instructorFatmaKaya':
+        return AppLocalizations.of(context)!.instructorFatmaKaya;
+      case 'instructorMehmetOzkan':
+        return AppLocalizations.of(context)!.instructorMehmetOzkan;
+      case 'instructorSarahJohnson':
+        return AppLocalizations.of(context)!.instructorSarahJohnson;
+      default:
+        return key;
+    }
   }
 
   Widget _buildTimeSlot(int hour, ThemeData theme) {
