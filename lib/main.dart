@@ -30,7 +30,7 @@ void main() async {
     runApp(const MyApp());
   }
 }
-
+// deneme commit
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
