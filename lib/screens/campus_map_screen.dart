@@ -25,11 +25,11 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   void initState() {
     super.initState();
     // iOS için timeout mekanizması / Timeout mechanism for iOS
-    Future.delayed(const Duration(seconds: 10), () {
+    Future.delayed(const Duration(seconds: 30), () {
       if (mounted && _isInitializing) {
         setState(() {
           _mapError = true;
-          _isInitializing = false;
+          _isInitializing = false; // Set error state if still initializing
         });
         debugPrint('Google Maps initialization timeout on iOS');
       }
@@ -78,6 +78,54 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
       infoWindow: const InfoWindow(
         title: 'Kavacık Köprüsü Bus Stop',
         snippet: 'Europe Road',
+      ),
+    ),
+    Marker(
+      markerId: const MarkerId('bus_stop_kavacik_towardsbeykoz'),
+      position: const LatLng(41.08915705000439, 29.088976773261635),
+      infoWindow: const InfoWindow(
+        title: 'Kavacık Bus Stop',
+        snippet: 'Ataturk Street/Beykoz',
+      ),
+    ),
+    Marker(
+      markerId: const MarkerId('bus_stop_kavacik_towardsüsküdar'),
+      position: const LatLng(41.088994338829686, 29.088191740305337),
+      infoWindow: const InfoWindow(
+        title: 'Kavacık Bus Stop',
+        snippet: 'Ataturk Street/Beykoz',
+      ),
+    ),
+     Marker(
+      markerId: const MarkerId('bus_stop_kavaciksapagi_towardsüsküdar'),
+      position: const LatLng(41.08860600008406, 29.090652087795732),
+      infoWindow: const InfoWindow(
+        title: 'Kavacık Sapağı Bus Stop',
+        snippet: 'Kavacik Junction/Beykoz',
+      ),
+    ),
+     Marker(
+      markerId: const MarkerId('bus_stop_kavaciksapagi_towardsbeykoz'),
+      position: const LatLng(41.08958640369496, 29.092962204616487),
+      infoWindow: const InfoWindow(
+        title: 'Kavacık Sapağı Bus Stop',
+        snippet: 'Kavacik Junction/Beykoz',
+      ),
+    ),
+      Marker(
+      markerId: const MarkerId('bus_stop_yenirivayolu_towardsmecidiyeköy'),
+      position: const LatLng(41.09133388881714, 29.094193858716775),
+      infoWindow: const InfoWindow(
+        title: 'Yeni Riva Yolu Bus Stop',
+        snippet: 'Kavacik Junction/Beykoz',
+      ),
+    ),
+     Marker(
+      markerId: const MarkerId('bus_stop_yenirivayolu_towardsbeykoz'),
+      position: const LatLng(41.090414530513, 29.09395214590087),
+      infoWindow: const InfoWindow(
+        title: 'Yeni Riva Yolu Bus Stop',
+        snippet: 'Kavacik Junction/Beykoz',
       ),
     ),
   };
