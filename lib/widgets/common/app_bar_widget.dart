@@ -17,7 +17,6 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle = true,
     this.automaticallyImplyLeading = true,
   });
-
   @override
   Widget build(BuildContext context) {
     return AppBar(

@@ -4,6 +4,7 @@ import '../themes/app_themes.dart';
 import '../widgets/common/app_bar_widget.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
+import '../l10n/app_localizations.dart';
 
 // Veri modelleri / Data models
 class CourseGrade {
@@ -207,7 +208,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppThemes.getBackgroundColor(context),
-      appBar: const CommonAppBar(title: 'Ders Notları'),
+      appBar: CommonAppBar(title: AppLocalizations.of(context)!.courseGrades),
       drawer: const AppDrawerWidget(
         currentPageIndex: -1,
       ), // Ders notları sayfası navigasyon dışında / Course grades page is outside navigation
@@ -299,7 +300,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () => _showPointPDF(context),
                   icon: const Icon(Icons.picture_as_pdf, size: 18),
-                  label: const Text('Point PDF'),
+                  label: Text(AppLocalizations.of(context)!.pointPDF),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppThemes.getPrimaryColor(context),
                     foregroundColor: Colors.white,
@@ -317,7 +318,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                 child: ElevatedButton.icon(
                   onPressed: () => _showTranscript(context),
                   icon: const Icon(Icons.description, size: 18),
-                  label: const Text('Transcript'),
+                  label: Text(AppLocalizations.of(context)!.transcript),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppThemes.getPrimaryColor(context),
                     foregroundColor: Colors.white,
@@ -363,7 +364,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dönem GPA / Semester GPA',
+                      AppLocalizations.of(context)!.semesterGPA,
                       style: TextStyle(
                         fontSize: AppConstants.fontSizeSmall,
                         color: AppThemes.getSecondaryTextColor(context),
@@ -395,7 +396,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Genel GPA / Cumulative GPA',
+                      AppLocalizations.of(context)!.cumulativeGPA,
                       style: TextStyle(
                         fontSize: AppConstants.fontSizeSmall,
                         color: AppThemes.getSecondaryTextColor(context),
@@ -440,7 +441,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                       ),
                     ),
                     Text(
-                      'Toplam Ders',
+                      AppLocalizations.of(context)!.totalCourses,
                       style: TextStyle(
                         fontSize: AppConstants.fontSizeSmall,
                         color: AppThemes.getSecondaryTextColor(context),
@@ -459,7 +460,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                       ),
                     ),
                     Text(
-                      'Tamamlanan',
+                      AppLocalizations.of(context)!.completedCourses,
                       style: TextStyle(
                         fontSize: AppConstants.fontSizeSmall,
                         color: AppThemes.getSecondaryTextColor(context),
@@ -478,7 +479,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                       ),
                     ),
                     Text(
-                      'Beklemede',
+                      AppLocalizations.of(context)!.waitingGrades,
                       style: TextStyle(
                         fontSize: AppConstants.fontSizeSmall,
                         color: AppThemes.getSecondaryTextColor(context),
@@ -497,7 +498,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                       ),
                     ),
                     Text(
-                      'Kredi',
+                      AppLocalizations.of(context)!.credits,
                       style: TextStyle(
                         fontSize: AppConstants.fontSizeSmall,
                         color: AppThemes.getSecondaryTextColor(context),
@@ -523,7 +524,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Ders adı veya kodu ara...',
+              hintText: AppLocalizations.of(context)!.searchCourseNameOrCode,
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
@@ -561,7 +562,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                 child: DropdownButton<String>(
                   value: _filterStatus,
                   isExpanded: true,
-                  hint: const Text('Durum'),
+                  hint: Text(AppLocalizations.of(context)!.status),
                   items: const [
                     DropdownMenuItem(value: 'all', child: Text('Tümü')),
                     DropdownMenuItem(
@@ -590,7 +591,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                 child: DropdownButton<String>(
                   value: _sortBy,
                   isExpanded: true,
-                  hint: const Text('Sırala'),
+                  hint: Text(AppLocalizations.of(context)!.sortBy),
                   items: const [
                     DropdownMenuItem(value: 'name', child: Text('Ada göre')),
                     DropdownMenuItem(value: 'grade', child: Text('Nota göre')),
@@ -653,14 +654,14 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
     if (filteredCourses.isEmpty) {
       return Container(
         height: 200,
-        child: const Center(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.search_off, size: 64, color: Colors.grey),
               SizedBox(height: 16),
               Text(
-                'Arama kriterlerinize uygun ders bulunamadı.',
+                AppLocalizations.of(context)!.noCoursesFound,
                 style: TextStyle(color: Colors.grey),
               ),
             ],
@@ -737,7 +738,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Kredi: ${course.credit} | GPA: ${course.gpa.toStringAsFixed(1)}',
+                          '${AppLocalizations.of(context)!.credits}: ${course.credit} | ${AppLocalizations.of(context)!.gpa}: ${course.gpa.toStringAsFixed(1)}',
                           style: TextStyle(
                             fontSize: AppConstants.fontSizeSmall,
                             color: AppThemes.getSecondaryTextColor(context),
@@ -799,7 +800,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Detaylı Notlar / Detailed Grades',
+            AppLocalizations.of(context)!.detailedGrades,
             style: TextStyle(
               fontSize: AppConstants.fontSizeMedium,
               fontWeight: FontWeight.w600,
@@ -847,7 +848,9 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
           // Sayısal not / Numerical grade
           Expanded(
             child: Text(
-              grade.isWaiting ? 'Beklemede...' : grade.value,
+              grade.isWaiting
+                  ? AppLocalizations.of(context)!.waiting
+                  : grade.value,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeSmall,
                 color: grade.isWaiting
@@ -913,7 +916,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Point PDF'),
+        title: Text(AppLocalizations.of(context)!.pointPDF),
         content: SizedBox(
           width: double.maxFinite,
           child: Column(
@@ -921,25 +924,29 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Dönem: ${semester.name}',
+                '${AppLocalizations.of(context)!.semester}: ${semester.name}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              Text('Dönem GPA: ${semester.semesterGPA.toStringAsFixed(2)}'),
-              Text('Genel GPA: ${semester.cumulativeGPA.toStringAsFixed(2)}'),
+              Text(
+                '${AppLocalizations.of(context)!.semesterGpa}: ${semester.semesterGPA.toStringAsFixed(2)}',
+              ),
+              Text(
+                '${AppLocalizations.of(context)!.cumulativeGpa}: ${semester.cumulativeGPA.toStringAsFixed(2)}',
+              ),
               const SizedBox(height: 16),
-              const Text(
-                'Bu dönem için PDF raporu oluşturulacak...',
+              Text(
+                AppLocalizations.of(context)!.pdfReportWillBeGenerated,
                 style: TextStyle(fontStyle: FontStyle.italic),
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.info_outline, size: 16, color: Colors.blue),
-                  const SizedBox(width: 8),
-                  const Expanded(
+                  Icon(Icons.info_outline, size: 16, color: Colors.blue),
+                  SizedBox(width: 8),
+                  Expanded(
                     child: Text(
-                      'PDF özelliği yakında eklenecektir.',
+                      AppLocalizations.of(context)!.pdfFeatureWillBeAddedSoon,
                       style: TextStyle(fontSize: 12),
                     ),
                   ),
@@ -951,7 +958,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Tamam'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),
@@ -963,24 +970,28 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Transcript'),
+        title: Text(AppLocalizations.of(context)!.transcript),
         content: SizedBox(
           width: double.maxFinite,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Tüm dönemler için genel transcript hazırlanacak...',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Text(
+                '${AppLocalizations.of(context)!.overallTranscriptForAllSemestersWillBePrepared}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              Text('Toplam GPA: ${_calculateOverallGPA().toStringAsFixed(2)}'),
-              Text('Toplam Kredi: ${_calculateTotalCredits()}'),
+              Text(
+                '${AppLocalizations.of(context)!.totalGpa}: ${_calculateOverallGPA().toStringAsFixed(2)}',
+              ),
+              Text(
+                '${AppLocalizations.of(context)!.totalCredits}: ${_calculateTotalCredits()}',
+              ),
               const SizedBox(height: 16),
-              const Text(
-                'İçerik:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Text(
+                '${AppLocalizations.of(context)!.content}:',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               ...List.generate(_semesters.length, (index) {
@@ -992,7 +1003,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                       const Text('• '),
                       Expanded(
                         child: Text(
-                          '${semester.name} - ${semester.courses.length} ders',
+                          '${semester.name} - ${semester.courses.length} ${AppLocalizations.of(context)!.courses}',
                           style: const TextStyle(fontSize: 12),
                         ),
                       ),
@@ -1003,11 +1014,13 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.info_outline, size: 16, color: Colors.blue),
-                  const SizedBox(width: 8),
-                  const Expanded(
+                  Icon(Icons.info_outline, size: 16, color: Colors.blue),
+                  SizedBox(width: 8),
+                  Expanded(
                     child: Text(
-                      'Transcript özelliği yakında eklenecektir.',
+                      AppLocalizations.of(
+                        context,
+                      )!.transcriptFeatureWillBeAddedSoon,
                       style: TextStyle(fontSize: 12),
                     ),
                   ),
@@ -1019,7 +1032,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Tamam'),
+            child: Text(AppLocalizations.of(context)!.ok),
           ),
         ],
       ),
@@ -1064,7 +1077,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
           children: [
             const CircularProgressIndicator(),
             const SizedBox(width: 16),
-            const Text('Notlar yenileniyor...'),
+            Text(AppLocalizations.of(context)!.refreshingGrades),
           ],
         ),
       ),
@@ -1076,7 +1089,9 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Notlar başarıyla güncellendi!'),
+          content: Text(
+            AppLocalizations.of(context)!.gradesUpdatedSuccessfully,
+          ),
           backgroundColor: Colors.green[600],
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),

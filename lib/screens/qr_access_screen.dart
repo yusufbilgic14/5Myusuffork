@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import 'qr_scanner_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class QRAccessScreen extends StatefulWidget {
   const QRAccessScreen({super.key});
@@ -87,9 +88,9 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: AppConstants.textColorLight,
         elevation: 0,
-        title: const Text(
-          'QR Access',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.qrAccess,
+          style: const TextStyle(
             fontSize: AppConstants.fontSizeXLarge,
             fontWeight: FontWeight.w600,
           ),
@@ -140,9 +141,9 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                 child: Column(
                   children: [
                     // QR kod başlığı / QR code title
-                    const Text(
-                      'Kampüs Giriş QR Kodu',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.campusQrTitle,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1E3A8A),
@@ -207,7 +208,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'Geçerli süre: ${_formatTime(_timeRemaining)}',
+                            '${AppLocalizations.of(context)!.validTime}: ${_formatTime(_timeRemaining)}',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
@@ -228,7 +229,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                       child: OutlinedButton.icon(
                         onPressed: _refreshQRCode,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Yenile'),
+                        label: Text(AppLocalizations.of(context)!.refresh),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppConstants.primaryColor,
                           side: BorderSide(color: AppConstants.primaryColor),
@@ -255,7 +256,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                           );
                         },
                         icon: const Icon(Icons.qr_code_scanner),
-                        label: const Text('QR Kodu Tarat'),
+                        label: Text(AppLocalizations.of(context)!.scanQr),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppConstants.primaryColor,
                           foregroundColor: Colors.white,
@@ -286,7 +287,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Bu QR kodu kampüs giriş tarayıcılarında kullanın. Güvenlik için kod otomatik olarak yenilenir.',
+                        AppLocalizations.of(context)!.qrInfo,
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.blue[700],
@@ -317,7 +318,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
                     Icon(Icons.security, size: 16, color: Colors.grey[600]),
                     const SizedBox(width: 8),
                     Text(
-                      'Güvenli kampüs erişimi',
+                      AppLocalizations.of(context)!.secureCampusAccess,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
