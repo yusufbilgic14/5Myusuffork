@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   
   # Google Maps for campus map functionality
-  google_maps_flutter: ^2.5.0
+  google_maps_flutter: ^2.6.0
   
   # QR code generation for access pass
   qr_flutter: ^4.1.0
@@ -51,16 +51,16 @@ dependencies:
   camera: ^0.11.0
   
   # Permission handler for camera access
-  permission_handler: ^11.0.1
+  permission_handler: ^11.3.1
   
   # Shared preferences for theme persistence
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.2.3
   
   # Provider for state management
-  provider: ^6.0.0
+  provider: ^6.1.2
   
   # URL launcher for external links (forgotten password)
-  url_launcher: ^6.2.2
+  url_launcher: ^6.2.6
   
   # Microsoft OAuth authentication using MSAL / MSAL kullanarak Microsoft OAuth kimlik doğrulaması
   msal_auth: ^3.2.4
@@ -69,34 +69,35 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   
   # HTTP client for API requests / API istekleri için HTTP istemcisi
-  http: ^1.1.0
+  http: ^1.2.1
   
   # JSON annotation for data models / Veri modelleri için JSON annotasyonu
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
   
   # Firebase Core - Required for all Firebase services / Tüm Firebase servisleri için gerekli
-  firebase_core: ^2.0.0
+  firebase_core: ^2.30.0
+
   
   # Firebase Authentication for user management / Kullanıcı yönetimi için Firebase Authentication
-  firebase_auth: ^4.15.3
+  firebase_auth: ^4.17.8
   
   # Cloud Firestore for real-time database / Gerçek zamanlı veritabanı için Cloud Firestore
-  cloud_firestore: ^4.13.6
+  cloud_firestore: ^4.15.8
   
   # Firebase Storage for file uploads / Dosya yüklemeleri için Firebase Storage
-  firebase_storage: ^11.6.0
+  firebase_storage: ^11.6.8
   
   # Firebase Analytics for usage tracking / Kullanım takibi için Firebase Analytics
-  firebase_analytics: ^10.7.4
+  firebase_analytics: ^10.8.10
   
   # Firebase Crashlytics for crash reporting / Hata raporlama için Firebase Crashlytics
-  firebase_crashlytics: ^3.4.9
+  firebase_crashlytics: ^3.5.7
   
   # Firebase Remote Config for dynamic configuration / Dinamik konfigürasyon için Firebase Remote Config
-  firebase_remote_config: ^4.3.8
+  firebase_remote_config: ^4.4.7
   
   # Firebase Cloud Messaging for push notifications / Push bildirimleri için Firebase Cloud Messaging
-  firebase_messaging: ^14.7.10
+  firebase_messaging: ^14.7.19
   flutter_localizations:
     sdk: flutter
 

@@ -8,6 +8,7 @@ import 'inbox_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import 'cafeteria_menu_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _autoAdvanceTimer;
   bool _showNotifications =
       false; // Bildirim popup'ını kontrol etmek için / To control notification popup
+  bool _showCafeteriaMenu = false; // Cafeteria popup'ı
 
   // Duyuru listesi / Announcements list
   final List<Map<String, String>> _announcements = [
@@ -264,6 +266,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     : null,
               ),
 
+              // Cafeteria paneli
+              AnimatedContainer(
+                duration: AppConstants.animationNormal,
+                curve: Curves.easeInOut,
+                height: _showCafeteriaMenu ? 400 : 0,
+                child: _showCafeteriaMenu
+                    ? _buildCafeteriaPanel(context)
+                    : null,
+              ),
+
               // Ana içerik / Main content
               Expanded(
                 child: SingleChildScrollView(
@@ -379,6 +391,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
+              ),
+
+              // Çatal-bıçak ikon butonu
+              IconButton(
+                icon: const Icon(Icons.restaurant, color: Colors.white),
+                tooltip: AppLocalizations.of(context)!.cafeteriaMenu,
+                onPressed: () {
+                  setState(() {
+                    _showCafeteriaMenu = !_showCafeteriaMenu;
+                    _showNotifications = false;
+                  });
+                },
               ),
 
               // Bildirim butonu / Notification button
@@ -1121,6 +1145,37 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Cafeteria paneli widget'ı
+  Widget _buildCafeteriaPanel(BuildContext context) {
+    return Material(
+      elevation: 8,
+      color: Colors.white,
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(24),
+        bottomRight: Radius.circular(24),
+      ),
+      child: Stack(
+        children: [
+          // Panel içeriği: CafeteriaMenuScreen'in ana gövdesi veya özet menü
+          SizedBox(height: 400, child: CafeteriaMenuScreen()),
+          // Kapatma butonu
+          Positioned(
+            right: 8,
+            top: 8,
+            child: IconButton(
+              icon: const Icon(Icons.close, color: Colors.black),
+              onPressed: () {
+                setState(() {
+                  _showCafeteriaMenu = false;
+                });
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
