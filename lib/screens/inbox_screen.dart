@@ -752,13 +752,13 @@ String getLocalizedDayName(BuildContext context, DateTime date) {
 // Kısa gün ismi (Pzt, Mon vs.)
 String getLocalizedDayShortName(BuildContext context, DateTime date) {
   final dayShortNames = [
-    AppLocalizations.of(context)!.mon_short,
-    AppLocalizations.of(context)!.tue_short,
-    AppLocalizations.of(context)!.wed_short,
-    AppLocalizations.of(context)!.thu_short,
-    AppLocalizations.of(context)!.fri_short,
-    AppLocalizations.of(context)!.sat_short,
-    AppLocalizations.of(context)!.sun_short,
+    AppLocalizations.of(context)!.monShort,
+    AppLocalizations.of(context)!.tueShort,
+    AppLocalizations.of(context)!.wedShort,
+    AppLocalizations.of(context)!.thuShort,
+    AppLocalizations.of(context)!.friShort,
+    AppLocalizations.of(context)!.satShort,
+    AppLocalizations.of(context)!.sunShort,
   ];
   return dayShortNames[date.weekday - 1];
 }

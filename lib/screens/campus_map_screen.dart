@@ -31,12 +31,12 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     super.initState();
     // Koyu tema için map style yükle
     rootBundle.loadString('assets/map_styles/dark_map_style.json').then((
-      string,
-    ) {
+      string,)
+       {
       _darkMapStyle = string;
     });
     // iOS için timeout mekanizması / Timeout mechanism for iOS
-    Future.delayed(const Duration(seconds: 30), () {
+    Future.delayed(const Duration(seconds: 5), () {
       if (mounted && _isInitializing) {
         setState(() {
           _mapError = true;
