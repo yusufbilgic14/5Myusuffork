@@ -127,6 +127,7 @@ flutter:
   assets:
     - assets/images/
     - assets/msal_config.json
+    - assets/map_styles/dark_map_style.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
