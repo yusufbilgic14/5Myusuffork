@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../l10n/app_localizations.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({Key? key}) : super(key: key);
@@ -40,7 +41,11 @@ class _NotificationSettingsScreenState
     await prefs.setBool('clubNotifications', clubNotifications);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Bildirim ayarları kaydedildi.')),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.notificationSettingsSaved,
+          ),
+        ),
       );
       await Future.delayed(const Duration(milliseconds: 500));
       if (mounted) Navigator.pop(context);
@@ -51,7 +56,7 @@ class _NotificationSettingsScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bildirim Ayarları'),
+        title: Text(AppLocalizations.of(context)!.notificationSettings),
         backgroundColor: const Color(0xFF1E3A8A),
         foregroundColor: Colors.white,
       ),
@@ -61,28 +66,28 @@ class _NotificationSettingsScreenState
             padding: const EdgeInsets.all(24),
             children: [
               CheckboxListTile(
-                title: const Text('Etkinlik Bildirimleri'),
+                title: Text(AppLocalizations.of(context)!.eventNotifications),
                 value: eventNotifications,
                 onChanged: (val) {
                   setState(() => eventNotifications = val ?? false);
                 },
               ),
               CheckboxListTile(
-                title: const Text('Sınav Bildirimleri'),
+                title: Text(AppLocalizations.of(context)!.gradeNotifications),
                 value: gradeNotifications,
                 onChanged: (val) {
                   setState(() => gradeNotifications = val ?? false);
                 },
               ),
               CheckboxListTile(
-                title: const Text('Mesaj Bildirimleri'),
+                title: Text(AppLocalizations.of(context)!.messageNotifications),
                 value: messageNotifications,
                 onChanged: (val) {
                   setState(() => messageNotifications = val ?? false);
                 },
               ),
               CheckboxListTile(
-                title: const Text('Kulüp ve Topluluk Duyuruları'),
+                title: Text(AppLocalizations.of(context)!.clubNotifications),
                 value: clubNotifications,
                 onChanged: (val) {
                   setState(() => clubNotifications = val ?? false);
@@ -97,7 +102,7 @@ class _NotificationSettingsScreenState
               onPressed: _saveSettings,
               backgroundColor: const Color(0xFF1E3A8A),
               icon: const Icon(Icons.save),
-              label: const Text('Kaydet'),
+              label: Text(AppLocalizations.of(context)!.save),
             ),
           ),
         ],

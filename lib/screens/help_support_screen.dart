@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../l10n/app_localizations.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({Key? key}) : super(key: key);
@@ -59,7 +60,7 @@ class HelpSupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Yardım ve Destek'),
+        title: Text(AppLocalizations.of(context)!.helpSupport),
         backgroundColor: const Color(0xFF1E3A8A),
         foregroundColor: Colors.white,
       ),
@@ -68,33 +69,33 @@ class HelpSupportScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'İletişim',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.contact,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1E3A8A),
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Her türlü soru, görüş ve destek talepleriniz için aşağıdaki iletişim kanallarını kullanabilirsiniz.',
-              style: TextStyle(fontSize: 16),
+            Text(
+              AppLocalizations.of(context)!.contactDesc,
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 32),
             // Kavacık Kuzey Yerleşkesi
-            const Text(
-              'Kavacık Kuzey Yerleşkesi',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.kavacikNorth,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1E3A8A),
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Yerleşke; Medipol Üniversitesi Kavacık (Ana Yerleşke Rektörlük)',
-              style: TextStyle(fontSize: 16),
+            Text(
+              AppLocalizations.of(context)!.kavacikNorthDesc,
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 4),
             _buildContactRow(

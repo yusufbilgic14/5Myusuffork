@@ -5,6 +5,10 @@ import '../themes/app_themes.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import 'inbox_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
+import 'cafeteria_menu_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _autoAdvanceTimer;
   bool _showNotifications =
       false; // Bildirim popup'ını kontrol etmek için / To control notification popup
+  bool _showCafeteriaMenu = false; // Cafeteria popup'ı
 
   // Duyuru listesi / Announcements list
   final List<Map<String, String>> _announcements = [
@@ -238,6 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppThemes.getBackgroundColor(context),
       drawer: const AppDrawerWidget(
@@ -257,6 +263,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: _showNotifications ? 350 : 0,
                 child: _showNotifications
                     ? _buildNotificationPanel(context)
+                    : null,
+              ),
+
+              // Cafeteria paneli
+              AnimatedContainer(
+                duration: AppConstants.animationNormal,
+                curve: Curves.easeInOut,
+                height: _showCafeteriaMenu ? 400 : 0,
+                child: _showCafeteriaMenu
+                    ? _buildCafeteriaPanel(context)
                     : null,
               ),
 
@@ -298,6 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Modern header widget / Modern başlık widget
   Widget _buildModernHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -347,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hoş geldin,',
+                      l10n.homeWelcome,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.9),
                         fontSize: AppConstants.fontSizeMedium,
@@ -374,6 +391,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
+              ),
+
+              // Çatal-bıçak ikon butonu
+              IconButton(
+                icon: const Icon(Icons.restaurant, color: Colors.white),
+                tooltip: AppLocalizations.of(context)!.cafeteriaMenu,
+                onPressed: () {
+                  setState(() {
+                    _showCafeteriaMenu = !_showCafeteriaMenu;
+                    _showNotifications = false;
+                  });
+                },
               ),
 
               // Bildirim butonu / Notification button
@@ -434,6 +463,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Duyurular bölümü / Announcements section
   Widget _buildAnnouncementsSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -447,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(width: AppConstants.paddingSmall),
             Text(
-              'Duyurular',
+              l10n.announcements,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeXLarge,
                 fontWeight: FontWeight.bold,
@@ -460,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Tüm duyuruları göster / Show all announcements
               },
               child: Text(
-                'Tümünü Gör',
+                l10n.seeAll,
                 style: TextStyle(
                   color: AppThemes.getPrimaryColor(context),
                   fontWeight: FontWeight.w600,
@@ -649,6 +679,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Günün dersleri bölümü / Today's courses section
   Widget _buildTodaysCoursesSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -662,7 +693,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(width: AppConstants.paddingSmall),
             Text(
-              'Bugünün Dersleri',
+              l10n.todaysCourses,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeXLarge,
                 fontWeight: FontWeight.bold,
@@ -682,7 +713,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
               child: Text(
-                'Cuma, 24 Mayıs',
+                l10n.todayDate,
                 style: TextStyle(
                   color: AppThemes.getPrimaryColor(context),
                   fontSize: AppConstants.fontSizeSmall,
@@ -865,6 +896,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Bildirim paneli / Notification panel
   Widget _buildNotificationPanel(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
@@ -896,7 +928,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: AppConstants.paddingSmall),
                 Expanded(
                   child: Text(
-                    'Bildirimler',
+                    l10n.notifications,
                     style: TextStyle(
                       color: AppThemes.getPrimaryColor(context),
                       fontSize: AppConstants.fontSizeMedium,
@@ -914,7 +946,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   },
                   child: Text(
-                    'Tümünü Okundu İşaretle',
+                    l10n.markAllRead,
                     style: TextStyle(
                       color: AppThemes.getPrimaryColor(context),
                       fontSize: AppConstants.fontSizeSmall,
@@ -1112,6 +1144,154 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Cafeteria paneli widget'ı
+  Widget _buildCafeteriaPanel(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      elevation: 8,
+      color: theme.cardColor,
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(24),
+        bottomRight: Radius.circular(24),
+      ),
+      child: Stack(
+        children: [
+          // Panel içeriği: Sadece yazılı menü özeti
+          SizedBox(height: 400, child: _buildCafeteriaMenuSummary(context)),
+          // Kapatma butonu
+          Positioned(
+            right: 8,
+            top: 8,
+            child: IconButton(
+              icon: Icon(Icons.close, color: theme.iconTheme.color),
+              onPressed: () {
+                setState(() {
+                  _showCafeteriaMenu = false;
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Sadece yazılı menü özeti gösteren widget
+  Widget _buildCafeteriaMenuSummary(BuildContext context) {
+    final theme = Theme.of(context);
+    final now = DateTime.now();
+    final weekdayNames = [
+      AppLocalizations.of(context)!.mondayShort,
+      AppLocalizations.of(context)!.tuesdayShort,
+      AppLocalizations.of(context)!.wednesdayShort,
+      AppLocalizations.of(context)!.thursdayShort,
+      AppLocalizations.of(context)!.fridayShort,
+      AppLocalizations.of(context)!.saturdayShort,
+      AppLocalizations.of(context)!.sundayShort,
+    ];
+    // Örnek menü verisi (gerçek uygulamada API'den çekilebilir)
+    final menus = [
+      [
+        'Naneli Yoğurt Çorba 171 KCAL',
+        'Köfteli Izgara Patlıcan Beğendi ile 378 KCAL',
+        'Soslu Piliç But 335 KCAL',
+        'Sade Pirinç Pilavı 330 KCAL',
+        'Soslu Spagetti 276 KCAL',
+        'Kolatalı Vanilyalı Dondurma 207 KCAL',
+        'Salata Bar',
+        'Göbek Salata',
+        'Karışık Turşu',
+      ],
+      [
+        'Ezogelin Çorba 150 KCAL',
+        'Izgara Tavuk 320 KCAL',
+        'Fırın Makarna 250 KCAL',
+        'Pirinç Pilavı 300 KCAL',
+        'Mevsim Salata',
+        'Ayran',
+      ],
+      [
+        'Mercimek Çorba 140 KCAL',
+        'Etli Türlü 350 KCAL',
+        'Bulgur Pilavı 280 KCAL',
+        'Yoğurt',
+        'Çoban Salata',
+      ],
+      [
+        'Domates Çorba 120 KCAL',
+        'Karnıyarık 400 KCAL',
+        'Şehriyeli Pilav 290 KCAL',
+        'Cacık',
+        'Mevsim Meyve',
+      ],
+    ];
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(4, (i) {
+            final date = now.add(Duration(days: i));
+            final weekday = weekdayNames[date.weekday - 1];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.restaurant,
+                      color: AppThemes.getPrimaryColor(context),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      AppLocalizations.of(context)!.cafeteriaMenu,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: theme.textTheme.titleLarge?.color,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year} $weekday',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: theme.textTheme.bodyMedium?.color,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  AppLocalizations.of(context)!.lunch,
+                  style: TextStyle(
+                    color: Colors.green[700],
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ...menus[i % menus.length].map(
+                  (item) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Text(
+                      item,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                  ),
+                ),
+                if (i < 3) const Divider(height: 28),
+              ],
+            );
+          }),
         ),
       ),
     );

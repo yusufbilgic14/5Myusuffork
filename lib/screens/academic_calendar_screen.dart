@@ -3,6 +3,7 @@ import '../constants/app_constants.dart';
 import '../themes/app_themes.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
+import '../l10n/app_localizations.dart';
 
 /// Akademik Takvim Sayfası / Academic Calendar Screen
 class AcademicCalendarScreen extends StatefulWidget {
@@ -49,7 +50,8 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
       description: 'Program sonuçlarının öğrencilere duyurulması',
     ),
     AcademicEvent(
-      title: 'Registration Procedures on Double Major/Minor Programs for students',
+      title:
+          'Registration Procedures on Double Major/Minor Programs for students',
       titleTr: 'Öğrenciler için Çift Anadal/Yan Dal Kayıt İşlemleri',
       startDate: DateTime(2024, 9, 10),
       endDate: DateTime(2024, 9, 12),
@@ -57,7 +59,8 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
       description: 'Kabul edilen öğrencilerin kayıt işlemleri',
     ),
     AcademicEvent(
-      title: 'Registration Procedures on Double Major/Minor Programs for substitute students',
+      title:
+          'Registration Procedures on Double Major/Minor Programs for substitute students',
       titleTr: 'Yedek Öğrenciler için Çift Anadal/Yan Dal Kayıt İşlemleri',
       startDate: DateTime(2024, 9, 17),
       endDate: DateTime(2024, 9, 19),
@@ -89,7 +92,8 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
       description: 'Güz döneminin başlangıç ve bitiş tarihleri',
     ),
     AcademicEvent(
-      title: 'Fall Semester-Course Selection (For Associate and Undergraduate Programs)',
+      title:
+          'Fall Semester-Course Selection (For Associate and Undergraduate Programs)',
       titleTr: 'Güz Dönemi Ders Seçimi (Ön Lisans ve Lisans Programları)',
       startDate: DateTime(2024, 9, 24),
       endDate: DateTime(2024, 10, 4),
@@ -97,7 +101,8 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
       description: 'Güz dönemi için ders seçim işlemleri',
     ),
     AcademicEvent(
-      title: 'Fall Semester Add-Drop (For Associate and Undergraduate Programs)',
+      title:
+          'Fall Semester Add-Drop (For Associate and Undergraduate Programs)',
       titleTr: 'Güz Dönemi Ders Ekleme-Çıkarma (Ön Lisans ve Lisans)',
       startDate: DateTime(2024, 10, 5),
       endDate: DateTime(2024, 10, 11),
@@ -145,7 +150,8 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
       description: 'Geleneksel mezuniyet partisi',
     ),
     AcademicEvent(
-      title: 'Spring Semester Course Selection (For Associate and Undergraduate Programs)',
+      title:
+          'Spring Semester Course Selection (For Associate and Undergraduate Programs)',
       titleTr: 'Bahar Dönemi Ders Seçimi (Ön Lisans ve Lisans Programları)',
       startDate: DateTime(2025, 2, 8),
       endDate: DateTime(2025, 2, 14),
@@ -198,7 +204,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
       filtered = filtered.where((event) {
         return event.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
             event.titleTr.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            event.description.toLowerCase().contains(_searchQuery.toLowerCase());
+            event.description.toLowerCase().contains(
+              _searchQuery.toLowerCase(),
+            );
       }).toList();
     }
 
@@ -217,9 +225,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: AppConstants.textColorLight,
         elevation: 0,
-        title: const Text(
-          'Academic Calendar',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.academicCalendar,
+          style: const TextStyle(
             fontSize: AppConstants.fontSizeXLarge,
             fontWeight: FontWeight.w600,
           ),
@@ -237,16 +245,17 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
         ),
       ),
 
-      // Ana sayfa drawer'ı / Main drawer  
+      // Ana sayfa drawer'ı / Main drawer
       drawer: const AppDrawerWidget(
-        currentPageIndex: AppConstants.navIndexHome, // Academic Calendar için özel indeks yok, home kullanıyoruz
+        currentPageIndex: AppConstants
+            .navIndexHome, // Academic Calendar için özel indeks yok, home kullanıyoruz
       ),
 
       body: Column(
         children: [
           // Filtre çubuğu / Filter bar
           _buildFilterBar(),
-          
+
           // Ana içerik / Main content
           Expanded(
             child: _filteredEvents.isEmpty
@@ -258,7 +267,8 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
 
       // Alt navigasyon çubuğu / Bottom navigation bar
       bottomNavigationBar: const BottomNavigationWidget(
-        currentIndex: AppConstants.navIndexHome, // Academic Calendar için özel indeks yok
+        currentIndex:
+            AppConstants.navIndexHome, // Academic Calendar için özel indeks yok
       ),
     );
   }
@@ -296,13 +306,17 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
                 borderSide: BorderSide(
-                  color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+                  color: AppThemes.getSecondaryTextColor(
+                    context,
+                  ).withValues(alpha: 0.3),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
                 borderSide: BorderSide(
-                  color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+                  color: AppThemes.getSecondaryTextColor(
+                    context,
+                  ).withValues(alpha: 0.3),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -319,9 +333,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
               });
             },
           ),
-          
+
           const SizedBox(height: AppConstants.paddingSmall),
-          
+
           // Filtre butonları / Filter buttons
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -329,13 +343,19 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
               children: ['Tümü', 'Mevcut', 'Yaklaşan', 'Geçmiş'].map((filter) {
                 final isSelected = _selectedFilter == filter;
                 return Padding(
-                  padding: const EdgeInsets.only(right: AppConstants.paddingSmall),
+                  padding: const EdgeInsets.only(
+                    right: AppConstants.paddingSmall,
+                  ),
                   child: FilterChip(
                     label: Text(
                       filter,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : AppThemes.getTextColor(context),
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                        color: isSelected
+                            ? Colors.white
+                            : AppThemes.getTextColor(context),
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
                       ),
                     ),
                     selected: isSelected,
@@ -347,9 +367,11 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                       });
                     },
                     side: BorderSide(
-                      color: isSelected 
+                      color: isSelected
                           ? AppThemes.getPrimaryColor(context)
-                          : AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+                          : AppThemes.getSecondaryTextColor(
+                              context,
+                            ).withValues(alpha: 0.3),
                     ),
                   ),
                 );
@@ -376,10 +398,12 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
   // Etkinlik kartı widget'ı / Event card widget
   Widget _buildEventCard(AcademicEvent event) {
     final now = DateTime.now();
-    final isActive = event.startDate.isBefore(now.add(const Duration(days: 1))) &&
-        (event.endDate == null || event.endDate!.isAfter(now.subtract(const Duration(days: 1))));
+    final isActive =
+        event.startDate.isBefore(now.add(const Duration(days: 1))) &&
+        (event.endDate == null ||
+            event.endDate!.isAfter(now.subtract(const Duration(days: 1))));
     final isPast = event.endDate != null && event.endDate!.isBefore(now);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: AppConstants.paddingMedium),
       decoration: BoxDecoration(
@@ -406,7 +430,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                   ),
                   decoration: BoxDecoration(
                     color: event.category.color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                    borderRadius: BorderRadius.circular(
+                      AppConstants.radiusSmall,
+                    ),
                     border: Border.all(
                       color: event.category.color.withValues(alpha: 0.3),
                     ),
@@ -431,9 +457,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                     ],
                   ),
                 ),
-                
+
                 const Spacer(),
-                
+
                 // Durum badge / Status badge
                 if (isActive)
                   Container(
@@ -443,7 +469,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                     ),
                     decoration: BoxDecoration(
                       color: Colors.green.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.radiusSmall,
+                      ),
                     ),
                     child: const Text(
                       'Aktif',
@@ -462,7 +490,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                     ),
                     decoration: BoxDecoration(
                       color: Colors.grey.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.radiusSmall,
+                      ),
                     ),
                     child: const Text(
                       'Geçmiş',
@@ -475,9 +505,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                   ),
               ],
             ),
-            
+
             const SizedBox(height: AppConstants.paddingSmall),
-            
+
             // Etkinlik başlığı / Event title
             Text(
               event.titleTr,
@@ -487,9 +517,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                 color: AppThemes.getTextColor(context),
               ),
             ),
-            
+
             const SizedBox(height: 4),
-            
+
             // İngilizce başlık / English title
             Text(
               event.title,
@@ -500,9 +530,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                 fontStyle: FontStyle.italic,
               ),
             ),
-            
+
             const SizedBox(height: AppConstants.paddingSmall),
-            
+
             // Açıklama / Description
             Text(
               event.description,
@@ -511,28 +541,28 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                 color: AppThemes.getSecondaryTextColor(context),
               ),
             ),
-            
+
             const SizedBox(height: AppConstants.paddingSmall),
-            
+
             // Tarih bilgileri / Date information
             Row(
               children: [
                 // Başlangıç tarihi / Start date
                 Expanded(
                   child: _buildDateInfo(
-                    'Başlangıç',
+                    AppLocalizations.of(context)!.startDate,
                     event.startDate,
                     Icons.event_available,
                     Colors.blue,
                   ),
                 ),
-                
+
                 if (event.endDate != null) ...[
                   const SizedBox(width: AppConstants.paddingMedium),
                   // Bitiş tarihi / End date
                   Expanded(
                     child: _buildDateInfo(
-                      'Bitiş',
+                      AppLocalizations.of(context)!.endDate,
                       event.endDate!,
                       Icons.event_busy,
                       Colors.red,
@@ -548,7 +578,12 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
   }
 
   // Tarih bilgisi widget'ı / Date info widget
-  Widget _buildDateInfo(String label, DateTime date, IconData icon, Color color) {
+  Widget _buildDateInfo(
+    String label,
+    DateTime date,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       padding: const EdgeInsets.all(AppConstants.paddingSmall),
       decoration: BoxDecoration(
@@ -602,7 +637,7 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
             ),
             const SizedBox(height: AppConstants.paddingMedium),
             Text(
-              'Etkinlik Bulunamadı',
+              AppLocalizations.of(context)!.noEventsFound,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeXLarge,
                 fontWeight: FontWeight.bold,
@@ -611,7 +646,7 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
             ),
             const SizedBox(height: AppConstants.paddingSmall),
             Text(
-              'Seçili filtrelere uygun akademik takvim etkinliği bulunamadı.',
+              AppLocalizations.of(context)!.noEventsFilter,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeMedium,
@@ -635,12 +670,14 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                   vertical: AppConstants.paddingMedium,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    AppConstants.radiusMedium,
+                  ),
                 ),
               ),
-              child: const Text(
-                'Filtreleri Temizle',
-                style: TextStyle(
+              child: Text(
+                AppLocalizations.of(context)!.clearFilters,
+                style: const TextStyle(
                   fontSize: AppConstants.fontSizeMedium,
                   fontWeight: FontWeight.w600,
                 ),
@@ -655,10 +692,20 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
   // Tarihi formatla / Format date
   String _formatDate(DateTime date) {
     final months = [
-      'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-      'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+      'Ocak',
+      'Şubat',
+      'Mart',
+      'Nisan',
+      'Mayıs',
+      'Haziran',
+      'Temmuz',
+      'Ağustos',
+      'Eylül',
+      'Ekim',
+      'Kasım',
+      'Aralık',
     ];
-    
+
     return '${date.day} ${months[date.month - 1]} ${date.year}';
   }
 }

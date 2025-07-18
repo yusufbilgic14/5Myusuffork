@@ -7,13 +7,17 @@ import 'providers/authentication_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/initial_loading_screen.dart';
 import 'constants/app_constants.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart';
+import 'providers/language_provider.dart';
+import 'l10n/app_localizations.dart';
 
 /// Ana uygulama başlatma fonksiyonu / Main application startup function
 /// Firebase'i başlatır ve uygulamayı çalıştırır / Initializes Firebase and runs the app
 void main() async {
   // Flutter widget binding'ini başlat / Initialize Flutter widget binding
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     // Firebase'i başlat / Initialize Firebase
     print('🔥 Firebase initialization starting...');
@@ -21,7 +25,7 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     print('✅ Firebase initialized successfully');
-    
+
     // Uygulamayı çalıştır / Run the app
     runApp(const MyApp());
   } catch (e) {
@@ -39,23 +43,30 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // Tema sağlayıcı / Theme provider
-        ChangeNotifierProvider(
-          create: (context) => ThemeProvider(),
-        ),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
         // Kimlik doğrulama sağlayıcı / Authentication provider
-        ChangeNotifierProvider(
-          create: (context) => AuthenticationProvider(),
-        ),
+        ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
+        // Dil sağlayıcı / Language provider
+        ChangeNotifierProvider(create: (context) => LanguageProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, LanguageProvider>(
+        builder: (context, themeProvider, languageProvider, child) {
           return MaterialApp(
-            title: 'Medipol Üniversitesi',
+            title:
+                AppLocalizations.of(context)?.appTitle ??
+                'Medipol Üniversitesi',
             theme: themeProvider.currentTheme,
             home: const LoginScreen(),
             debugShowCheckedModeBanner: false,
-            // Genel renkler / Global colors
             color: AppConstants.primaryColor,
+            locale: languageProvider.locale,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
           );
         },
       ),

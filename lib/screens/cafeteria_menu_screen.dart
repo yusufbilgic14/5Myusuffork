@@ -3,6 +3,7 @@ import '../constants/app_constants.dart';
 import '../themes/app_themes.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
+import '../l10n/app_localizations.dart';
 
 /// Yemekhane Menü Sayfası / Cafeteria Menu Screen
 class CafeteriaMenuScreen extends StatefulWidget {
@@ -41,7 +42,8 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
     MealType.breakfast: [
       MenuItem(
         name: 'Menemen',
-        description: 'Domates, biber ve yumurta ile yapılan geleneksel kahvaltı',
+        description:
+            'Domates, biber ve yumurta ile yapılan geleneksel kahvaltı',
         price: 15.50,
         calories: 220,
         ingredients: ['Yumurta', 'Domates', 'Biber', 'Soğan', 'Zeytinyağı'],
@@ -140,7 +142,11 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
         calories: 185,
         ingredients: ['Marul', 'Roka', 'Avokado', 'Chia Tohumu', 'Zeytinyağı'],
         allergens: [],
-        dietaryInfo: [DietaryFilter.vegan, DietaryFilter.glutenFree, DietaryFilter.lowCalorie],
+        dietaryInfo: [
+          DietaryFilter.vegan,
+          DietaryFilter.glutenFree,
+          DietaryFilter.lowCalorie,
+        ],
         image: 'assets/images/vegan_salad.jpg',
       ),
     ],
@@ -154,16 +160,22 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
     if (_searchQuery.isNotEmpty) {
       items = items.where((item) {
         return item.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            item.description.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            item.ingredients.any((ingredient) =>
-                ingredient.toLowerCase().contains(_searchQuery.toLowerCase()));
+            item.description.toLowerCase().contains(
+              _searchQuery.toLowerCase(),
+            ) ||
+            item.ingredients.any(
+              (ingredient) =>
+                  ingredient.toLowerCase().contains(_searchQuery.toLowerCase()),
+            );
       }).toList();
     }
 
     // Diyet filtresi / Dietary filter
     if (_selectedFilters.isNotEmpty) {
       items = items.where((item) {
-        return _selectedFilters.every((filter) => item.dietaryInfo.contains(filter));
+        return _selectedFilters.every(
+          (filter) => item.dietaryInfo.contains(filter),
+        );
       }).toList();
     }
 
@@ -180,9 +192,9 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: AppConstants.textColorLight,
         elevation: 0,
-        title: const Text(
-          'Cafeteria Menu',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.cafeteriaMenu,
+          style: const TextStyle(
             fontSize: AppConstants.fontSizeXLarge,
             fontWeight: FontWeight.w600,
           ),
@@ -207,17 +219,27 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
             fontSize: AppConstants.fontSizeMedium,
             fontWeight: FontWeight.w600,
           ),
-          tabs: const [
-            Tab(text: 'Kahvaltı', icon: Icon(Icons.free_breakfast, size: 20)),
-            Tab(text: 'Öğle', icon: Icon(Icons.lunch_dining, size: 20)),
-            Tab(text: 'Akşam', icon: Icon(Icons.dinner_dining, size: 20)),
+          tabs: [
+            Tab(
+              text: AppLocalizations.of(context)!.breakfast,
+              icon: const Icon(Icons.free_breakfast, size: 20),
+            ),
+            Tab(
+              text: AppLocalizations.of(context)!.lunch,
+              icon: const Icon(Icons.lunch_dining, size: 20),
+            ),
+            Tab(
+              text: AppLocalizations.of(context)!.dinner,
+              icon: const Icon(Icons.dinner_dining, size: 20),
+            ),
           ],
         ),
       ),
 
       // Ana sayfa drawer'ı / Main drawer
       drawer: const AppDrawerWidget(
-        currentPageIndex: AppConstants.navIndexHome, // Cafeteria Menu için özel indeks yok, home kullanıyoruz
+        currentPageIndex: AppConstants
+            .navIndexHome, // Cafeteria Menu için özel indeks yok, home kullanıyoruz
       ),
 
       body: Column(
@@ -241,7 +263,8 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
 
       // Alt navigasyon çubuğu / Bottom navigation bar
       bottomNavigationBar: const BottomNavigationWidget(
-        currentIndex: AppConstants.navIndexHome, // Cafeteria Menu için özel indeks yok
+        currentIndex:
+            AppConstants.navIndexHome, // Cafeteria Menu için özel indeks yok
       ),
     );
   }
@@ -279,13 +302,17 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
                 borderSide: BorderSide(
-                  color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+                  color: AppThemes.getSecondaryTextColor(
+                    context,
+                  ).withValues(alpha: 0.3),
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
                 borderSide: BorderSide(
-                  color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+                  color: AppThemes.getSecondaryTextColor(
+                    context,
+                  ).withValues(alpha: 0.3),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
@@ -312,7 +339,9 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
               children: DietaryFilter.values.map((filter) {
                 final isSelected = _selectedFilters.contains(filter);
                 return Padding(
-                  padding: const EdgeInsets.only(right: AppConstants.paddingSmall),
+                  padding: const EdgeInsets.only(
+                    right: AppConstants.paddingSmall,
+                  ),
                   child: FilterChip(
                     label: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -320,14 +349,20 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                         Icon(
                           filter.icon,
                           size: 16,
-                          color: isSelected ? Colors.white : AppThemes.getTextColor(context),
+                          color: isSelected
+                              ? Colors.white
+                              : AppThemes.getTextColor(context),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           filter.name,
                           style: TextStyle(
-                            color: isSelected ? Colors.white : AppThemes.getTextColor(context),
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                            color: isSelected
+                                ? Colors.white
+                                : AppThemes.getTextColor(context),
+                            fontWeight: isSelected
+                                ? FontWeight.w600
+                                : FontWeight.w500,
                             fontSize: AppConstants.fontSizeSmall,
                           ),
                         ),
@@ -348,7 +383,9 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                     side: BorderSide(
                       color: isSelected
                           ? filter.color
-                          : AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+                          : AppThemes.getSecondaryTextColor(
+                              context,
+                            ).withValues(alpha: 0.3),
                     ),
                   ),
                 );
@@ -529,7 +566,9 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                       ),
                       decoration: BoxDecoration(
                         color: AppThemes.getPrimaryColor(context),
-                        borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                        borderRadius: BorderRadius.circular(
+                          AppConstants.radiusSmall,
+                        ),
                       ),
                       child: Text(
                         '₺${item.price.toStringAsFixed(2)}',
@@ -570,7 +609,9 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                         ),
                         decoration: BoxDecoration(
                           color: filter.color.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                          borderRadius: BorderRadius.circular(
+                            AppConstants.radiusSmall,
+                          ),
                           border: Border.all(
                             color: filter.color.withValues(alpha: 0.3),
                           ),
@@ -578,11 +619,7 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              filter.icon,
-                              size: 12,
-                              color: filter.color,
-                            ),
+                            Icon(filter.icon, size: 12, color: filter.color),
                             const SizedBox(width: 4),
                             Text(
                               filter.name,
@@ -603,7 +640,7 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                 // Malzemeler / Ingredients
                 ExpansionTile(
                   title: Text(
-                    'Malzemeler',
+                    AppLocalizations.of(context)!.ingredients,
                     style: TextStyle(
                       fontSize: AppConstants.fontSizeMedium,
                       fontWeight: FontWeight.w600,
@@ -624,7 +661,9 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                               fontSize: AppConstants.fontSizeSmall,
                             ),
                           ),
-                          backgroundColor: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+                          backgroundColor: AppThemes.getSecondaryTextColor(
+                            context,
+                          ).withValues(alpha: 0.1),
                           side: BorderSide.none,
                         );
                       }).toList(),
@@ -644,7 +683,9 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Alerjenler: ${item.allergens.join(', ')}',
+                        AppLocalizations.of(
+                          context,
+                        )!.allergens(item.allergens.join(', ')),
                         style: TextStyle(
                           fontSize: AppConstants.fontSizeSmall,
                           color: Colors.orange[700],
@@ -669,15 +710,15 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
 
     switch (mealType) {
       case MealType.breakfast:
-        mealName = 'kahvaltı';
+        mealName = AppLocalizations.of(context)!.breakfast;
         icon = Icons.free_breakfast;
         break;
       case MealType.lunch:
-        mealName = 'öğle yemeği';
+        mealName = AppLocalizations.of(context)!.lunch;
         icon = Icons.lunch_dining;
         break;
       case MealType.dinner:
-        mealName = 'akşam yemeği';
+        mealName = AppLocalizations.of(context)!.dinner;
         icon = Icons.dinner_dining;
         break;
     }
@@ -695,7 +736,7 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
             ),
             const SizedBox(height: AppConstants.paddingMedium),
             Text(
-              'Menü Bulunamadı',
+              AppLocalizations.of(context)!.menuNotFound,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeXLarge,
                 fontWeight: FontWeight.bold,
@@ -704,7 +745,7 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
             ),
             const SizedBox(height: AppConstants.paddingSmall),
             Text(
-              'Seçili filtrelere uygun $mealName menüsü bulunamadı.',
+              AppLocalizations.of(context)!.menuNotFoundFilter(mealName),
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeMedium,
@@ -728,7 +769,9 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
                   vertical: AppConstants.paddingMedium,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+                  borderRadius: BorderRadius.circular(
+                    AppConstants.radiusMedium,
+                  ),
                 ),
               ),
               child: const Text(
@@ -770,11 +813,7 @@ class MenuItem {
 }
 
 // Öğün türleri / Meal types
-enum MealType {
-  breakfast,
-  lunch,
-  dinner,
-}
+enum MealType { breakfast, lunch, dinner }
 
 // Diyet filtre seçenekleri / Dietary filter options
 enum DietaryFilter {
@@ -788,4 +827,4 @@ enum DietaryFilter {
   final String name;
   final IconData icon;
   final Color color;
-} 
+}
