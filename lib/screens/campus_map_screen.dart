@@ -764,6 +764,12 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     ThemeData theme,
   ) {
     final isSelected = _selectedIndex == index;
+    final Color unselectedColor = theme.brightness == Brightness.dark
+        ? Colors.white70
+        : theme.iconTheme.color ?? Colors.black;
+    final Color unselectedTextColor = theme.brightness == Brightness.dark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color ?? Colors.black;
     return GestureDetector(
       onTap: () {
         if (index != _selectedIndex) {
@@ -805,9 +811,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
         children: [
           Icon(
             icon,
-            color: isSelected
-                ? theme.colorScheme.primary
-                : theme.iconTheme.color,
+            color: isSelected ? theme.colorScheme.primary : unselectedColor,
             size: 24,
           ),
           const SizedBox(height: 4),
@@ -816,7 +820,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             style: TextStyle(
               color: isSelected
                   ? theme.colorScheme.primary
-                  : theme.textTheme.bodyMedium?.color,
+                  : unselectedTextColor,
               fontSize: 10,
               fontWeight: FontWeight.w500,
             ),
