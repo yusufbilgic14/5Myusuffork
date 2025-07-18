@@ -65,12 +65,18 @@ class _LoginScreenState extends State<LoginScreen>
         await launchUrl(url, mode: LaunchMode.externalApplication);
       } else {
         if (mounted) {
-          _showSnackBar('URL açılamadı / Could not open URL', isError: true);
+          _showSnackBar(
+            AppLocalizations.of(context)!.urlCouldNotOpen,
+            isError: true,
+          );
         }
       }
     } catch (e) {
       if (mounted) {
-        _showSnackBar('Bir hata oluştu / An error occurred', isError: true);
+        _showSnackBar(
+          AppLocalizations.of(context)!.anErrorOccurred,
+          isError: true,
+        );
       }
     }
   }
@@ -314,7 +320,7 @@ class _LoginScreenState extends State<LoginScreen>
               _buildModernTextField(
                 controller: _studentIdController,
                 label: l10n.studentId,
-                hint: '2024520001',
+                hint: AppLocalizations.of(context)!.studentIdHint,
                 icon: Icons.person_outline,
                 textInputType: TextInputType.text,
                 validator: (value) {

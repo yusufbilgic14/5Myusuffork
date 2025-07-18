@@ -626,4 +626,193 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get monthView => 'Ay Görünümü';
+
+  @override
+  String get campusQrTitle => 'Kampüs Giriş QR Kodu';
+
+  @override
+  String get validTime => 'Geçerli süre';
+
+  @override
+  String get refresh => 'Yenile';
+
+  @override
+  String get scanQr => 'QR Kodu Tarat';
+
+  @override
+  String get qrInfo => 'Bu QR kodu kampüs giriş tarayıcılarında kullanın. Güvenlik için kod otomatik olarak yenilenir.';
+
+  @override
+  String get secureCampusAccess => 'Güvenli kampüs erişimi';
+
+  @override
+  String get urlCouldNotOpen => 'URL açılamadı';
+
+  @override
+  String get anErrorOccurred => 'Bir hata oluştu';
+
+  @override
+  String get studentIdHint => '2024520001';
+
+  @override
+  String get inboxSubject1 => 'Öğrenci Belgesi Talebiniz Hakkında';
+
+  @override
+  String get inboxSender1 => 'Öğrenci İşleri';
+
+  @override
+  String get inboxContent1 => 'Sayın Elif Yılmaz,\n\n24.06.2025 tarihinde talepte bulunduğunuz öğrenci belgesi hazırlanmıştır. \n\nBelgenizi aşağıdaki şekillerde temin edebilirsiniz:\n• Öğrenci İşleri ofisimizden şahsen teslim alabilirsiniz\n• Kargo ile adresinize göndermek için ek ücret karşılığında başvurabilirsiniz\n\nOfis saatleri: Pazartesi-Cuma 09:00-17:00\n\nSaygılarımızla,\nÖğrenci İşleri Müdürlüğü';
+
+  @override
+  String get inboxSubject2 => 'Burs Başvuru Sonucu';
+
+  @override
+  String get inboxSender2 => 'Burs ve Yardım İşleri';
+
+  @override
+  String get inboxContent2 => 'Sayın Elif Yılmaz,\n\n2024-2025 Akademik Yılı Başarı Bursu başvurunuz değerlendirilmiş olup, başvurunuzun KABUL edildiğini bildiririz.\n\nBurs Detayları:\n• Burs Türü: Başarı Bursu (%25)\n• Geçerli Dönem: 2025-2026 Güz Dönemi\n• Ödeme Tarihi: Kayıt yenileme sonrası\n\nSaygılarımızla,\nBurs ve Yardım İşleri';
+
+  @override
+  String get requestCategoryAcademicSupport => 'Akademik Destek';
+
+  @override
+  String get requestCategoryTechnicalHelp => 'Teknik Yardım';
+
+  @override
+  String get requestCategoryLibrary => 'Kütüphane Hizmetleri';
+
+  @override
+  String get requestCategoryCafeteria => 'Yemekhane Hizmetleri';
+
+  @override
+  String get requestCategoryTransport => 'Ulaşım Talebi';
+
+  @override
+  String get requestCategorySecurity => 'Güvenlik Desteği';
+
+  @override
+  String get requestCategoryFinance => 'Mali İşler';
+
+  @override
+  String get requestCategoryGeneral => 'Genel Talep';
+
+  @override
+  String get feedbackCategoryBugReport => 'Hata Bildirimi';
+
+  @override
+  String get feedbackCategorySuggestion => 'Öneri';
+
+  @override
+  String get feedbackCategoryComplaint => 'Şikayet';
+
+  @override
+  String get feedbackCategoryAppreciation => 'Takdir';
+
+  @override
+  String get feedbackCategoryFeatureRequest => 'Özellik İsteği';
+
+  @override
+  String get feedbackCategoryAppReview => 'Uygulama Yorumu';
+
+  @override
+  String get feedbackCategoryGeneral => 'Genel Geri Bildirim';
+
+  @override
+  String get searchBuildingOrLocation => 'Bina veya konum ara...';
+
+  @override
+  String get routeInfo => 'Rota Bilgisi';
+
+  @override
+  String get yourCurrentLocation => 'Mevcut Konumunuz';
+
+  @override
+  String get engineeringFaculty => 'Mühendislik Fakültesi';
+
+  @override
+  String get walking => 'Yürüyüş';
+
+  @override
+  String get shuttle => 'Servis';
+
+  @override
+  String get bike => 'Bisiklet';
+
+  @override
+  String get startNavigation => 'Navigasyonu Başlat';
+
+  @override
+  String get mainBuilding => 'Ana Bina';
+
+  @override
+  String get northCampus => 'Kuzey Kampüs';
+
+  @override
+  String get kavacikBridgeBusStop => 'Kavacık Köprüsü Otobüs Durağı';
+
+  @override
+  String get asiaRoad => 'Asya Yolu';
+
+  @override
+  String get europeRoad => 'Avrupa Yolu';
+
+  @override
+  String get kavacikBusStop => 'Kavacık Otobüs Durağı';
+
+  @override
+  String get ataturkStreetBeykoz => 'Atatürk Caddesi/Beykoz';
+
+  @override
+  String get kavacikJunctionBusStop => 'Kavacık Sapağı Otobüs Durağı';
+
+  @override
+  String get kavacikJunctionBeykoz => 'Kavacık Sapağı/Beykoz';
+
+  @override
+  String get yeniRivaYoluBusStop => 'Yeni Riva Yolu Otobüs Durağı';
+
+  @override
+  String get mapLoading => 'Harita yükleniyor...';
+
+  @override
+  String get monShort => 'Pzt';
+
+  @override
+  String get tueShort => 'Sal';
+
+  @override
+  String get wedShort => 'Çar';
+
+  @override
+  String get thuShort => 'Per';
+
+  @override
+  String get friShort => 'Cum';
+
+  @override
+  String get satShort => 'Cmt';
+
+  @override
+  String get sunShort => 'Paz';
+
+  @override
+  String get monday => 'Pazartesi';
+
+  @override
+  String get tuesday => 'Salı';
+
+  @override
+  String get wednesday => 'Çarşamba';
+
+  @override
+  String get thursday => 'Perşembe';
+
+  @override
+  String get friday => 'Cuma';
+
+  @override
+  String get saturday => 'Cumartesi';
+
+  @override
+  String get sunday => 'Pazar';
 }

@@ -1324,6 +1324,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Month View'**
   String get monthView;
+
+  /// No description provided for @campusQrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Campus Entry QR Code'**
+  String get campusQrTitle;
+
+  /// No description provided for @validTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Valid time'**
+  String get validTime;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @scanQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR Code'**
+  String get scanQr;
+
+  /// No description provided for @qrInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this QR code at campus entry scanners. For security, the code is automatically refreshed.'**
+  String get qrInfo;
+
+  /// No description provided for @secureCampusAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure campus access'**
+  String get secureCampusAccess;
+
+  /// No description provided for @urlCouldNotOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open URL'**
+  String get urlCouldNotOpen;
+
+  /// No description provided for @anErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred'**
+  String get anErrorOccurred;
+
+  /// No description provided for @studentIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'2024520001'**
+  String get studentIdHint;
+
+  /// No description provided for @inboxSubject1.
+  ///
+  /// In en, this message translates to:
+  /// **'About Your Student Certificate Request'**
+  String get inboxSubject1;
+
+  /// No description provided for @inboxSender1.
+  ///
+  /// In en, this message translates to:
+  /// **'Student Affairs'**
+  String get inboxSender1;
+
+  /// No description provided for @inboxContent1.
+  ///
+  /// In en, this message translates to:
+  /// **'Dear Elif Yılmaz,\n\nYour student certificate requested on 24.06.2025 has been prepared.\n\nYou can obtain your document in the following ways:\n• You can personally collect it from our Student Affairs office\n• You can apply for delivery to your address by cargo for an additional fee\n\nOffice hours: Monday-Friday 09:00-17:00\n\nBest regards,\nStudent Affairs Directorate'**
+  String get inboxContent1;
+
+  /// No description provided for @inboxSubject2.
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship Application Result'**
+  String get inboxSubject2;
+
+  /// No description provided for @inboxSender2.
+  ///
+  /// In en, this message translates to:
+  /// **'Scholarship and Aid Office'**
+  String get inboxSender2;
+
+  /// No description provided for @inboxContent2.
+  ///
+  /// In en, this message translates to:
+  /// **'Dear Elif Yılmaz,\n\nYour 2024-2025 Academic Year Achievement Scholarship application has been evaluated and we inform you that your application has been ACCEPTED.\n\nScholarship Details:\n• Scholarship Type: Achievement Scholarship (25%)\n• Valid Term: 2025-2026 Fall Term\n• Payment Date: After registration renewal\n\nBest regards,\nScholarship and Aid Office'**
+  String get inboxContent2;
+
+  /// No description provided for @requestCategoryAcademicSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Academic Support'**
+  String get requestCategoryAcademicSupport;
+
+  /// No description provided for @requestCategoryTechnicalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Help'**
+  String get requestCategoryTechnicalHelp;
+
+  /// No description provided for @requestCategoryLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Library Services'**
+  String get requestCategoryLibrary;
+
+  /// No description provided for @requestCategoryCafeteria.
+  ///
+  /// In en, this message translates to:
+  /// **'Cafeteria Services'**
+  String get requestCategoryCafeteria;
+
+  /// No description provided for @requestCategoryTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Transport Request'**
+  String get requestCategoryTransport;
+
+  /// No description provided for @requestCategorySecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Support'**
+  String get requestCategorySecurity;
+
+  /// No description provided for @requestCategoryFinance.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial Affairs'**
+  String get requestCategoryFinance;
+
+  /// No description provided for @requestCategoryGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General Request'**
+  String get requestCategoryGeneral;
+
+  /// No description provided for @feedbackCategoryBugReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug Report'**
+  String get feedbackCategoryBugReport;
+
+  /// No description provided for @feedbackCategorySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion'**
+  String get feedbackCategorySuggestion;
+
+  /// No description provided for @feedbackCategoryComplaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint'**
+  String get feedbackCategoryComplaint;
+
+  /// No description provided for @feedbackCategoryAppreciation.
+  ///
+  /// In en, this message translates to:
+  /// **'Appreciation'**
+  String get feedbackCategoryAppreciation;
+
+  /// No description provided for @feedbackCategoryFeatureRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature Request'**
+  String get feedbackCategoryFeatureRequest;
+
+  /// No description provided for @feedbackCategoryAppReview.
+  ///
+  /// In en, this message translates to:
+  /// **'App Review'**
+  String get feedbackCategoryAppReview;
+
+  /// No description provided for @feedbackCategoryGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General Feedback'**
+  String get feedbackCategoryGeneral;
+
+  /// No description provided for @searchBuildingOrLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Search building or location...'**
+  String get searchBuildingOrLocation;
+
+  /// No description provided for @routeInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Route Info'**
+  String get routeInfo;
+
+  /// No description provided for @yourCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Current Location'**
+  String get yourCurrentLocation;
+
+  /// No description provided for @engineeringFaculty.
+  ///
+  /// In en, this message translates to:
+  /// **'Engineering Faculty'**
+  String get engineeringFaculty;
+
+  /// No description provided for @walking.
+  ///
+  /// In en, this message translates to:
+  /// **'Walking'**
+  String get walking;
+
+  /// No description provided for @shuttle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shuttle'**
+  String get shuttle;
+
+  /// No description provided for @bike.
+  ///
+  /// In en, this message translates to:
+  /// **'Bike'**
+  String get bike;
+
+  /// No description provided for @startNavigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Navigation'**
+  String get startNavigation;
+
+  /// No description provided for @mainBuilding.
+  ///
+  /// In en, this message translates to:
+  /// **'Main Building'**
+  String get mainBuilding;
+
+  /// No description provided for @northCampus.
+  ///
+  /// In en, this message translates to:
+  /// **'North Campus'**
+  String get northCampus;
+
+  /// No description provided for @kavacikBridgeBusStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Kavacık Bridge Bus Stop'**
+  String get kavacikBridgeBusStop;
+
+  /// No description provided for @asiaRoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Asia Road'**
+  String get asiaRoad;
+
+  /// No description provided for @europeRoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Europe Road'**
+  String get europeRoad;
+
+  /// No description provided for @kavacikBusStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Kavacık Bus Stop'**
+  String get kavacikBusStop;
+
+  /// No description provided for @ataturkStreetBeykoz.
+  ///
+  /// In en, this message translates to:
+  /// **'Ataturk Street/Beykoz'**
+  String get ataturkStreetBeykoz;
+
+  /// No description provided for @kavacikJunctionBusStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Kavacık Junction Bus Stop'**
+  String get kavacikJunctionBusStop;
+
+  /// No description provided for @kavacikJunctionBeykoz.
+  ///
+  /// In en, this message translates to:
+  /// **'Kavacik Junction/Beykoz'**
+  String get kavacikJunctionBeykoz;
+
+  /// No description provided for @yeniRivaYoluBusStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Yeni Riva Yolu Bus Stop'**
+  String get yeniRivaYoluBusStop;
+
+  /// No description provided for @mapLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Map is loading...'**
+  String get mapLoading;
+
+  /// No description provided for @monShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon'**
+  String get monShort;
+
+  /// No description provided for @tueShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Tue'**
+  String get tueShort;
+
+  /// No description provided for @wedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Wed'**
+  String get wedShort;
+
+  /// No description provided for @thuShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu'**
+  String get thuShort;
+
+  /// No description provided for @friShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Fri'**
+  String get friShort;
+
+  /// No description provided for @satShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sat'**
+  String get satShort;
+
+  /// No description provided for @sunShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sun'**
+  String get sunShort;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
