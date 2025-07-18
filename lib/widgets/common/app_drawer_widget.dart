@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:medipolapp/screens/profile_screen.dart';
+import 'package:medipolapp/screens/help_support_screen.dart';
+import 'package:medipolapp/screens/login_screen.dart';
 import '../../screens/inbox_screen.dart';
 import '../../screens/feedback_screen.dart';
 import '../../screens/course_grades_screen.dart';
 import '../../screens/upcoming_events_screen.dart';
 import '../../screens/academic_calendar_screen.dart';
 import '../../screens/cafeteria_menu_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Uygulama drawer widget'ı - Tüm sayfalarda kullanılan ana drawer / App drawer widget - Main drawer used across all pages
 class AppDrawerWidget extends StatelessWidget {
@@ -59,9 +62,9 @@ class AppDrawerWidget extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   // Kullanıcı adı / Username
-                  const Text(
-                    'Elif Yılmaz',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.userName,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -71,18 +74,18 @@ class AppDrawerWidget extends StatelessWidget {
                   const SizedBox(height: 4),
 
                   // Bölüm bilgisi / Department info
-                  const Text(
-                    'MIS',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.userDepartment,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
 
-                  const Text(
-                    '3rd Grade',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.userGrade,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -108,7 +111,7 @@ class AppDrawerWidget extends StatelessWidget {
                 children: [
                   _buildDrawerItem(
                     icon: Icons.event,
-                    title: 'Upcoming Events',
+                    title: AppLocalizations.of(context)!.upcomingEvents,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -121,7 +124,7 @@ class AppDrawerWidget extends StatelessWidget {
                   ),
                   _buildDrawerItem(
                     icon: Icons.school,
-                    title: 'Course Grades',
+                    title: AppLocalizations.of(context)!.courseGrades,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -134,7 +137,7 @@ class AppDrawerWidget extends StatelessWidget {
                   ),
                   _buildDrawerItem(
                     icon: Icons.date_range,
-                    title: 'Academic Calendar',
+                    title: AppLocalizations.of(context)!.academicCalendar,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -147,7 +150,7 @@ class AppDrawerWidget extends StatelessWidget {
                   ),
                   _buildDrawerItem(
                     icon: Icons.restaurant,
-                    title: 'Cafeteria Menu',
+                    title: AppLocalizations.of(context)!.cafeteriaMenu,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -161,7 +164,7 @@ class AppDrawerWidget extends StatelessWidget {
 
                   _buildDrawerItem(
                     icon: Icons.mail,
-                    title: 'Message Box',
+                    title: AppLocalizations.of(context)!.inbox,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -174,7 +177,7 @@ class AppDrawerWidget extends StatelessWidget {
                   ),
                   _buildDrawerItem(
                     icon: Icons.feedback,
-                    title: 'Feedbacks',
+                    title: AppLocalizations.of(context)!.feedback,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -187,7 +190,7 @@ class AppDrawerWidget extends StatelessWidget {
                   ),
                   _buildDrawerItem(
                     icon: Icons.settings,
-                    title: 'Settings',
+                    title: AppLocalizations.of(context)!.settings,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -208,19 +211,57 @@ class AppDrawerWidget extends StatelessWidget {
               children: [
                 _buildDrawerItem(
                   icon: Icons.help_outline,
-                  title: 'Help',
+                  title: AppLocalizations.of(context)!.helpSupport,
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: Help sayfasına git
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HelpSupportScreen(),
+                      ),
+                    );
                   },
                 ),
                 _buildDrawerItem(
                   icon: Icons.logout,
-                  title: 'Logout',
+                  title: AppLocalizations.of(context)!.logout,
                   textColor: Colors.red[300],
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: Logout işlemi
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text(AppLocalizations.of(context)!.logout),
+                          content: Text(
+                            AppLocalizations.of(context)!.logoutConfirm,
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text(AppLocalizations.of(context)!.cancel),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginScreen(),
+                                  ),
+                                  (route) => false,
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text(AppLocalizations.of(context)!.logout),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   },
                 ),
                 const SizedBox(height: 20),

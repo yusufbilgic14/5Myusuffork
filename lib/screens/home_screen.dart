@@ -5,6 +5,9 @@ import '../themes/app_themes.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import 'inbox_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -238,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppThemes.getBackgroundColor(context),
       drawer: const AppDrawerWidget(
@@ -298,6 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Modern header widget / Modern başlık widget
   Widget _buildModernHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -347,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hoş geldin,',
+                      l10n.homeWelcome,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.9),
                         fontSize: AppConstants.fontSizeMedium,
@@ -434,6 +439,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Duyurular bölümü / Announcements section
   Widget _buildAnnouncementsSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -447,7 +453,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(width: AppConstants.paddingSmall),
             Text(
-              'Duyurular',
+              l10n.announcements,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeXLarge,
                 fontWeight: FontWeight.bold,
@@ -460,7 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Tüm duyuruları göster / Show all announcements
               },
               child: Text(
-                'Tümünü Gör',
+                l10n.seeAll,
                 style: TextStyle(
                   color: AppThemes.getPrimaryColor(context),
                   fontWeight: FontWeight.w600,
@@ -649,6 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Günün dersleri bölümü / Today's courses section
   Widget _buildTodaysCoursesSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -662,7 +669,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(width: AppConstants.paddingSmall),
             Text(
-              'Bugünün Dersleri',
+              l10n.todaysCourses,
               style: TextStyle(
                 fontSize: AppConstants.fontSizeXLarge,
                 fontWeight: FontWeight.bold,
@@ -682,7 +689,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
               child: Text(
-                'Cuma, 24 Mayıs',
+                l10n.todayDate,
                 style: TextStyle(
                   color: AppThemes.getPrimaryColor(context),
                   fontSize: AppConstants.fontSizeSmall,
@@ -865,6 +872,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// Bildirim paneli / Notification panel
   Widget _buildNotificationPanel(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
@@ -896,7 +904,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: AppConstants.paddingSmall),
                 Expanded(
                   child: Text(
-                    'Bildirimler',
+                    l10n.notifications,
                     style: TextStyle(
                       color: AppThemes.getPrimaryColor(context),
                       fontSize: AppConstants.fontSizeMedium,
@@ -914,7 +922,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   },
                   child: Text(
-                    'Tümünü Okundu İşaretle',
+                    l10n.markAllRead,
                     style: TextStyle(
                       color: AppThemes.getPrimaryColor(context),
                       fontSize: AppConstants.fontSizeSmall,

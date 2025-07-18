@@ -8,6 +8,8 @@ import '../screens/profile_screen.dart';
 import '../screens/feedback_screen.dart';
 import '../screens/inbox_screen.dart';
 import '../screens/course_grades_screen.dart';
+import '../widgets/universal_map_widget.dart';
+import '../l10n/app_localizations.dart';
 
 /// Navigasyon hizmetleri / Navigation services
 class NavigationService {
@@ -69,6 +71,14 @@ class NavigationService {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const CourseGradesScreen()),
+    );
+  }
+
+  /// Universal Map Navigation (web ve mobil için)
+  static void navigateToMap(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UniversalMapWidget()),
     );
   }
 
@@ -134,8 +144,22 @@ class NavigationState {
   };
 
   /// Sayfa etiketi al / Get page label
-  static String getPageLabel(NavigationPage page) {
-    return _pageLabels[page] ?? 'Unknown';
+  static String getPageLabel(BuildContext context, NavigationPage page) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (page) {
+      case NavigationPage.navigation:
+        return l10n.navigation;
+      case NavigationPage.calendar:
+        return l10n.calendar;
+      case NavigationPage.home:
+        return l10n.home;
+      case NavigationPage.scan:
+        return l10n.scan;
+      case NavigationPage.profile:
+        return l10n.profile;
+      default:
+        return 'Unknown';
+    }
   }
 
   /// Sayfa ikonu al / Get page icon

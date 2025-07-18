@@ -45,7 +45,7 @@ dependencies:
   table_calendar: ^3.0.9
   
   # Date formatting utilities
-  intl: ^0.19.0
+  intl: ^0.20.2
   
   # Camera for QR scanning
   camera: ^0.11.0
@@ -57,7 +57,7 @@ dependencies:
   shared_preferences: ^2.2.2
   
   # Provider for state management
-  provider: ^6.1.1
+  provider: ^6.0.0
   
   # URL launcher for external links (forgotten password)
   url_launcher: ^6.2.2
@@ -75,7 +75,7 @@ dependencies:
   json_annotation: ^4.8.1
   
   # Firebase Core - Required for all Firebase services / Tüm Firebase servisleri için gerekli
-  firebase_core: ^2.24.2
+  firebase_core: ^2.0.0
   
   # Firebase Authentication for user management / Kullanıcı yönetimi için Firebase Authentication
   firebase_auth: ^4.15.3
@@ -97,6 +97,8 @@ dependencies:
   
   # Firebase Cloud Messaging for push notifications / Push bildirimleri için Firebase Cloud Messaging
   firebase_messaging: ^14.7.10
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -112,21 +114,16 @@ dev_dependencies:
   # JSON serialization build runner / JSON serileştirme build runner
   build_runner: ^2.4.7
   json_serializable: ^6.7.1
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
+  generate: true
   assets:
-    - assets/
     - assets/images/
     - assets/msal_config.json
   #   - images/a_dot_ham.jpeg
@@ -156,3 +153,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/medipol_logo.png"

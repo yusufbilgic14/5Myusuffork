@@ -11,6 +11,7 @@ import '../screens/login_screen.dart'; // LoginScreen importu eklendi
 import 'notification_settings_screen.dart'; // Bildirim ayarları ekranı importu
 import 'help_support_screen.dart'; // Yardım ve Destek ekranı importu
 import 'kampuse_ulasim_screen.dart'; // Kampüse Ulaşım ekranı importu
+import '../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,9 +33,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: AppConstants.textColorLight,
         elevation: 0,
-        title: const Text(
-          'Profile',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.profile,
+          style: const TextStyle(
             fontSize: AppConstants.fontSizeXLarge,
             fontWeight: FontWeight.w600,
           ),
@@ -71,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // İstatistik kartları başlığı / Stats cards title
               Text(
-                'Hızlı İstatistikler',
+                AppLocalizations.of(context)!.quickStats,
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeXLarge,
                   fontWeight: FontWeight.bold,
@@ -82,13 +83,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: AppConstants.paddingMedium),
 
               // Yatay kaydırılabilir istatistik kartları / Horizontal scrollable stats cards
-              _buildStatsCards(),
+              _buildStatsCards(context),
 
               const SizedBox(height: AppConstants.paddingXLarge),
 
               // Menü öğeleri başlığı / Menu items title
               Text(
-                'Hesap Ayarları',
+                AppLocalizations.of(context)!.accountSettings,
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeXLarge,
                   fontWeight: FontWeight.bold,
@@ -131,36 +132,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // İstatistik kartları / Stats cards
-  Widget _buildStatsCards() {
+  Widget _buildStatsCards(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
-      height: 94, // Reduced height to prevent overflow
+      height: 94,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
           _buildStatCard(
             icon: Icons.event,
-            title: 'Katılınan Etkinlik',
+            title: l10n.statsEvents,
             value: '12',
             color: Colors.blue,
           ),
           const SizedBox(width: 12),
           _buildStatCard(
             icon: Icons.school,
-            title: 'GPA',
+            title: l10n.statsGpa,
             value: '3.67',
             color: Colors.green,
           ),
           const SizedBox(width: 12),
           _buildStatCard(
             icon: Icons.feedback,
-            title: 'Şikayet Sayısı',
+            title: l10n.statsComplaints,
             value: '2',
             color: Colors.orange,
           ),
           const SizedBox(width: 12),
           _buildStatCard(
             icon: Icons.assignment,
-            title: 'Tamamlanan Ödev',
+            title: l10n.statsAssignments,
             value: '28',
             color: Colors.purple,
           ),
@@ -241,8 +243,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.notifications,
-            title: 'Bildirim Ayarları',
-            subtitle: 'Hangi bildirimleri alacağınızı seçin',
+            title: AppLocalizations.of(context)!.notificationSettings,
+            subtitle: AppLocalizations.of(context)!.notificationSettingsDesc,
             onTap: () {
               Navigator.push(
                 context,
@@ -255,8 +257,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.help,
-            title: 'Yardım ve Destek',
-            subtitle: 'SSS ve iletişim bilgileri',
+            title: AppLocalizations.of(context)!.helpSupport,
+            subtitle: AppLocalizations.of(context)!.helpSupportDesc,
             onTap: () {
               Navigator.push(
                 context,
@@ -269,8 +271,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.directions_bus,
-            title: 'Kampüse Ulaşım',
-            subtitle: 'Hat ve güzergah bilgileri',
+            title: AppLocalizations.of(context)!.campusTransport,
+            subtitle: AppLocalizations.of(context)!.campusTransportDesc,
             onTap: () {
               Navigator.push(
                 context,
@@ -285,8 +287,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.logout,
-            title: 'Çıkış Yap',
-            subtitle: 'Hesabınızdan güvenli şekilde çıkış yapın',
+            title: AppLocalizations.of(context)!.logout,
+            subtitle: AppLocalizations.of(context)!.logoutDesc,
             iconColor: Colors.red,
             textColor: Colors.red,
             onTap: () {
@@ -371,7 +373,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           title: Text(
-            'Tema',
+            AppLocalizations.of(context)!.theme,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -379,7 +381,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           subtitle: Text(
-            themeProvider.currentThemeName,
+            AppLocalizations.of(context)!.themeDesc,
             style: TextStyle(
               fontSize: 12,
               color: AppThemes.getSecondaryTextColor(context),
@@ -416,17 +418,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text(
-            'Çıkış Yap',
-            style: TextStyle(color: AppConstants.primaryColor),
+          title: Text(
+            AppLocalizations.of(context)!.logout,
+            style: const TextStyle(color: AppConstants.primaryColor),
           ),
-          content: const Text(
-            'Hesabınızdan çıkış yapmak istediğinizden emin misiniz?',
-          ),
+          content: Text(AppLocalizations.of(context)!.logoutConfirm),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('İptal'),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -442,7 +442,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('Çıkış Yap'),
+              child: Text(AppLocalizations.of(context)!.logout),
             ),
           ],
         );
