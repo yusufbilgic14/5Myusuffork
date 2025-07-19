@@ -34,23 +34,41 @@ class HelpSupportScreen extends StatelessWidget {
     required String value,
     void Function()? onTap,
   }) {
+    final isPhone = label.toLowerCase().contains('telefon');
+    final phoneNumber = value.replaceAll(RegExp(r'[^0-9]'), '');
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: const Color(0xFF1E3A8A)),
         const SizedBox(width: 12),
         Expanded(
-          child: GestureDetector(
-            onTap: onTap,
-            child: Text(
-              '$label $value',
-              style: TextStyle(
-                fontSize: 16,
-                decoration: onTap != null ? TextDecoration.underline : null,
-                color: onTap != null ? const Color(0xFF1E3A8A) : Colors.black,
-              ),
-            ),
-          ),
+          child: isPhone
+              ? GestureDetector(
+                  onTap: () => _launchPhone(phoneNumber),
+                  child: Text(
+                    '$label $value',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      decoration: TextDecoration.underline,
+                      color: Color(0xFF1E3A8A),
+                    ),
+                  ),
+                )
+              : GestureDetector(
+                  onTap: onTap,
+                  child: Text(
+                    '$label $value',
+                    style: TextStyle(
+                      fontSize: 16,
+                      decoration: onTap != null
+                          ? TextDecoration.underline
+                          : null,
+                      color: onTap != null
+                          ? const Color(0xFF1E3A8A)
+                          : Colors.black,
+                    ),
+                  ),
+                ),
         ),
       ],
     );
