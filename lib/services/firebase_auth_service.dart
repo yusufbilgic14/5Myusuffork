@@ -221,9 +221,11 @@ class FirebaseAuthService {
       // Geçici olarak kullanıcıyı sakla / Temporarily store the user
       _currentAppUser = appUser;
       
-      // TODO: Firebase'e kullanıcı kaydet
-      // TODO: Save user to Firebase
-      // await _createOrUpdateUserDocument(appUser, microsoftUserData, accessToken);
+      // Firebase'e kullanıcı kaydet / Save user to Firebase
+      await _createOrUpdateUserDocument(appUser, microsoftUserData, accessToken);
+      
+      // Sistem koleksiyonlarını oluştur / Create system collections
+      await _createSystemCollectionsIfNeeded();
       
       // Token'ları güvenli şekilde sakla / Store tokens securely
       await _storeAuthTokens(accessToken, idToken);
@@ -378,6 +380,184 @@ class FirebaseAuthService {
       print('❌ FirebaseAuthService: Failed to configure Firebase - $e');
       _emitAuthState(FirebaseAuthState.error('Firebase konfigürasyon hatası / Firebase configuration error'));
       rethrow;
+    }
+  }
+
+  /// Firebase'e kullanıcı belgesi oluştur veya güncelle
+  /// Create or update user document in Firebase
+  Future<void> _createOrUpdateUserDocument(
+    AppUser appUser, 
+    Map<String, dynamic> microsoftUserData, 
+    String accessToken
+  ) async {
+    try {
+      if (!_isFirebaseConfigured || _firestore == null) {
+        print('⚠️ Firebase not configured, skipping user document creation');
+        return;
+      }
+
+      final userDocRef = _firestore!.collection('users').doc(appUser.id);
+      
+      // Check if user document already exists
+      final docSnapshot = await userDocRef.get();
+      final now = FieldValue.serverTimestamp();
+      
+      if (docSnapshot.exists) {
+        // Update existing user
+        await userDocRef.update({
+          'displayName': appUser.displayName,
+          'email': appUser.email,
+          'lastLoginAt': now,
+          'lastActiveAt': now,
+          'updatedAt': now,
+        });
+        print('✅ Updated existing user document in Firebase');
+      } else {
+        // Create new user document
+        await userDocRef.set({
+          // Microsoft OAuth Data
+          'microsoftId': microsoftUserData['id'] ?? '',
+          'email': appUser.email,
+          'displayName': appUser.displayName,
+          'firstName': microsoftUserData['givenName'] ?? '',
+          'lastName': microsoftUserData['surname'] ?? '',
+          'userPrincipalName': microsoftUserData['userPrincipalName'] ?? appUser.email,
+          
+          // University-specific Data (will be populated later)
+          'studentId': null,
+          'employeeId': null,
+          'department': null,
+          'faculty': null,
+          'year': null,
+          'semester': null,
+          
+          // System Data
+          'role': 'student', // Default role
+          'permissions': ['read_announcements', 'read_calendar', 'read_cafeteria'],
+          'isActive': true,
+          
+          // Preferences
+          'preferences': {
+            'language': 'tr',
+            'notifications': {
+              'announcements': true,
+              'grades': true,
+              'cafeteria': true,
+              'events': true,
+              'pushEnabled': true,
+              'emailEnabled': true,
+            },
+            'theme': 'system',
+            'timezone': 'Europe/Istanbul',
+          },
+          
+          // Profile Data
+          'profile': {
+            'profilePhotoUrl': null,
+            'bio': null,
+            'phoneNumber': null,
+            'emergencyContact': null,
+            'socialLinks': null,
+          },
+          
+          // Timestamps
+          'createdAt': now,
+          'updatedAt': now,
+          'lastLoginAt': now,
+          'lastActiveAt': now,
+        });
+        print('✅ Created new user document in Firebase');
+      }
+    } catch (e) {
+      print('❌ Failed to create/update user document: $e');
+      // Don't rethrow to avoid breaking authentication flow
+      // rethrow;
+    }
+  }
+
+  /// Sistem koleksiyonlarını oluştur (sadece ilk kurulumda)
+  /// Create system collections (only on first setup)
+  Future<void> _createSystemCollectionsIfNeeded() async {
+    try {
+      if (!_isFirebaseConfigured || _firestore == null) {
+        print('⚠️ Firebase not configured, skipping system collections creation');
+        return;
+      }
+
+      // Check if app_config already exists
+      final appConfigRef = _firestore!.collection('system').doc('app_config');
+      final appConfigSnapshot = await appConfigRef.get();
+      
+      if (!appConfigSnapshot.exists) {
+        // Create initial system configuration
+        await appConfigRef.set({
+          'maintenanceMode': false,
+          'minimumAppVersion': '1.0.0',
+          'forceUpdateVersion': '1.0.0',
+          'supportedLanguages': ['tr', 'en'],
+          'defaultLanguage': 'tr',
+          'timezone': 'Europe/Istanbul',
+          'academicYear': '2024-2025',
+          'currentSemester': 1,
+          'semesterStartDate': FieldValue.serverTimestamp(),
+          'semesterEndDate': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        print('✅ Created initial app_config document');
+      }
+
+      // Create feature flags if not exist
+      final featureFlagsRef = _firestore!.collection('system').doc('feature_flags');
+      final featureFlagsSnapshot = await featureFlagsRef.get();
+      
+      if (!featureFlagsSnapshot.exists) {
+        await featureFlagsRef.set({
+          'gradesEnabled': true,
+          'cafeteriaEnabled': true,
+          'calendarEnabled': true,
+          'notificationsEnabled': true,
+          'chatEnabled': false,
+          'fileUploadsEnabled': true,
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        print('✅ Created initial feature_flags document');
+      }
+
+      // Create university data if not exist
+      final universityDataRef = _firestore!.collection('system').doc('university_data');
+      final universityDataSnapshot = await universityDataRef.get();
+      
+      if (!universityDataSnapshot.exists) {
+        await universityDataRef.set({
+          'name': 'İstanbul Medipol Üniversitesi',
+          'nameEn': 'Istanbul Medipol University',
+          'address': 'Göztepe Mahallesi, Atatürk Caddesi No:40/16, 34815 Beykoz/İstanbul',
+          'phone': '+90 216 681 51 00',
+          'email': 'info@medipol.edu.tr',
+          'website': 'https://www.medipol.edu.tr',
+          'campuses': {
+            'kavacik': {
+              'name': 'Kavacık Kampüsü',
+              'address': 'Kavacık, Beykoz, İstanbul',
+              'coordinates': {
+                'latitude': 41.088612162240274,
+                'longitude': 29.08920602676745,
+              }
+            }
+          },
+          'departments': ['Bilgisayar Mühendisliği', 'Tıp', 'Hukuk', 'İşletme'],
+          'faculties': ['Mühendislik ve Doğa Bilimleri', 'Tıp', 'Hukuk', 'İşletme ve Yönetim Bilimleri'],
+          'createdAt': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+        print('✅ Created initial university_data document');
+      }
+
+    } catch (e) {
+      print('❌ Failed to create system collections: $e');
+      // Don't rethrow to avoid breaking authentication flow
     }
   }
 
