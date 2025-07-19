@@ -24,261 +24,287 @@ class AppDrawerWidget extends StatelessWidget {
 
   // Sidebar drawer oluştur / Build sidebar drawer
   Widget _buildSideDrawer(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final gradient = isDark
+        ? const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF181F2A), Color(0xFF1E3A8A)],
+          )
+        : const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1E3A8A), Color(0xFF2563EB)],
+          );
+    final boxShadow = [
+      BoxShadow(
+        color: isDark
+            ? Colors.black.withOpacity(0.25)
+            : const Color(0xFF1E3A8A).withOpacity(0.13),
+        blurRadius: 16,
+        offset: const Offset(0, 6),
+      ),
+    ];
     return Drawer(
-      backgroundColor: const Color(0xFF1E3A8A),
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Üst profil bölümü / Top profile section
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Profil resmi / Profile picture
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/images/elifyilmaz.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.person,
-                              color: Colors.grey,
-                              size: 40,
-                            ),
-                          );
-                        },
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: gradient,
+          boxShadow: boxShadow,
+          borderRadius: const BorderRadius.only(
+            topRight: Radius.circular(0),
+            bottomLeft: Radius.circular(18),
+            bottomRight: Radius.circular(18),
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Üst profil bölümü / Top profile section
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    // Profil resmi / Profile picture
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/elifyilmaz.png',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey[300],
+                              child: const Icon(
+                                Icons.person,
+                                color: Colors.grey,
+                                size: 40,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Kullanıcı adı / Username
-                  Text(
-                    AppLocalizations.of(context)!.userName,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                    const SizedBox(height: 12),
+                    Text(
+                      AppLocalizations.of(context)!.userName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  // Bölüm bilgisi / Department info
-                  Text(
-                    AppLocalizations.of(context)!.userDepartment,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 4),
+                    Text(
+                      AppLocalizations.of(context)!.userDepartment,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-
-                  Text(
-                    AppLocalizations.of(context)!.userGrade,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
+                    Text(
+                      AppLocalizations.of(context)!.userGrade,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            // Ayırıcı çizgi / Divider line
-            Container(
-              height: 1,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              color: Colors.white.withValues(alpha: 0.3),
-            ),
+              // Ayırıcı çizgi / Divider line
+              Container(
+                height: 1,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                color: Colors.white.withValues(alpha: 0.3),
+              ),
 
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // Menü öğeleri / Menu items
-            Expanded(
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  _buildDrawerItem(
-                    icon: Icons.event,
-                    title: AppLocalizations.of(context)!.upcomingEvents,
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const UpcomingEventsScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.school,
-                    title: AppLocalizations.of(context)!.courseGrades,
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CourseGradesScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.date_range,
-                    title: AppLocalizations.of(context)!.academicCalendar,
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AcademicCalendarScreen(),
-                        ),
-                      );
-                    },
-                  ),
+              // Menü öğeleri / Menu items
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _buildDrawerItem(
+                      icon: Icons.event,
+                      title: AppLocalizations.of(context)!.upcomingEvents,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const UpcomingEventsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.school,
+                      title: AppLocalizations.of(context)!.courseGrades,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CourseGradesScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.date_range,
+                      title: AppLocalizations.of(context)!.academicCalendar,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const AcademicCalendarScreen(),
+                          ),
+                        );
+                      },
+                    ),
 
-                  _buildDrawerItem(
-                    icon: Icons.mail,
-                    title: AppLocalizations.of(context)!.inbox,
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const InboxScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildDrawerItem(
-                    icon: Icons.feedback,
-                    title: AppLocalizations.of(context)!.feedback,
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FeedbackScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  // Yardım ve Destek
-                  _buildDrawerItem(
-                    icon: Icons.help_outline,
-                    title: AppLocalizations.of(context)!.helpSupport,
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HelpSupportScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  // Çıkış Yap
-                  _buildDrawerItem(
-                    icon: Icons.logout,
-                    title: AppLocalizations.of(context)!.logout,
-                    textColor: Colors.red[300],
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text(AppLocalizations.of(context)!.logout),
-                            content: Text(
-                              AppLocalizations.of(context)!.logoutConfirm,
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text(
-                                  AppLocalizations.of(context)!.cancel,
-                                ),
+                    _buildDrawerItem(
+                      icon: Icons.mail,
+                      title: AppLocalizations.of(context)!.inbox,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const InboxScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildDrawerItem(
+                      icon: Icons.feedback,
+                      title: AppLocalizations.of(context)!.feedback,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const FeedbackScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    // Yardım ve Destek
+                    _buildDrawerItem(
+                      icon: Icons.help_outline,
+                      title: AppLocalizations.of(context)!.helpSupport,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const HelpSupportScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    // Çıkış Yap
+                    _buildDrawerItem(
+                      icon: Icons.logout,
+                      title: AppLocalizations.of(context)!.logout,
+                      textColor: Colors.red[300],
+                      onTap: () {
+                        Navigator.pop(context);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text(AppLocalizations.of(context)!.logout),
+                              content: Text(
+                                AppLocalizations.of(context)!.logoutConfirm,
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const LoginScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  foregroundColor: Colors.white,
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.cancel,
+                                  ),
                                 ),
-                                child: Text(
-                                  AppLocalizations.of(context)!.logout,
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginScreen(),
+                                      ),
+                                      (route) => false,
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: Text(
+                                    AppLocalizations.of(context)!.logout,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ],
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            // Sosyal medya ikonları en alta sabit
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0, top: 4.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildSocialIcon(
-                    context,
-                    'assets/images/facebook.png',
-                    'https://www.facebook.com/medipoluniversitesi',
-                  ),
-                  const SizedBox(width: 10),
-                  _buildSocialIcon(
-                    context,
-                    'assets/images/twitter.png',
-                    'https://x.com/medipolunv',
-                  ),
-                  const SizedBox(width: 10),
-                  _buildSocialIcon(
-                    context,
-                    'assets/images/youtube.png',
-                    'https://www.youtube.com/medipoluniversitesi',
-                  ),
-                  const SizedBox(width: 10),
-                  _buildSocialIcon(
-                    context,
-                    'assets/images/linkedin.jpg',
-                    'https://www.linkedin.com/school/medipoluniversitesi/',
-                  ),
-                  const SizedBox(width: 10),
-                  _buildSocialIcon(
-                    context,
-                    'assets/images/instagram.jpg',
-                    'https://www.instagram.com/medipolunv/',
-                  ),
-                ],
+              // Sosyal medya ikonları en alta sabit
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0, top: 4.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildSocialIcon(
+                      context,
+                      'assets/images/facebook.png',
+                      'https://www.facebook.com/medipoluniversitesi',
+                    ),
+                    const SizedBox(width: 10),
+                    _buildSocialIcon(
+                      context,
+                      'assets/images/twitter.png',
+                      'https://x.com/medipolunv',
+                    ),
+                    const SizedBox(width: 10),
+                    _buildSocialIcon(
+                      context,
+                      'assets/images/youtube.png',
+                      'https://www.youtube.com/medipoluniversitesi',
+                    ),
+                    const SizedBox(width: 10),
+                    _buildSocialIcon(
+                      context,
+                      'assets/images/linkedin.jpg',
+                      'https://www.linkedin.com/school/medipoluniversitesi/',
+                    ),
+                    const SizedBox(width: 10),
+                    _buildSocialIcon(
+                      context,
+                      'assets/images/instagram.jpg',
+                      'https://www.instagram.com/medipolunv/',
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

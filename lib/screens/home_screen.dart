@@ -309,10 +309,12 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               setState(() {
                 _showNotifications = !_showNotifications;
+                _showCafeteriaMenu = false;
               });
             },
           ),
         ],
+        centerTitle: false,
       ),
       body: Column(
         children: [
