@@ -277,10 +277,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: AppConstants.primaryColor.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
-              child: const Icon(Icons.language, color: Colors.blue, size: 20),
+              child: Icon(
+                Icons.language,
+                color: AppConstants.primaryColor,
+                size: 20,
+              ),
             ),
             title: Text(
               AppLocalizations.of(context)!.language,
