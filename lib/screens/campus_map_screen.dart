@@ -31,7 +31,11 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   @override
   void initState() {
     super.initState();
-
+    _loadDarkMapStyle();
+    
+    // Set timeout for map initialization
+    _timeoutTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted) {
         setState(() {
           _mapError = true;
           _isInitializing = false;
@@ -48,19 +52,11 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   }
 
   // Koyu tema map style'ını yükle - hata durumunda sessizce devam et
-  void _loadDarkMapStyle() {
+  Future<void> _loadDarkMapStyle() async {
     try {
-      rootBundle.loadString('assets/map_styles/dark_map_style.json').then((
-        string,
-      ) {
-        _darkMapStyle = string;
-      }).catchError((error) {
-        // Asset yoksa varsayılan dark theme kullan
-        debugPrint('Dark map style asset not found, using default: $error');
-        _darkMapStyle = null;
-      });
+      _darkMapStyle = await rootBundle.loadString('assets/map_styles/dark_map_style.json');
     } catch (e) {
-      debugPrint('Error loading dark map style: $e');
+      debugPrint('Dark map style could not be loaded: $e');
       _darkMapStyle = null;
     }
   }
@@ -194,7 +190,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: theme.shadowColor.withOpacity(0.08),
+                    color: theme.shadowColor.withValues(alpha: 0.08),
                     offset: const Offset(0, 2),
                     blurRadius: 8,
                   ),
@@ -227,7 +223,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: theme.shadowColor.withOpacity(0.08),
+                  color: theme.shadowColor.withValues(alpha: 0.08),
                   offset: const Offset(0, 2),
                   blurRadius: 8,
                 ),
@@ -255,7 +251,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: theme.shadowColor.withOpacity(0.08),
+              color: theme.shadowColor.withValues(alpha: 0.08),
               offset: const Offset(0, 2),
               blurRadius: 8,
             ),
@@ -569,14 +565,14 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             Icon(
               Icons.map_outlined,
               size: 80,
-              color: theme.iconTheme.color?.withOpacity(0.3),
+              color: theme.iconTheme.color?.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 20),
             Text(
               'Web için harita desteği yakında!',
               style: TextStyle(
                 fontSize: 20,
-                color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
+                color: theme.textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 8),
@@ -584,7 +580,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               'Mobil uygulamada harita tam fonksiyoneldir.',
               style: TextStyle(
                 fontSize: 14,
-                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
               ),
             ),
           ],
@@ -595,17 +591,55 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
       return _buildMapErrorWidget(theme);
     }
 
-          ),
-          markers: _showShuttleLayer
-              ? {..._buildingMarkers, ..._shuttleStops}
-              : _buildingMarkers,
-          myLocationEnabled: true,
-          myLocationButtonEnabled: false,
-          zoomControlsEnabled: false,
-          mapToolbarEnabled: false,
-        ),
-
+    return GoogleMap(
+      onMapCreated: _onMapCreated,
+      initialCameraPosition: const CameraPosition(
+        target: _medipolCenter,
+        zoom: 15.0,
+      ),
+      style: theme.brightness == Brightness.dark ? _darkMapStyle : null,
+      markers: _showShuttleLayer
+          ? <Marker>{..._buildingMarkers(context), ..._shuttleStops(context)}
+          : _buildingMarkers(context),
+      myLocationEnabled: true,
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      mapToolbarEnabled: false,
     );
+  }
+
+  // Google Maps controller callback / Google Maps kontrolcü geri çağırması
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    if (mounted) {
+      setState(() {
+        _isInitializing = false;
+        _mapError = false;
+      });
+    }
+    _timeoutTimer?.cancel();
+  }
+
+  // Harita yeniden başlatma metodu / Map reinitialization method
+  void _initializeMap() {
+    if (mounted) {
+      setState(() {
+        _isInitializing = true;
+        _mapError = false;
+      });
+    }
+    
+    // Timeout timer'ını yeniden başlat / Restart timeout timer
+    _timeoutTimer?.cancel();
+    _timeoutTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted) {
+        setState(() {
+          _mapError = true;
+          _isInitializing = false;
+        });
+        debugPrint('Google Maps reinitialization timeout');
+      }
+    });
   }
 
   Widget _buildMapErrorWidget(ThemeData theme) {
@@ -618,7 +652,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             Icon(
               Icons.map_outlined,
               size: 80,
-              color: theme.iconTheme.color?.withOpacity(0.3),
+              color: theme.iconTheme.color?.withValues(alpha: 0.3),
             ),
             const SizedBox(height: 20),
             Text(
@@ -634,7 +668,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               AppLocalizations.of(context)!.googleMapsNotLoaded,
               style: TextStyle(
                 fontSize: 16,
-                color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
+                color: theme.textTheme.bodyLarge?.color?.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -643,7 +677,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               AppLocalizations.of(context)!.checkApiKeyOrInternet,
               style: TextStyle(
                 fontSize: 14,
-                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -674,7 +708,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
           color: theme.cardColor,
           boxShadow: [
             BoxShadow(
-              color: theme.shadowColor.withOpacity(0.2),
+              color: theme.shadowColor.withValues(alpha: 0.2),
               spreadRadius: 0,
               blurRadius: 10,
               offset: const Offset(0, -2),
