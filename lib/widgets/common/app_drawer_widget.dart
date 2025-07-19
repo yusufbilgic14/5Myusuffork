@@ -9,6 +9,7 @@ import '../../screens/upcoming_events_screen.dart';
 import '../../screens/academic_calendar_screen.dart';
 import '../../screens/cafeteria_menu_screen.dart';
 import '../../l10n/app_localizations.dart';
+import '../../screens/home_screen.dart';
 
 /// Uygulama drawer widget'ı - Tüm sayfalarda kullanılan ana drawer / App drawer widget - Main drawer used across all pages
 class AppDrawerWidget extends StatelessWidget {
