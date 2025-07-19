@@ -48,6 +48,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
+  String get language => 'Language';
+
+  @override
+  String get languageDesc => 'Change the application language.';
+
+  @override
   String get homeWelcome => 'Welcome,';
 
   @override
@@ -120,7 +126,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'Logout';
 
   @override
-  String get logoutConfirm => 'Are you sure you want to log out of your account?';
+  String get logoutConfirm =>
+      'Are you sure you want to log out of your account?';
 
   @override
   String get cancel => 'Cancel';
@@ -216,13 +223,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationSettingsSaved => 'Notification settings saved.';
 
   @override
-  String get notificationSettingsDesc => 'Select which notifications you want to receive';
+  String get notificationSettingsDesc =>
+      'Select which notifications you want to receive';
 
   @override
   String get helpSupportDesc => 'FAQ and contact information';
 
   @override
-  String get campusTransportDesc => 'The following lines and routes are for transportation to Istanbul Medipol University Kavacık South and North Campuses.';
+  String get campusTransportDesc =>
+      'The following lines and routes are for transportation to Istanbul Medipol University Kavacık South and North Campuses.';
 
   @override
   String get europeanSide => 'European Side';
@@ -250,7 +259,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noEventsFound => 'No Events Found';
 
   @override
-  String get noEventsFilter => 'No academic calendar events found for the selected filters.';
+  String get noEventsFilter =>
+      'No academic calendar events found for the selected filters.';
 
   @override
   String get clearFilters => 'Clear Filters';
@@ -274,19 +284,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contact => 'Contact';
 
   @override
-  String get contactDesc => 'For any questions, feedback or support requests, you can use the contact channels below.';
+  String get contactDesc =>
+      'For any questions, feedback or support requests, you can use the contact channels below.';
 
   @override
   String get kavacikNorth => 'Kavacık North Campus';
 
   @override
-  String get kavacikNorthDesc => 'Campus; Medipol University Kavacık (Main Campus Rectorate)';
+  String get kavacikNorthDesc =>
+      'Campus; Medipol University Kavacık (Main Campus Rectorate)';
 
   @override
   String get feedbackTitle => 'Your Feedback is Valuable to Us';
 
   @override
-  String get feedbackDesc => 'Share your feedback and suggestions to help us improve the Medipol app.';
+  String get feedbackDesc =>
+      'Share your feedback and suggestions to help us improve the Medipol app.';
 
   @override
   String get feedbackDetail => 'Detailed Description';
@@ -331,13 +344,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rate_and_comment_app => 'Click here to rate and comment the app';
 
   @override
-  String get redirect_to_app_store => 'You will be redirected to the app store...';
+  String get redirect_to_app_store =>
+      'You will be redirected to the app store...';
 
   @override
   String get anonymous_feedback => 'Anonymous Feedback';
 
   @override
-  String get keep_my_identity_private => 'I want to keep my identity private and send feedback anonymously.';
+  String get keep_my_identity_private =>
+      'I want to keep my identity private and send feedback anonymously.';
 
   @override
   String get relevant_department => 'Relevant Department';
@@ -385,7 +400,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get description_required => 'Description required';
 
   @override
-  String get description_min_length => 'Description must be at least 20 characters';
+  String get description_min_length =>
+      'Description must be at least 20 characters';
 
   @override
   String get add_photo_or_document => 'Add Photo or Document';
@@ -406,16 +422,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get file_removed => 'File removed:';
 
   @override
-  String get please_select_feedback_or_request_type => 'Please select feedback or request type';
+  String get please_select_feedback_or_request_type =>
+      'Please select feedback or request type';
 
   @override
-  String get please_select_request_category => 'Please select a request category';
+  String get please_select_request_category =>
+      'Please select a request category';
 
   @override
-  String get please_select_feedback_category => 'Please select a feedback category';
+  String get please_select_feedback_category =>
+      'Please select a feedback category';
 
   @override
-  String get your_feedback_submitted_successfully => 'Your feedback has been submitted successfully! Thank you.';
+  String get your_feedback_submitted_successfully =>
+      'Your feedback has been submitted successfully! Thank you.';
 
   @override
   String get clear_form => 'Clear Form';
@@ -424,7 +444,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get your_feedback_is_valuable => 'Your Feedback is Valuable to Us';
 
   @override
-  String get share_your_opinions_and_suggestions_for_better_app => 'Share your opinions and suggestions to make the Medipol app better.';
+  String get share_your_opinions_and_suggestions_for_better_app =>
+      'Share your opinions and suggestions to make the Medipol app better.';
 
   @override
   String get submitting => 'Submitting...';
@@ -487,7 +508,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortBy => 'Sort By';
 
   @override
-  String get noCoursesFound => 'No courses found matching your search criteria.';
+  String get noCoursesFound =>
+      'No courses found matching your search criteria.';
 
   @override
   String get gpa => 'GPA';
@@ -508,7 +530,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cumulativeGpa => 'Cumulative GPA';
 
   @override
-  String get pdfReportWillBeGenerated => 'A PDF report will be generated for this semester...';
+  String get pdfReportWillBeGenerated =>
+      'A PDF report will be generated for this semester...';
 
   @override
   String get pdfFeatureWillBeAddedSoon => 'PDF feature will be added soon.';
@@ -517,7 +540,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ok => 'OK';
 
   @override
-  String get overallTranscriptForAllSemestersWillBePrepared => 'An overall transcript for all semesters will be prepared...';
+  String get overallTranscriptForAllSemestersWillBePrepared =>
+      'An overall transcript for all semesters will be prepared...';
 
   @override
   String get totalGpa => 'Total GPA';
@@ -532,7 +556,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get courses => 'courses';
 
   @override
-  String get transcriptFeatureWillBeAddedSoon => 'Transcript feature will be added soon.';
+  String get transcriptFeatureWillBeAddedSoon =>
+      'Transcript feature will be added soon.';
 
   @override
   String get refreshingGrades => 'Refreshing grades...';
@@ -544,16 +569,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrScanner => 'QR Code Scanner';
 
   @override
-  String get cameraPermissionPermanentlyDenied => 'Camera permission permanently denied. Please enable it in settings.';
+  String get cameraPermissionPermanentlyDenied =>
+      'Camera permission permanently denied. Please enable it in settings.';
 
   @override
   String get cameraPermissionRequired => 'Camera Permission Required';
 
   @override
-  String get enableCameraPermissionInSettings => 'Enable camera permission in settings.';
+  String get enableCameraPermissionInSettings =>
+      'Enable camera permission in settings.';
 
   @override
-  String get needCameraPermissionToScan => 'We need camera permission to scan QR codes.';
+  String get needCameraPermissionToScan =>
+      'We need camera permission to scan QR codes.';
 
   @override
   String get startingCamera => 'Starting camera...';
@@ -589,7 +617,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get googleMapsNotLoaded => 'Google Maps could not be loaded.';
 
   @override
-  String get checkApiKeyOrInternet => 'Check API key configuration or verify your internet connection.';
+  String get checkApiKeyOrInternet =>
+      'Check API key configuration or verify your internet connection.';
 
   @override
   String get tryAgain => 'Try Again';
@@ -640,7 +669,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanQr => 'Scan QR Code';
 
   @override
-  String get qrInfo => 'Use this QR code at campus entry scanners. For security, the code is automatically refreshed.';
+  String get qrInfo =>
+      'Use this QR code at campus entry scanners. For security, the code is automatically refreshed.';
 
   @override
   String get secureCampusAccess => 'Secure campus access';
@@ -661,7 +691,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inboxSender1 => 'Student Affairs';
 
   @override
-  String get inboxContent1 => 'Dear Elif Yılmaz,\n\nYour student certificate requested on 24.06.2025 has been prepared.\n\nYou can obtain your document in the following ways:\n• You can personally collect it from our Student Affairs office\n• You can apply for delivery to your address by cargo for an additional fee\n\nOffice hours: Monday-Friday 09:00-17:00\n\nBest regards,\nStudent Affairs Directorate';
+  String get inboxContent1 =>
+      'Dear Elif Yılmaz,\n\nYour student certificate requested on 24.06.2025 has been prepared.\n\nYou can obtain your document in the following ways:\n• You can personally collect it from our Student Affairs office\n• You can apply for delivery to your address by cargo for an additional fee\n\nOffice hours: Monday-Friday 09:00-17:00\n\nBest regards,\nStudent Affairs Directorate';
 
   @override
   String get inboxSubject2 => 'Scholarship Application Result';
@@ -670,7 +701,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inboxSender2 => 'Scholarship and Aid Office';
 
   @override
-  String get inboxContent2 => 'Dear Elif Yılmaz,\n\nYour 2024-2025 Academic Year Achievement Scholarship application has been evaluated and we inform you that your application has been ACCEPTED.\n\nScholarship Details:\n• Scholarship Type: Achievement Scholarship (25%)\n• Valid Term: 2025-2026 Fall Term\n• Payment Date: After registration renewal\n\nBest regards,\nScholarship and Aid Office';
+  String get inboxContent2 =>
+      'Dear Elif Yılmaz,\n\nYour 2024-2025 Academic Year Achievement Scholarship application has been evaluated and we inform you that your application has been ACCEPTED.\n\nScholarship Details:\n• Scholarship Type: Achievement Scholarship (25%)\n• Valid Term: 2025-2026 Fall Term\n• Payment Date: After registration renewal\n\nBest regards,\nScholarship and Aid Office';
 
   @override
   String get requestCategoryAcademicSupport => 'Academic Support';

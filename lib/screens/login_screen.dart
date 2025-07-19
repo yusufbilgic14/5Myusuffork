@@ -337,8 +337,6 @@ class _LoginScreenState extends State<LoginScreen>
                 icon: Icons.person_outline,
                 textInputType: TextInputType.text,
                 validator: (value) {
-                  
-                  
                   return null;
                 },
               ),
@@ -351,8 +349,6 @@ class _LoginScreenState extends State<LoginScreen>
                 icon: Icons.lock_outline,
                 isPassword: true,
                 validator: (value) {
-                  
-                  
                   return null;
                 },
               ),
@@ -581,7 +577,7 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                   )
                 : Image.asset(
-                    'assets/images/microsoft_logo.png', // Microsoft logosu / Microsoft logo
+                    'assets/images/microsoft-logo-png_seeklogo-258454.png', // Doğru Microsoft logosu
                     width: 20,
                     height: 20,
                     errorBuilder: (context, error, stackTrace) {
