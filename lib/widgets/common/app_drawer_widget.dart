@@ -7,9 +7,9 @@ import '../../screens/feedback_screen.dart';
 import '../../screens/course_grades_screen.dart';
 import '../../screens/upcoming_events_screen.dart';
 import '../../screens/academic_calendar_screen.dart';
-import '../../screens/cafeteria_menu_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../../screens/home_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Uygulama drawer widget'ı - Tüm sayfalarda kullanılan ana drawer / App drawer widget - Main drawer used across all pages
 class AppDrawerWidget extends StatelessWidget {
@@ -149,19 +149,6 @@ class AppDrawerWidget extends StatelessWidget {
                       );
                     },
                   ),
-                  _buildDrawerItem(
-                    icon: Icons.restaurant,
-                    title: AppLocalizations.of(context)!.cafeteriaMenu,
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CafeteriaMenuScreen(),
-                        ),
-                      );
-                    },
-                  ),
 
                   _buildDrawerItem(
                     icon: Icons.mail,
@@ -189,84 +176,107 @@ class AppDrawerWidget extends StatelessWidget {
                       );
                     },
                   ),
+                  // Yardım ve Destek
                   _buildDrawerItem(
-                    icon: Icons.settings,
-                    title: AppLocalizations.of(context)!.settings,
+                    icon: Icons.help_outline,
+                    title: AppLocalizations.of(context)!.helpSupport,
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const ProfileScreen(),
+                          builder: (context) => const HelpSupportScreen(),
                         ),
                       );
-                      // TODO: Settings sayfasına git
+                    },
+                  ),
+                  // Çıkış Yap
+                  _buildDrawerItem(
+                    icon: Icons.logout,
+                    title: AppLocalizations.of(context)!.logout,
+                    textColor: Colors.red[300],
+                    onTap: () {
+                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text(AppLocalizations.of(context)!.logout),
+                            content: Text(
+                              AppLocalizations.of(context)!.logoutConfirm,
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(
+                                  AppLocalizations.of(context)!.cancel,
+                                ),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const LoginScreen(),
+                                    ),
+                                    (route) => false,
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                ),
+                                child: Text(
+                                  AppLocalizations.of(context)!.logout,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                   ),
                 ],
               ),
             ),
-
-            // Alt bölüm - Help ve Logout / Bottom section - Help and Logout
-            Column(
-              children: [
-                _buildDrawerItem(
-                  icon: Icons.help_outline,
-                  title: AppLocalizations.of(context)!.helpSupport,
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HelpSupportScreen(),
-                      ),
-                    );
-                  },
-                ),
-                _buildDrawerItem(
-                  icon: Icons.logout,
-                  title: AppLocalizations.of(context)!.logout,
-                  textColor: Colors.red[300],
-                  onTap: () {
-                    Navigator.pop(context);
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text(AppLocalizations.of(context)!.logout),
-                          content: Text(
-                            AppLocalizations.of(context)!.logoutConfirm,
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(AppLocalizations.of(context)!.cancel),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const LoginScreen(),
-                                  ),
-                                  (route) => false,
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: Text(AppLocalizations.of(context)!.logout),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-              ],
+            // Sosyal medya ikonları en alta sabit
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0, top: 4.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildSocialIcon(
+                    context,
+                    'assets/images/facebook.png',
+                    'https://www.facebook.com/medipoluniversitesi',
+                  ),
+                  const SizedBox(width: 10),
+                  _buildSocialIcon(
+                    context,
+                    'assets/images/twitter.png',
+                    'https://x.com/medipolunv',
+                  ),
+                  const SizedBox(width: 10),
+                  _buildSocialIcon(
+                    context,
+                    'assets/images/youtube.png',
+                    'https://www.youtube.com/medipoluniversitesi',
+                  ),
+                  const SizedBox(width: 10),
+                  _buildSocialIcon(
+                    context,
+                    'assets/images/linkedin.jpg',
+                    'https://www.linkedin.com/school/medipoluniversitesi/',
+                  ),
+                  const SizedBox(width: 10),
+                  _buildSocialIcon(
+                    context,
+                    'assets/images/instagram.jpg',
+                    'https://www.instagram.com/medipolunv/',
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -293,6 +303,34 @@ class AppDrawerWidget extends StatelessWidget {
       ),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+    );
+  }
+
+  // Sosyal medya ikon butonu
+  Widget _buildSocialIcon(BuildContext context, String assetPath, String url) {
+    return GestureDetector(
+      onTap: () async {
+        final Uri uri = Uri.parse(url);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Bağlantı açılamadı: $url')));
+        }
+      },
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E3A8A).withOpacity(0.12), // Mavi ton uyumu
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset(assetPath, fit: BoxFit.contain),
+        ),
+      ),
     );
   }
 }

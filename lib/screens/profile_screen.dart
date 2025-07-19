@@ -12,6 +12,7 @@ import 'notification_settings_screen.dart'; // Bildirim ayarları ekranı import
 import 'help_support_screen.dart'; // Yardım ve Destek ekranı importu
 import 'kampuse_ulasim_screen.dart'; // Kampüse Ulaşım ekranı importu
 import '../l10n/app_localizations.dart';
+import '../providers/language_provider.dart'; // Dil ayarları için provider eklendi
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -230,8 +231,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Bayrak butonu (LoginScreen'den alınan)
+  Widget _buildFlagButton({
+    required String imagePath,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.transparent,
+            width: 2,
+          ),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Image.asset(imagePath, width: 38, height: 28, fit: BoxFit.cover),
+      ),
+    );
+  }
+
   // Menü öğeleri / Menu items
   Widget _buildMenuItems() {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return Container(
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
@@ -240,6 +266,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       child: Column(
         children: [
+          _buildDivider(),
+          // Dil seçici
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppConstants.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+              ),
+              child: Icon(
+                Icons.language,
+                color: AppConstants.primaryColor,
+                size: 20,
+              ),
+            ),
+            title: Text(
+              AppLocalizations.of(context)!.language,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppThemes.getTextColor(context),
+              ),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context)!.languageDesc,
+              style: TextStyle(
+                fontSize: 12,
+                color: AppThemes.getSecondaryTextColor(context),
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildFlagButton(
+                  imagePath: 'assets/images/turkey.png',
+                  isSelected: languageProvider.locale.languageCode == 'tr',
+                  onTap: () => languageProvider.setLocale(const Locale('tr')),
+                ),
+                const SizedBox(width: 8),
+                _buildFlagButton(
+                  imagePath: 'assets/images/uk.png',
+                  isSelected: languageProvider.locale.languageCode == 'en',
+                  onTap: () => languageProvider.setLocale(const Locale('en')),
+                ),
+              ],
+            ),
+          ),
           _buildDivider(),
           _buildMenuItem(
             icon: Icons.notifications,
