@@ -146,71 +146,93 @@ class _LoginScreenState extends State<LoginScreen>
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     final safeAreaTop = MediaQuery.of(context).padding.top;
 
+    final languageProvider = Provider.of<LanguageProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
       resizeToAvoidBottomInset: true,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.grey.shade50,
-              Colors.white,
-              AppConstants.primaryColor.withValues(alpha: 0.05),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: screenSize.height - safeAreaTop - keyboardHeight,
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.grey.shade50,
+                  Colors.white,
+                  AppConstants.primaryColor.withValues(alpha: 0.05),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppConstants.paddingXLarge,
-                  vertical: AppConstants.paddingLarge,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Logo bölümü / Logo section
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: _buildLogoSection(),
+            ),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: screenSize.height - safeAreaTop - keyboardHeight,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppConstants.paddingXLarge,
+                      vertical: AppConstants.paddingLarge,
                     ),
-
-                    // Form kartı / Form card
-                    SlideTransition(
-                      position: _slideAnimation,
-                      child: FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: _buildLoginCard(),
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Logo bölümü / Logo section
+                        FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: _buildLogoSection(showFlags: false),
+                        ),
+                        // Form kartı / Form card
+                        SlideTransition(
+                          position: _slideAnimation,
+                          child: FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: _buildLoginCard(),
+                          ),
+                        ),
+                        const SizedBox(height: AppConstants.paddingXLarge),
+                        // Alt bölüm / Footer section
+                        FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: _buildFooterSection(),
+                        ),
+                      ],
                     ),
-
-                    const SizedBox(height: AppConstants.paddingXLarge),
-
-                    // Alt bölüm / Footer section
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: _buildFooterSection(),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+          // Sağ üstte bayraklar
+          Positioned(
+            top: 18,
+            right: 18,
+            child: Row(
+              children: [
+                _buildFlagButton(
+                  imagePath: 'assets/images/turkey.png',
+                  isSelected: languageProvider.locale.languageCode == 'tr',
+                  onTap: () => languageProvider.setLocale(const Locale('tr')),
+                ),
+                const SizedBox(width: 8),
+                _buildFlagButton(
+                  imagePath: 'assets/images/uk.png',
+                  isSelected: languageProvider.locale.languageCode == 'en',
+                  onTap: () => languageProvider.setLocale(const Locale('en')),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   /// Logo bölümü widget'ı / Logo section widget
-  Widget _buildLogoSection() {
-    final languageProvider = Provider.of<LanguageProvider>(context);
+  Widget _buildLogoSection({bool showFlags = true}) {
     return Column(
       children: [
         // Logo resmi - Standalone büyük logo / Standalone large logo
@@ -228,24 +250,15 @@ class _LoginScreenState extends State<LoginScreen>
             return _buildFallbackLogo();
           },
         ),
-        const SizedBox(height: 12),
-        // Dil seçimi bayrakları / Language selection flags
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildFlagButton(
-              imagePath: 'assets/images/turkey.png',
-              isSelected: languageProvider.locale.languageCode == 'tr',
-              onTap: () => languageProvider.setLocale(const Locale('tr')),
-            ),
-            const SizedBox(width: 12),
-            _buildFlagButton(
-              imagePath: 'assets/images/uk.png',
-              isSelected: languageProvider.locale.languageCode == 'en',
-              onTap: () => languageProvider.setLocale(const Locale('en')),
-            ),
-          ],
-        ),
+        if (showFlags) ...[
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Bayraklar burada gösterilecek (ama artık yukarıda gösteriliyor)
+            ],
+          ),
+        ],
       ],
     );
   }
