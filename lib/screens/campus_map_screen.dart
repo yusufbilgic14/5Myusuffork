@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
+import 'dart:async';
 import 'home_screen.dart';
 import 'calendar_screen.dart';
 import 'qr_access_screen.dart';
@@ -24,26 +25,65 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   bool _mapError = false; // Google Maps error state
   bool _isInitializing = true; // Map initialization state
   String? _darkMapStyle;
+  Timer? _timeoutTimer;
 
   @override
   void initState() {
     super.initState();
-    // Koyu tema için map style yükle
-    rootBundle.loadString('assets/map_styles/dark_map_style.json').then((
-      string,
-    ) {
-      _darkMapStyle = string;
-    });
-    // iOS için timeout mekanizması / Timeout mechanism for iOS
-    Future.delayed(const Duration(seconds: 30), () {
-      if (mounted && _isInitializing) {
+    // Koyu tema için map style yükle (isteğe bağlı)
+    _loadDarkMapStyle();
+    _initializeMap();
+  }
+
+  void _initializeMap() {
+    // Cancel any existing timer first
+    _timeoutTimer?.cancel();
+    _timeoutTimer = null;
+    
+    // Reset states
+    if (mounted) {
+      setState(() {
+        _mapError = false;
+        _isInitializing = true;
+      });
+    }
+    
+    // Start new timeout timer
+    _timeoutTimer = Timer(const Duration(seconds: 8), () {
+      debugPrint('Timeout triggered - _isInitializing: $_isInitializing, mounted: $mounted');
+      if (mounted && _isInitializing && !_mapError) {
+        debugPrint('Setting map error state due to timeout');
         setState(() {
           _mapError = true;
-          _isInitializing = false; // Set error state if still initializing
+          _isInitializing = false;
         });
-        debugPrint('Google Maps initialization timeout on iOS');
+        debugPrint('Google Maps initialization timeout');
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _timeoutTimer?.cancel();
+    super.dispose();
+  }
+
+  // Koyu tema map style'ını yükle - hata durumunda sessizce devam et
+  void _loadDarkMapStyle() {
+    try {
+      rootBundle.loadString('assets/map_styles/dark_map_style.json').then((
+        string,
+      ) {
+        _darkMapStyle = string;
+      }).catchError((error) {
+        // Asset yoksa varsayılan dark theme kullan
+        debugPrint('Dark map style asset not found, using default: $error');
+        _darkMapStyle = null;
+      });
+    } catch (e) {
+      debugPrint('Error loading dark map style: $e');
+      _darkMapStyle = null;
+    }
   }
 
   // İstanbul Medipol Üniversitesi koordinatları / Medipol University coordinates
@@ -546,64 +586,73 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     if (_mapError) {
       return _buildMapErrorWidget(theme);
     }
-    if (_isInitializing) {
-      return Container(
-        color: theme.cardColor,
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color: theme.colorScheme.primary),
-              const SizedBox(height: 16),
-              Text(
-                'Harita yükleniyor...',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-    return GoogleMap(
-      onMapCreated: (GoogleMapController controller) {
-        try {
-          if (mounted) {
-            _mapController = controller;
-            setState(() {
-              _isInitializing = false;
-            });
-            if (theme.brightness == Brightness.dark && _darkMapStyle != null) {
-              controller.setMapStyle(_darkMapStyle);
-            } else {
-              controller.setMapStyle(null);
+    
+    return Stack(
+      children: [
+        GoogleMap(
+          onMapCreated: (GoogleMapController controller) {
+            debugPrint('onMapCreated called - starting map setup');
+            try {
+              if (mounted) {
+                _mapController = controller;
+                _timeoutTimer?.cancel(); // Cancel timeout since map loaded successfully
+                debugPrint('Timer cancelled, setting _isInitializing = false');
+                setState(() {
+                  _isInitializing = false;
+                  _mapError = false; // Ensure error state is cleared
+                });
+                if (theme.brightness == Brightness.dark && _darkMapStyle != null) {
+                  controller.setMapStyle(_darkMapStyle);
+                } else {
+                  controller.setMapStyle(null);
+                }
+                debugPrint('Google Maps initialized successfully');
+              }
+            } catch (e) {
+              debugPrint('Google Maps initialization error: $e');
+              if (mounted) {
+                _timeoutTimer?.cancel();
+                setState(() {
+                  _mapError = true;
+                  _isInitializing = false;
+                });
+              }
             }
-            debugPrint('Google Maps initialized successfully on iOS');
-          }
-        } catch (e) {
-          debugPrint('Google Maps initialization error: $e');
-          if (mounted) {
-            setState(() {
-              _mapError = true;
-              _isInitializing = false;
-            });
-          }
-        }
-      },
-      onCameraMove: (CameraPosition position) {},
-      initialCameraPosition: const CameraPosition(
-        target: _medipolCenter,
-        zoom: 16.0,
-      ),
-      markers: _showShuttleLayer
-          ? {..._buildingMarkers, ..._shuttleStops}
-          : _buildingMarkers,
-      myLocationEnabled: true,
-      myLocationButtonEnabled: false,
-      zoomControlsEnabled: false,
-      mapToolbarEnabled: false,
+          },
+          onCameraMove: (CameraPosition position) {},
+          initialCameraPosition: const CameraPosition(
+            target: _medipolCenter,
+            zoom: 16.0,
+          ),
+          markers: _showShuttleLayer
+              ? {..._buildingMarkers, ..._shuttleStops}
+              : _buildingMarkers,
+          myLocationEnabled: true,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          mapToolbarEnabled: false,
+        ),
+        if (_isInitializing)
+          Container(
+            color: theme.cardColor.withOpacity(0.8),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: theme.colorScheme.primary),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Harita yükleniyor...',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -649,9 +698,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                setState(() {
-                  _mapError = false;
-                });
+                _initializeMap();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,

@@ -318,12 +318,8 @@ class _LoginScreenState extends State<LoginScreen>
                 icon: Icons.person_outline,
                 textInputType: TextInputType.text,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l10n.invalidStudentId;
-                  }
-                  if (value.length < 6) {
-                    return l10n.invalidStudentId;
-                  }
+                  
+                  
                   return null;
                 },
               ),
@@ -336,12 +332,8 @@ class _LoginScreenState extends State<LoginScreen>
                 icon: Icons.lock_outline,
                 isPassword: true,
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l10n.invalidPassword;
-                  }
-                  if (value.length < 3) {
-                    return l10n.invalidPassword;
-                  }
+                  
+                  
                   return null;
                 },
               ),
