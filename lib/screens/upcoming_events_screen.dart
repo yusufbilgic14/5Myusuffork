@@ -240,7 +240,18 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppThemes.getBackgroundColor(context),
-      appBar: CommonAppBar(title: AppLocalizations.of(context)!.upcomingEvents),
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.upcomingEvents,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
+      ),
       drawer: const AppDrawerWidget(currentPageIndex: -1),
       body: Column(
         children: [

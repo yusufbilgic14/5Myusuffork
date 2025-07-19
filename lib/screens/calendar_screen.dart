@@ -100,27 +100,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CommonAppBar(
-        title: DateFormat('MMMM yyyy', locale).format(_selectedDate),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.calendar,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
         ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _isGridView ? Icons.view_timeline : Icons.calendar_view_month,
-            ),
-            tooltip: _isGridView
-                ? AppLocalizations.of(context)!.timelineView
-                : AppLocalizations.of(context)!.monthView,
-            onPressed: () {
-              setState(() {
-                _isGridView = !_isGridView;
-              });
-            },
-          ),
-        ],
       ),
       drawer: const AppDrawerWidget(
         currentPageIndex: AppConstants.navIndexCalendar,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 class InboxScreen extends StatefulWidget {
   final int? selectedMessageId; // Seçili mesaj ID'si / Selected message ID
@@ -184,80 +185,44 @@ Protokol Birimi''',
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF181F2A) : Colors.white;
+    final cardColor = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final borderColor = isDark ? Colors.white12 : Colors.grey[300]!;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+    final unreadColor = isDark ? Colors.blue[900]! : Colors.blue[50]!;
+    final selectedColor = isDark
+        ? Colors.blueGrey[900]!
+        : const Color(0xFF1E3A8A).withOpacity(0.1);
+    final selectedBorder = isDark ? Colors.blue[300]! : const Color(0xFF1E3A8A);
+    final attachBg = isDark ? Colors.blueGrey[800]! : Colors.blue[50]!;
+    final attachBorder = isDark ? Colors.blueGrey[700]! : Colors.blue[200]!;
+    final attachText = isDark ? Colors.blue[200]! : const Color(0xFF1E3A8A);
+    final replyBg = isDark ? Colors.blue[700]! : const Color(0xFF1E3A8A);
+    final replyFg = Colors.white;
+    final forwardFg = isDark ? Colors.blue[200]! : const Color(0xFF1E3A8A);
+    final forwardBorder = isDark ? Colors.blue[200]! : const Color(0xFF1E3A8A);
+    final detailBg = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final detailHeader = isDark ? Colors.blueGrey[900]! : Colors.grey[50]!;
+    final detailBorder = isDark ? Colors.white12 : Colors.grey[300]!;
+    final detailSub = isDark ? Colors.white70 : Colors.grey[600];
+    final detailMain = isDark ? Colors.white : Colors.black87;
+    final iconColor = isDark ? Colors.white : const Color(0xFF1E3A8A);
+    final deleteColor = isDark ? Colors.red[300] : Colors.red[600];
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF1E3A8A),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+      backgroundColor: bgColor,
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.inbox,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
         ),
-        title: _isSearching
-            ? Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      autofocus: true,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                        ),
-                        hintText: AppLocalizations.of(
-                          context,
-                        )!.searchBuildingOrLocation,
-                        hintStyle: const TextStyle(color: Colors.white54),
-                        border: InputBorder.none,
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              )
-            : Text(
-                AppLocalizations.of(context)!.inbox,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-        actions: [
-          if (_isSearching)
-            IconButton(
-              icon: const Icon(Icons.close, color: Colors.white),
-              onPressed: () {
-                setState(() {
-                  _isSearching = false;
-                  _searchQuery = '';
-                  _searchController.clear();
-                });
-              },
-            )
-          else ...[
-            IconButton(
-              icon: const Icon(Icons.search, color: Colors.white),
-              onPressed: () {
-                setState(() {
-                  _isSearching = true;
-                });
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.white),
-              onPressed: () {
-                // TODO: Yenileme functionality
-              },
-            ),
-          ],
-        ],
       ),
       body: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
@@ -274,7 +239,7 @@ Protokol Birimi''',
                 curve: Curves.easeInOut,
                 decoration: BoxDecoration(
                   border: Border(
-                    right: BorderSide(color: Colors.grey[300]!, width: 1),
+                    right: BorderSide(color: borderColor, width: 1),
                   ),
                 ),
                 child: Column(
@@ -283,12 +248,9 @@ Protokol Birimi''',
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.grey[50],
+                        color: detailHeader,
                         border: Border(
-                          bottom: BorderSide(
-                            color: Colors.grey[300]!,
-                            width: 1,
-                          ),
+                          bottom: BorderSide(color: borderColor, width: 1),
                         ),
                       ),
                       child: Row(
@@ -297,7 +259,7 @@ Protokol Birimi''',
                             '${_messages.length} ${AppLocalizations.of(context)!.messages}',
                             style: TextStyle(
                               fontSize: 10,
-                              color: Colors.grey[600],
+                              color: subTextColor,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -338,7 +300,24 @@ Protokol Birimi''',
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
-                  child: _buildMessageDetail(_messages[_selectedMessageIndex]),
+                  child: _buildMessageDetail(
+                    _messages[_selectedMessageIndex],
+                    isDark,
+                    detailBg as Color,
+                    detailHeader as Color,
+                    detailBorder as Color,
+                    detailSub as Color,
+                    detailMain as Color,
+                    iconColor as Color,
+                    attachBg as Color,
+                    attachBorder as Color,
+                    attachText as Color,
+                    replyBg as Color,
+                    replyFg as Color,
+                    forwardFg as Color,
+                    forwardBorder as Color,
+                    deleteColor as Color,
+                  ),
                 ),
               ),
           ],
@@ -349,6 +328,14 @@ Protokol Birimi''',
 
   // Mesaj öğesi oluştur / Build message item
   Widget _buildMessageItem(Map<String, dynamic> message, int index) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectedColor = isDark
+        ? Colors.blueGrey[900]!
+        : const Color(0xFF1E3A8A).withOpacity(0.1);
+    final unreadColor = isDark ? Colors.blue[900]! : Colors.blue[50]!;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+    final selectedBorder = isDark ? Colors.blue[300]! : const Color(0xFF1E3A8A);
     final isSelected = _selectedMessageIndex == index;
 
     return GestureDetector(
@@ -362,12 +349,17 @@ Protokol Birimi''',
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF1E3A8A).withValues(alpha: 0.1)
-              : (message['isRead'] ? Colors.white : Colors.blue[50]),
+              ? selectedColor
+              : (message['isRead']
+                    ? (isDark ? const Color(0xFF232B3E) : Colors.white)
+                    : unreadColor),
           border: Border(
-            bottom: BorderSide(color: Colors.grey[200]!, width: 1),
+            bottom: BorderSide(
+              color: isDark ? Colors.white12 : Colors.grey[200]!,
+              width: 1,
+            ),
             left: isSelected
-                ? const BorderSide(color: Color(0xFF1E3A8A), width: 3)
+                ? BorderSide(color: selectedBorder, width: 3)
                 : BorderSide.none,
           ),
         ),
@@ -382,14 +374,17 @@ Protokol Birimi''',
                     _localizedInboxField(context, message, 'sender'),
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color: subTextColor,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
                 Text(
                   '${message['date']} ${message['time']}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? Colors.white38 : Colors.grey[500],
+                  ),
                 ),
               ],
             ),
@@ -404,8 +399,10 @@ Protokol Birimi''',
                     width: 8,
                     height: 8,
                     margin: const EdgeInsets.only(right: 8),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF1E3A8A),
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.blue[300]
+                          : const Color(0xFF1E3A8A),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -417,14 +414,18 @@ Protokol Birimi''',
                       fontWeight: message['isRead']
                           ? FontWeight.w500
                           : FontWeight.bold,
-                      color: Colors.black87,
+                      color: textColor,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (message['hasAttachment'])
-                  const Icon(Icons.attach_file, size: 16, color: Colors.grey),
+                  Icon(
+                    Icons.attach_file,
+                    size: 16,
+                    color: isDark ? Colors.white54 : Colors.grey,
+                  ),
               ],
             ),
 
@@ -439,7 +440,7 @@ Protokol Birimi''',
               ).split('\n')[0], // İlk satırı göster / Show first line
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.grey[600],
+                color: subTextColor,
                 fontWeight: FontWeight.w400,
               ),
               maxLines: 2,
@@ -452,7 +453,24 @@ Protokol Birimi''',
   }
 
   // Mesaj detay görünümü / Message detail view
-  Widget _buildMessageDetail(Map<String, dynamic> message) {
+  Widget _buildMessageDetail(
+    Map<String, dynamic> message,
+    bool isDark,
+    Color detailBg,
+    Color detailHeader,
+    Color detailBorder,
+    Color detailSub,
+    Color detailMain,
+    Color iconColor,
+    Color attachBg,
+    Color attachBorder,
+    Color attachText,
+    Color replyBg,
+    Color replyFg,
+    Color forwardFg,
+    Color forwardBorder,
+    Color deleteColor,
+  ) {
     return GestureDetector(
       onPanUpdate: (details) {
         // Swipe left detection / Sol kaydırma algılama
@@ -463,16 +481,16 @@ Protokol Birimi''',
         }
       },
       child: Container(
-        color: Colors.white,
+        color: detailBg,
         child: Column(
           children: [
             // Mesaj başlığı / Message header
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: detailHeader,
                 border: Border(
-                  bottom: BorderSide(color: Colors.grey[300]!, width: 1),
+                  bottom: BorderSide(color: detailBorder, width: 1),
                 ),
               ),
               child: Column(
@@ -487,17 +505,17 @@ Protokol Birimi''',
                             _selectedMessageIndex = -1;
                           });
                         },
-                        icon: const Icon(Icons.arrow_back),
-                        color: const Color(0xFF1E3A8A),
+                        icon: Icon(Icons.arrow_back, color: iconColor),
+                        color: iconColor,
                         tooltip: AppLocalizations.of(context)!.back,
                       ),
                       Expanded(
                         child: Text(
                           _localizedInboxField(context, message, 'subject'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: detailMain,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -516,13 +534,13 @@ Protokol Birimi''',
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1E3A8A),
+                          color: iconColor,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Center(
                           child: Text(
                             _localizedInboxField(context, message, 'sender')[0],
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -540,20 +558,17 @@ Protokol Birimi''',
                           children: [
                             Text(
                               _localizedInboxField(context, message, 'sender'),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.black87,
+                                color: detailMain,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               message['senderEmail'],
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey[600],
-                              ),
+                              style: TextStyle(fontSize: 13, color: detailSub),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -569,7 +584,7 @@ Protokol Birimi''',
                             message['date'],
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.grey[600],
+                              color: detailSub,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -577,7 +592,7 @@ Protokol Birimi''',
                             message['time'],
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey[500],
+                              color: isDark ? Colors.white38 : Colors.grey[500],
                             ),
                           ),
                         ],
@@ -592,27 +607,27 @@ Protokol Birimi''',
                       margin: const EdgeInsets.only(top: 16),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.blue[50],
+                        color: attachBg,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue[200]!, width: 1),
+                        border: Border.all(color: attachBorder, width: 1),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.attach_file,
                                 size: 16,
-                                color: Color(0xFF1E3A8A),
+                                color: attachText,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${AppLocalizations.of(context)!.attachments} (${message['attachments'].length})',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
-                                  color: Color(0xFF1E3A8A),
+                                  color: attachText,
                                 ),
                               ),
                             ],
@@ -626,25 +641,25 @@ Protokol Birimi''',
                                   const Icon(
                                     Icons.picture_as_pdf,
                                     size: 16,
-                                    color: Colors.red,
+                                    color: Colors.redAccent,
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       attachment,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
-                                        color: Color(0xFF1E3A8A),
+                                        color: attachText,
                                         decoration: TextDecoration.underline,
                                       ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
-                                  const Icon(
+                                  Icon(
                                     Icons.download,
                                     size: 16,
-                                    color: Color(0xFF1E3A8A),
+                                    color: attachText,
                                   ),
                                 ],
                               ),
@@ -663,10 +678,10 @@ Protokol Birimi''',
                 padding: const EdgeInsets.all(20),
                 child: Text(
                   _localizedInboxField(context, message, 'content'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     height: 1.6,
-                    color: Colors.black87,
+                    color: detailMain,
                   ),
                 ),
               ),
@@ -676,10 +691,8 @@ Protokol Birimi''',
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
-                border: Border(
-                  top: BorderSide(color: Colors.grey[300]!, width: 1),
-                ),
+                color: detailHeader,
+                border: Border(top: BorderSide(color: detailBorder, width: 1)),
               ),
               child: Wrap(
                 spacing: 8,
@@ -692,8 +705,8 @@ Protokol Birimi''',
                     icon: const Icon(Icons.reply, size: 16),
                     label: Text(AppLocalizations.of(context)!.reply),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1E3A8A),
-                      foregroundColor: Colors.white,
+                      backgroundColor: replyBg,
+                      foregroundColor: replyFg,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
@@ -708,8 +721,8 @@ Protokol Birimi''',
                     icon: const Icon(Icons.forward, size: 16),
                     label: Text(AppLocalizations.of(context)!.forward),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF1E3A8A),
-                      side: const BorderSide(color: Color(0xFF1E3A8A)),
+                      foregroundColor: forwardFg,
+                      side: BorderSide(color: forwardBorder),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
@@ -722,7 +735,7 @@ Protokol Birimi''',
                       // TODO: Sil functionality
                     },
                     icon: const Icon(Icons.delete_outline),
-                    color: Colors.red[600],
+                    color: deleteColor,
                     tooltip: AppLocalizations.of(context)!.delete,
                   ),
                 ],

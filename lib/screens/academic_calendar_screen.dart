@@ -4,6 +4,7 @@ import '../themes/app_themes.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 /// Akademik Takvim Sayfası / Academic Calendar Screen
 class AcademicCalendarScreen extends StatefulWidget {
@@ -221,25 +222,14 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
       key: _scaffoldKey,
       backgroundColor: AppThemes.getBackgroundColor(context),
       // Navy renkli AppBar / Navy colored AppBar
-      appBar: AppBar(
-        backgroundColor: AppConstants.primaryColor,
-        foregroundColor: AppConstants.textColorLight,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.academicCalendar,
-          style: const TextStyle(
-            fontSize: AppConstants.fontSizeXLarge,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.academicCalendar,
         leading: Builder(
           builder: (BuildContext context) {
-            return GestureDetector(
-              onTap: () {
-                _scaffoldKey.currentState?.openDrawer();
-              },
-              child: const Icon(Icons.menu, color: Colors.white, size: 24),
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
             );
           },
         ),

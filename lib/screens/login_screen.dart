@@ -147,9 +147,27 @@ class _LoginScreenState extends State<LoginScreen>
     final safeAreaTop = MediaQuery.of(context).padding.top;
 
     final languageProvider = Provider.of<LanguageProvider>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgGradient = isDark
+        ? [
+            const Color(0xFF181F2A),
+            const Color(0xFF232B3E),
+            const Color(0xFF1A2233),
+          ]
+        : [
+            const Color(0xFFF3F6FB),
+            const Color(0xFFE9F0FA),
+            const Color(0xFFD6E4F0),
+          ];
+    final cardColor = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final inputFill = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final inputBorder = isDark ? Colors.white12 : Colors.grey.shade200;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final hintColor = isDark ? Colors.white54 : Colors.grey.shade400;
+    final labelColor = isDark ? Colors.white : AppConstants.primaryColor;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: isDark ? const Color(0xFF181F2A) : Colors.grey.shade50,
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
@@ -158,14 +176,11 @@ class _LoginScreenState extends State<LoginScreen>
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Colors.grey.shade50,
-                  Colors.white,
-                  AppConstants.primaryColor.withValues(alpha: 0.05),
-                ],
+                colors: bgGradient,
               ),
             ),
             child: SafeArea(
+              minimum: const EdgeInsets.only(top: 4),
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: ConstrainedBox(
@@ -175,15 +190,63 @@ class _LoginScreenState extends State<LoginScreen>
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: AppConstants.paddingXLarge,
-                      vertical: AppConstants.paddingLarge,
+                      vertical: AppConstants.paddingMedium,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Logo bölümü / Logo section
-                        FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: _buildLogoSection(showFlags: false),
+                        const SizedBox(height: 0), // Üst boşluk minimum
+                        // Logo ve bayraklar aynı satırda
+                        Row(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.center, // Ortaya hizala
+                          children: [
+                            Expanded(
+                              child: Image.asset(
+                                'assets/images/loginlogo.png',
+                                width: 320,
+                                height: 210,
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return _buildFallbackLogo();
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Bayraklar ortalanmış şekilde
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    _buildFlagButton(
+                                      imagePath: 'assets/images/turkey.png',
+                                      isSelected:
+                                          languageProvider
+                                              .locale
+                                              .languageCode ==
+                                          'tr',
+                                      onTap: () => languageProvider.setLocale(
+                                        const Locale('tr'),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    _buildFlagButton(
+                                      imagePath: 'assets/images/uk.png',
+                                      isSelected:
+                                          languageProvider
+                                              .locale
+                                              .languageCode ==
+                                          'en',
+                                      onTap: () => languageProvider.setLocale(
+                                        const Locale('en'),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         // Form kartı / Form card
                         SlideTransition(
@@ -204,26 +267,6 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                 ),
               ),
-            ),
-          ),
-          // Sağ üstte bayraklar
-          Positioned(
-            top: 18,
-            right: 18,
-            child: Row(
-              children: [
-                _buildFlagButton(
-                  imagePath: 'assets/images/turkey.png',
-                  isSelected: languageProvider.locale.languageCode == 'tr',
-                  onTap: () => languageProvider.setLocale(const Locale('tr')),
-                ),
-                const SizedBox(width: 8),
-                _buildFlagButton(
-                  imagePath: 'assets/images/uk.png',
-                  isSelected: languageProvider.locale.languageCode == 'en',
-                  onTap: () => languageProvider.setLocale(const Locale('en')),
-                ),
-              ],
             ),
           ),
         ],
@@ -289,46 +332,55 @@ class _LoginScreenState extends State<LoginScreen>
   /// Giriş kartı widget'ı / Login card widget
   Widget _buildLoginCard() {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black;
     return Container(
       width: double.infinity,
-      constraints: const BoxConstraints(maxWidth: 400),
+      constraints: const BoxConstraints(maxWidth: 320),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppConstants.radiusXLarge),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 25,
-            offset: const Offset(0, 15),
+            color: isDark
+                ? Colors.black.withOpacity(0.25)
+                : Colors.black.withOpacity(0.10),
+            blurRadius: 40,
+            offset: const Offset(0, 18),
             spreadRadius: 0,
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppConstants.paddingXLarge * 1.5),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Başlık / Title
-              Text(
-                l10n.loginTitle,
-                style: TextStyle(
-                  fontSize: AppConstants.fontSizeXXLarge,
-                  fontWeight: FontWeight.bold,
-                  color: AppConstants.primaryColor,
+              Center(
+                child: Text(
+                  l10n.loginTitle,
+                  style: TextStyle(
+                    fontSize: AppConstants.fontSizeXXLarge,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? Colors.white : AppConstants.primaryColor,
+                    letterSpacing: 0.2,
+                  ),
                 ),
               ),
-              const SizedBox(height: AppConstants.paddingMedium),
+              const SizedBox(height: 8),
               Text(
                 l10n.loginSubtitle,
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeMedium,
-                  color: Colors.grey.shade600,
+                  color: isDark ? Colors.white70 : Colors.grey.shade600,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
-              const SizedBox(height: AppConstants.paddingXLarge),
+              const SizedBox(height: 12),
               // Öğrenci numarası alanı / Student ID field
               _buildModernTextField(
                 controller: _studentIdController,
@@ -340,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen>
                   return null;
                 },
               ),
-              const SizedBox(height: AppConstants.paddingLarge),
+              const SizedBox(height: 10),
               // Şifre alanı / Password field
               _buildModernTextField(
                 controller: _passwordController,
@@ -352,7 +404,7 @@ class _LoginScreenState extends State<LoginScreen>
                   return null;
                 },
               ),
-              const SizedBox(height: AppConstants.paddingMedium),
+              const SizedBox(height: 8),
               // Şifremi unuttum linki / Forgot password link
               Align(
                 alignment: Alignment.centerRight,
@@ -360,8 +412,8 @@ class _LoginScreenState extends State<LoginScreen>
                   onPressed: _launchPasswordResetUrl,
                   style: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: AppConstants.paddingSmall,
-                      vertical: AppConstants.paddingSmall,
+                      horizontal: 4,
+                      vertical: 4,
                     ),
                   ),
                   child: Text(
@@ -374,10 +426,10 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                 ),
               ),
-              const SizedBox(height: AppConstants.paddingXLarge),
+              const SizedBox(height: 12),
               // Giriş butonu / Login button
               _buildModernButton(l10n),
-              const SizedBox(height: AppConstants.paddingLarge),
+              const SizedBox(height: 10),
               // Ayırıcı çizgi / Divider
               Row(
                 children: [
@@ -385,9 +437,7 @@ class _LoginScreenState extends State<LoginScreen>
                     child: Divider(color: Colors.grey.shade300, thickness: 1),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppConstants.paddingMedium,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Text(
                       l10n.or,
                       style: TextStyle(
@@ -401,7 +451,7 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                 ],
               ),
-              const SizedBox(height: AppConstants.paddingLarge),
+              const SizedBox(height: 10),
               // Microsoft OAuth giriş butonu / Microsoft OAuth login button
               _buildMicrosoftLoginButton(l10n),
             ],
@@ -421,20 +471,23 @@ class _LoginScreenState extends State<LoginScreen>
     TextInputType textInputType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inputFill = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final inputBorder = isDark ? Colors.white12 : Colors.grey.shade200;
+    final labelColor = isDark ? Colors.white : AppConstants.primaryColor;
+    final hintColor = isDark ? Colors.white54 : Colors.grey.shade400;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
           style: TextStyle(
-            fontSize: AppConstants.fontSizeMedium,
+            fontSize: AppConstants.fontSizeSmall,
             fontWeight: FontWeight.w600,
-            color: AppConstants.primaryColor,
+            color: labelColor,
           ),
         ),
-
         const SizedBox(height: AppConstants.paddingSmall),
-
         TextFormField(
           controller: controller,
           obscureText: isPassword && !_isPasswordVisible,
@@ -447,12 +500,14 @@ class _LoginScreenState extends State<LoginScreen>
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: Colors.grey.shade400,
+              color: hintColor,
               fontWeight: FontWeight.normal,
             ),
             prefixIcon: Icon(
               icon,
-              color: AppConstants.primaryColor.withValues(alpha: 0.7),
+              color: isDark
+                  ? Colors.white54
+                  : AppConstants.primaryColor.withValues(alpha: 0.7),
               size: 22,
             ),
             suffixIcon: isPassword
@@ -461,7 +516,9 @@ class _LoginScreenState extends State<LoginScreen>
                       _isPasswordVisible
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: AppConstants.primaryColor.withValues(alpha: 0.7),
+                      color: isDark
+                          ? Colors.white54
+                          : AppConstants.primaryColor.withValues(alpha: 0.7),
                       size: 22,
                     ),
                     onPressed: () {
@@ -472,29 +529,29 @@ class _LoginScreenState extends State<LoginScreen>
                   )
                 : null,
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: inputFill,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: inputBorder, width: 1),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-              borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: inputBorder, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
-                color: AppConstants.primaryColor,
-                width: 2,
+                color: isDark ? Colors.white54 : AppConstants.primaryColor,
+                width: 1.5,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-              borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.red.shade400, width: 1),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-              borderSide: BorderSide(color: Colors.red.shade400, width: 2),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: AppConstants.paddingLarge,
@@ -510,7 +567,7 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildModernButton(AppLocalizations l10n) {
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: 60,
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
@@ -519,7 +576,7 @@ class _LoginScreenState extends State<LoginScreen>
           elevation: 0,
           shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+            borderRadius: BorderRadius.circular(18),
           ),
           disabledBackgroundColor: AppConstants.primaryColor.withValues(
             alpha: 0.7,
@@ -534,13 +591,18 @@ class _LoginScreenState extends State<LoginScreen>
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : Text(
-                l10n.loginButton,
-                style: TextStyle(
-                  fontSize: AppConstants.fontSizeLarge,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                ),
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    l10n.loginButton,
+                    style: TextStyle(
+                      fontSize: AppConstants.fontSizeLarge,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
               ),
       ),
     );
@@ -552,7 +614,7 @@ class _LoginScreenState extends State<LoginScreen>
       builder: (context, authProvider, child) {
         return SizedBox(
           width: double.infinity,
-          height: 56,
+          height: 60,
           child: OutlinedButton.icon(
             onPressed: authProvider.isLoading
                 ? null
@@ -561,9 +623,11 @@ class _LoginScreenState extends State<LoginScreen>
               foregroundColor: const Color(0xFF0078D4), // Microsoft blue color
               side: const BorderSide(color: Color(0xFF0078D4), width: 2),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+                borderRadius: BorderRadius.circular(18),
               ),
               backgroundColor: Colors.white,
+              shadowColor: Colors.black.withOpacity(0.08),
+              elevation: 2,
             ),
             icon: authProvider.isLoading
                 ? const SizedBox(
@@ -594,7 +658,7 @@ class _LoginScreenState extends State<LoginScreen>
                   : l10n.loginWithMicrosoft,
               style: const TextStyle(
                 fontSize: AppConstants.fontSizeLarge,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 color: Color(0xFF0078D4),
               ),
             ),

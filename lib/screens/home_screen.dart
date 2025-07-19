@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import 'cafeteria_menu_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -250,214 +251,111 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: const AppDrawerWidget(
         currentPageIndex: AppConstants.navIndexHome,
       ),
-      body: Stack(
+      appBar: ModernAppBar(
+        title: l10n.homeWelcome,
+        subtitle: AppConstants.userName,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.restaurant, color: Colors.white),
+            tooltip: l10n.cafeteriaMenu,
+            onPressed: () {
+              setState(() {
+                _showCafeteriaMenu = !_showCafeteriaMenu;
+                _showNotifications = false;
+              });
+            },
+          ),
+          IconButton(
+            icon: Stack(
+              children: [
+                const Icon(Icons.notifications_rounded, color: Colors.white),
+                if (_notifications.where((n) => !n['isRead']).isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red[500],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '${_notifications.where((n) => !n['isRead']).length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            tooltip: 'Bildirimler',
+            onPressed: () {
+              setState(() {
+                _showNotifications = !_showNotifications;
+              });
+            },
+          ),
+        ],
+      ),
+      body: Column(
         children: [
-          Column(
-            children: [
-              // Modern header / Modern başlık
-              _buildModernHeader(context),
-
-              // Bildirim paneli / Notification panel
-              AnimatedContainer(
-                duration: AppConstants.animationNormal,
-                curve: Curves.easeInOut,
-                height: _showNotifications ? 350 : 0,
-                child: _showNotifications
-                    ? _buildNotificationPanel(context)
-                    : null,
+          // Bildirim paneli / Notification panel
+          AnimatedContainer(
+            duration: AppConstants.animationNormal,
+            curve: Curves.easeInOut,
+            height: _showNotifications ? 350 : 0,
+            child: _showNotifications ? _buildNotificationPanel(context) : null,
+          ),
+          // Cafeteria paneli
+          AnimatedContainer(
+            duration: AppConstants.animationNormal,
+            curve: Curves.easeInOut,
+            height: _showCafeteriaMenu ? 400 : 0,
+            child: _showCafeteriaMenu ? _buildCafeteriaPanel(context) : null,
+          ),
+          // Ana içerik / Main content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppConstants.paddingMedium,
               ),
-
-              // Cafeteria paneli
-              AnimatedContainer(
-                duration: AppConstants.animationNormal,
-                curve: Curves.easeInOut,
-                height: _showCafeteriaMenu ? 400 : 0,
-                child: _showCafeteriaMenu
-                    ? _buildCafeteriaPanel(context)
-                    : null,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: AppConstants.paddingMedium),
+                  // Duyurular bölümü / Announcements section
+                  _buildAnnouncementsSection(context),
+                  const SizedBox(height: AppConstants.paddingXLarge),
+                  // Günün dersleri bölümü / Today's courses section
+                  _buildTodaysCoursesSection(context),
+                  const SizedBox(
+                    height: 100,
+                  ), // Alt navigasyon için boşluk / Space for bottom navigation
+                ],
               ),
-
-              // Ana içerik / Main content
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppConstants.paddingMedium,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: AppConstants.paddingMedium),
-
-                      // Duyurular bölümü / Announcements section
-                      _buildAnnouncementsSection(context),
-
-                      const SizedBox(height: AppConstants.paddingXLarge),
-
-                      // Günün dersleri bölümü / Today's courses section
-                      _buildTodaysCoursesSection(context),
-
-                      const SizedBox(
-                        height: 100,
-                      ), // Alt navigasyon için boşluk / Space for bottom navigation
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
       bottomNavigationBar: const BottomNavigationWidget(
         currentIndex: AppConstants.navIndexHome,
-      ),
-    );
-  }
-
-  /// Modern header widget / Modern başlık widget
-  Widget _buildModernHeader(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppThemes.getPrimaryColor(context),
-            AppThemes.getPrimaryColor(context).withValues(alpha: 0.8),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.all(AppConstants.paddingMedium),
-          child: Row(
-            children: [
-              // Hamburger menü / Hamburger menu
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
-                ),
-                child: Builder(
-                  builder: (BuildContext context) {
-                    return IconButton(
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                      icon: const Icon(Icons.menu_rounded, color: Colors.white),
-                      tooltip: 'Menü',
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(width: AppConstants.paddingMedium),
-
-              // Kullanıcı bilgileri / User info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.homeWelcome,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: AppConstants.fontSizeMedium,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    const Text(
-                      AppConstants.userName,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: AppConstants.fontSizeXXLarge,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${AppConstants.userDepartment} • ${AppConstants.userGrade}',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: AppConstants.fontSizeSmall,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Çatal-bıçak ikon butonu
-              IconButton(
-                icon: const Icon(Icons.restaurant, color: Colors.white),
-                tooltip: AppLocalizations.of(context)!.cafeteriaMenu,
-                onPressed: () {
-                  setState(() {
-                    _showCafeteriaMenu = !_showCafeteriaMenu;
-                    _showNotifications = false;
-                  });
-                },
-              ),
-
-              // Bildirim butonu / Notification button
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _showNotifications = !_showNotifications;
-                    });
-                  },
-                  icon: Stack(
-                    children: [
-                      const Icon(
-                        Icons.notifications_rounded,
-                        color: Colors.white,
-                      ),
-                      // Okunmamış bildirim badge'i / Unread notification badge
-                      if (_notifications.where((n) => !n['isRead']).isNotEmpty)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: Colors.red[500],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 16,
-                              minHeight: 16,
-                            ),
-                            child: Text(
-                              '${_notifications.where((n) => !n['isRead']).length}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  tooltip: 'Bildirimler',
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

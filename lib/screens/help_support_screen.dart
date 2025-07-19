@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({Key? key}) : super(key: key);
@@ -34,23 +35,41 @@ class HelpSupportScreen extends StatelessWidget {
     required String value,
     void Function()? onTap,
   }) {
+    final isPhone = label.toLowerCase().contains('telefon');
+    final phoneNumber = value.replaceAll(RegExp(r'[^0-9]'), '');
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: const Color(0xFF1E3A8A)),
         const SizedBox(width: 12),
         Expanded(
-          child: GestureDetector(
-            onTap: onTap,
-            child: Text(
-              '$label $value',
-              style: TextStyle(
-                fontSize: 16,
-                decoration: onTap != null ? TextDecoration.underline : null,
-                color: onTap != null ? const Color(0xFF1E3A8A) : Colors.black,
-              ),
-            ),
-          ),
+          child: isPhone
+              ? GestureDetector(
+                  onTap: () => _launchPhone(phoneNumber),
+                  child: Text(
+                    '$label $value',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      decoration: TextDecoration.underline,
+                      color: Color(0xFF1E3A8A),
+                    ),
+                  ),
+                )
+              : GestureDetector(
+                  onTap: onTap,
+                  child: Text(
+                    '$label $value',
+                    style: TextStyle(
+                      fontSize: 16,
+                      decoration: onTap != null
+                          ? TextDecoration.underline
+                          : null,
+                      color: onTap != null
+                          ? const Color(0xFF1E3A8A)
+                          : Colors.black,
+                    ),
+                  ),
+                ),
         ),
       ],
     );
@@ -59,10 +78,10 @@ class HelpSupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.helpSupport),
-        backgroundColor: const Color(0xFF1E3A8A),
-        foregroundColor: Colors.white,
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.helpSupport,
+        leading: BackButton(color: Colors.white),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
