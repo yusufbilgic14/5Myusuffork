@@ -147,6 +147,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final startOfWeek = _selectedDate.subtract(
       Duration(days: _selectedDate.weekday - 1),
     );
+    // Sadece İngilizce gün kısaltmaları
+    final weekdayShorts = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
     return Container(
       height: 100,
       decoration: BoxDecoration(
@@ -195,7 +197,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    DateFormat('E', 'tr_TR').format(date).toUpperCase(),
+                    weekdayShorts[date.weekday - 1],
                     style: TextStyle(
                       color: isSelected
                           ? theme.colorScheme.onPrimary
@@ -311,15 +313,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildWeekdayHeaders(ThemeData theme) {
-    final weekdays = [
-      AppLocalizations.of(context)!.mondayShort,
-      AppLocalizations.of(context)!.tuesdayShort,
-      AppLocalizations.of(context)!.wednesdayShort,
-      AppLocalizations.of(context)!.thursdayShort,
-      AppLocalizations.of(context)!.fridayShort,
-      AppLocalizations.of(context)!.saturdayShort,
-      AppLocalizations.of(context)!.sundayShort,
-    ];
+    final weekdays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
     return Row(
       children: weekdays
           .map(

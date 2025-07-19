@@ -626,4 +626,193 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get monthView => 'Month View';
+
+  @override
+  String get campusQrTitle => 'Campus Entry QR Code';
+
+  @override
+  String get validTime => 'Valid time';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get scanQr => 'Scan QR Code';
+
+  @override
+  String get qrInfo => 'Use this QR code at campus entry scanners. For security, the code is automatically refreshed.';
+
+  @override
+  String get secureCampusAccess => 'Secure campus access';
+
+  @override
+  String get urlCouldNotOpen => 'Could not open URL';
+
+  @override
+  String get anErrorOccurred => 'An error occurred';
+
+  @override
+  String get studentIdHint => '2024520001';
+
+  @override
+  String get inboxSubject1 => 'About Your Student Certificate Request';
+
+  @override
+  String get inboxSender1 => 'Student Affairs';
+
+  @override
+  String get inboxContent1 => 'Dear Elif Yılmaz,\n\nYour student certificate requested on 24.06.2025 has been prepared.\n\nYou can obtain your document in the following ways:\n• You can personally collect it from our Student Affairs office\n• You can apply for delivery to your address by cargo for an additional fee\n\nOffice hours: Monday-Friday 09:00-17:00\n\nBest regards,\nStudent Affairs Directorate';
+
+  @override
+  String get inboxSubject2 => 'Scholarship Application Result';
+
+  @override
+  String get inboxSender2 => 'Scholarship and Aid Office';
+
+  @override
+  String get inboxContent2 => 'Dear Elif Yılmaz,\n\nYour 2024-2025 Academic Year Achievement Scholarship application has been evaluated and we inform you that your application has been ACCEPTED.\n\nScholarship Details:\n• Scholarship Type: Achievement Scholarship (25%)\n• Valid Term: 2025-2026 Fall Term\n• Payment Date: After registration renewal\n\nBest regards,\nScholarship and Aid Office';
+
+  @override
+  String get requestCategoryAcademicSupport => 'Academic Support';
+
+  @override
+  String get requestCategoryTechnicalHelp => 'Technical Help';
+
+  @override
+  String get requestCategoryLibrary => 'Library Services';
+
+  @override
+  String get requestCategoryCafeteria => 'Cafeteria Services';
+
+  @override
+  String get requestCategoryTransport => 'Transport Request';
+
+  @override
+  String get requestCategorySecurity => 'Security Support';
+
+  @override
+  String get requestCategoryFinance => 'Financial Affairs';
+
+  @override
+  String get requestCategoryGeneral => 'General Request';
+
+  @override
+  String get feedbackCategoryBugReport => 'Bug Report';
+
+  @override
+  String get feedbackCategorySuggestion => 'Suggestion';
+
+  @override
+  String get feedbackCategoryComplaint => 'Complaint';
+
+  @override
+  String get feedbackCategoryAppreciation => 'Appreciation';
+
+  @override
+  String get feedbackCategoryFeatureRequest => 'Feature Request';
+
+  @override
+  String get feedbackCategoryAppReview => 'App Review';
+
+  @override
+  String get feedbackCategoryGeneral => 'General Feedback';
+
+  @override
+  String get searchBuildingOrLocation => 'Search building or location...';
+
+  @override
+  String get routeInfo => 'Route Info';
+
+  @override
+  String get yourCurrentLocation => 'Your Current Location';
+
+  @override
+  String get engineeringFaculty => 'Engineering Faculty';
+
+  @override
+  String get walking => 'Walking';
+
+  @override
+  String get shuttle => 'Shuttle';
+
+  @override
+  String get bike => 'Bike';
+
+  @override
+  String get startNavigation => 'Start Navigation';
+
+  @override
+  String get mainBuilding => 'Main Building';
+
+  @override
+  String get northCampus => 'North Campus';
+
+  @override
+  String get kavacikBridgeBusStop => 'Kavacık Bridge Bus Stop';
+
+  @override
+  String get asiaRoad => 'Asia Road';
+
+  @override
+  String get europeRoad => 'Europe Road';
+
+  @override
+  String get kavacikBusStop => 'Kavacık Bus Stop';
+
+  @override
+  String get ataturkStreetBeykoz => 'Ataturk Street/Beykoz';
+
+  @override
+  String get kavacikJunctionBusStop => 'Kavacık Junction Bus Stop';
+
+  @override
+  String get kavacikJunctionBeykoz => 'Kavacik Junction/Beykoz';
+
+  @override
+  String get yeniRivaYoluBusStop => 'Yeni Riva Yolu Bus Stop';
+
+  @override
+  String get mapLoading => 'Map is loading...';
+
+  @override
+  String get monShort => 'Mon';
+
+  @override
+  String get tueShort => 'Tue';
+
+  @override
+  String get wedShort => 'Wed';
+
+  @override
+  String get thuShort => 'Thu';
+
+  @override
+  String get friShort => 'Fri';
+
+  @override
+  String get satShort => 'Sat';
+
+  @override
+  String get sunShort => 'Sun';
+
+  @override
+  String get monday => 'Monday';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get wednesday => 'Wednesday';
+
+  @override
+  String get thursday => 'Thursday';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get sunday => 'Sunday';
 }

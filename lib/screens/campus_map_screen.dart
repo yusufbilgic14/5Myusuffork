@@ -8,6 +8,7 @@ import 'home_screen.dart';
 import 'calendar_screen.dart';
 import 'qr_access_screen.dart';
 import 'profile_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class CampusMapScreen extends StatefulWidget {
   const CampusMapScreen({super.key});
@@ -30,29 +31,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   @override
   void initState() {
     super.initState();
-    // Koyu tema için map style yükle (isteğe bağlı)
-    _loadDarkMapStyle();
-    _initializeMap();
-  }
 
-  void _initializeMap() {
-    // Cancel any existing timer first
-    _timeoutTimer?.cancel();
-    _timeoutTimer = null;
-    
-    // Reset states
-    if (mounted) {
-      setState(() {
-        _mapError = false;
-        _isInitializing = true;
-      });
-    }
-    
-    // Start new timeout timer
-    _timeoutTimer = Timer(const Duration(seconds: 8), () {
-      debugPrint('Timeout triggered - _isInitializing: $_isInitializing, mounted: $mounted');
-      if (mounted && _isInitializing && !_mapError) {
-        debugPrint('Setting map error state due to timeout');
         setState(() {
           _mapError = true;
           _isInitializing = false;
@@ -93,89 +72,89 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   );
 
   // Kampüs binaları / Campus buildings
-  final Set<Marker> _buildingMarkers = {
-    const Marker(
-      markerId: MarkerId('main_building'),
-      position: LatLng(41.08852308584411, 29.088860275782068),
+  Set<Marker> _buildingMarkers(BuildContext context) => {
+    Marker(
+      markerId: const MarkerId('main_building'),
+      position: const LatLng(41.08852308584411, 29.088860275782068),
       infoWindow: InfoWindow(
-        title: 'Main Building',
+        title: AppLocalizations.of(context)!.mainBuilding,
         snippet: 'Kavacık South Campus',
       ),
     ),
-    const Marker(
-      markerId: MarkerId('north_campus'),
-      position: LatLng(41.091203723712844, 29.091344541914122),
+    Marker(
+      markerId: const MarkerId('north_campus'),
+      position: const LatLng(41.091203723712844, 29.091344541914122),
       infoWindow: InfoWindow(
-        title: 'North Campus',
+        title: AppLocalizations.of(context)!.northCampus,
         snippet: 'Kavacık North Campus',
       ),
     ),
   };
 
   // Servis durakları / Shuttle stops
-  final Set<Marker> _shuttleStops = {
+  Set<Marker> _shuttleStops(BuildContext context) => {
     Marker(
       markerId: const MarkerId('shuttle_main_gate'),
       position: const LatLng(41.08958242494858, 29.0899021494668),
-      infoWindow: const InfoWindow(
-        title: 'Kavacık Köprüsü Bus Stop',
-        snippet: 'Asia Road',
+      infoWindow: InfoWindow(
+        title: AppLocalizations.of(context)!.kavacikBridgeBusStop,
+        snippet: AppLocalizations.of(context)!.asiaRoad,
       ),
     ),
     Marker(
       markerId: const MarkerId('shuttle_europe'),
       position: const LatLng(41.08764623193279, 29.093379648637885),
-      infoWindow: const InfoWindow(
-        title: 'Kavacık Köprüsü Bus Stop',
-        snippet: 'Europe Road',
+      infoWindow: InfoWindow(
+        title: AppLocalizations.of(context)!.kavacikBridgeBusStop,
+        snippet: AppLocalizations.of(context)!.europeRoad,
       ),
     ),
     Marker(
       markerId: const MarkerId('bus_stop_kavacik_towardsbeykoz'),
       position: const LatLng(41.08915705000439, 29.088976773261635),
-      infoWindow: const InfoWindow(
-        title: 'Kavacık Bus Stop',
-        snippet: 'Ataturk Street/Beykoz',
+      infoWindow: InfoWindow(
+        title: AppLocalizations.of(context)!.kavacikBusStop,
+        snippet: AppLocalizations.of(context)!.ataturkStreetBeykoz,
       ),
     ),
     Marker(
       markerId: const MarkerId('bus_stop_kavacik_towardsüsküdar'),
       position: const LatLng(41.088994338829686, 29.088191740305337),
-      infoWindow: const InfoWindow(
-        title: 'Kavacık Bus Stop',
-        snippet: 'Ataturk Street/Beykoz',
+      infoWindow: InfoWindow(
+        title: AppLocalizations.of(context)!.kavacikBusStop,
+        snippet: AppLocalizations.of(context)!.ataturkStreetBeykoz,
       ),
     ),
-     Marker(
+    Marker(
       markerId: const MarkerId('bus_stop_kavaciksapagi_towardsüsküdar'),
       position: const LatLng(41.08860600008406, 29.090652087795732),
-      infoWindow: const InfoWindow(
-        title: 'Kavacık Sapağı Bus Stop',
-        snippet: 'Kavacik Junction/Beykoz',
+      infoWindow: InfoWindow(
+        title: AppLocalizations.of(context)!.kavacikJunctionBusStop,
+        snippet: AppLocalizations.of(context)!.kavacikJunctionBeykoz,
       ),
     ),
-     Marker(
+    Marker(
       markerId: const MarkerId('bus_stop_kavaciksapagi_towardsbeykoz'),
       position: const LatLng(41.08958640369496, 29.092962204616487),
-      infoWindow: const InfoWindow(
-        title: 'Kavacık Sapağı Bus Stop',
-        snippet: 'Kavacik Junction/Beykoz',
+      infoWindow: InfoWindow(
+        title: AppLocalizations.of(context)!.kavacikJunctionBusStop,
+        snippet: AppLocalizations.of(context)!.kavacikJunctionBeykoz,
       ),
     ),
-      Marker(
+    Marker(
       markerId: const MarkerId('bus_stop_yenirivayolu_towardsmecidiyeköy'),
       position: const LatLng(41.09133388881714, 29.094193858716775),
-      infoWindow: const InfoWindow(
-        title: 'Yeni Riva Yolu Bus Stop',
-        snippet: 'Kavacik Junction/Beykoz',
+      infoWindow: InfoWindow(
+        title: AppLocalizations.of(context)!.yeniRivaYoluBusStop,
+        snippet: AppLocalizations.of(context)!.kavacikJunctionBeykoz,
       ),
     ),
-     Marker(
+    Marker(
       markerId: const MarkerId('bus_stop_yenirivayolu_towardsbeykoz'),
       position: const LatLng(41.090414530513, 29.09395214590087),
-      infoWindow: const InfoWindow(
-        title: 'Yeni Riva Yolu Bus Stop',
-        snippet: 'Kavacik Junction/Beykoz',
+      infoWindow: InfoWindow(
+        title: AppLocalizations.of(context)!.yeniRivaYoluBusStop,
+        snippet: AppLocalizations.of(context)!.kavacikJunctionBeykoz,
       ),
     ),
   };
@@ -224,7 +203,9 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               child: TextField(
                 style: TextStyle(color: theme.textTheme.bodyLarge?.color),
                 decoration: InputDecoration(
-                  hintText: 'Bina veya konum ara...',
+                  hintText: AppLocalizations.of(
+                    context,
+                  )!.searchBuildingOrLocation,
                   hintStyle: TextStyle(color: theme.hintColor),
                   prefixIcon: Icon(Icons.search, color: theme.iconTheme.color),
                   border: InputBorder.none,
@@ -286,7 +267,16 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             color: theme.colorScheme.primary,
             size: 20,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+            }
+          },
         ),
       ),
     );
@@ -347,7 +337,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Rota Bilgisi',
+                  AppLocalizations.of(context)!.routeInfo,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -370,7 +360,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                 Icon(Icons.radio_button_checked, color: Colors.green, size: 16),
                 const SizedBox(width: 8),
                 Text(
-                  'Mevcut Konumunuz',
+                  AppLocalizations.of(context)!.yourCurrentLocation,
                   style: TextStyle(
                     fontSize: 14,
                     color: theme.textTheme.bodyLarge?.color,
@@ -382,7 +372,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                 Icon(Icons.location_on, color: Colors.red, size: 16),
                 const SizedBox(width: 8),
                 Text(
-                  'Mühendislik Fakültesi',
+                  AppLocalizations.of(context)!.engineeringFaculty,
                   style: TextStyle(
                     fontSize: 14,
                     color: theme.textTheme.bodyLarge?.color,
@@ -395,7 +385,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               children: [
                 _buildTravelModeChip(
                   Icons.directions_walk,
-                  'Yürüyüş',
+                  AppLocalizations.of(context)!.walking,
                   '8 dk',
                   true,
                   theme,
@@ -403,7 +393,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                 const SizedBox(width: 12),
                 _buildTravelModeChip(
                   Icons.directions_bus,
-                  'Servis',
+                  AppLocalizations.of(context)!.shuttle,
                   '3 dk',
                   false,
                   theme,
@@ -411,7 +401,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                 const SizedBox(width: 12),
                 _buildTravelModeChip(
                   Icons.directions_bike,
-                  'Bisiklet',
+                  AppLocalizations.of(context)!.bike,
                   '5 dk',
                   false,
                   theme,
@@ -431,9 +421,12 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Navigasyonu Başlat',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                child: Text(
+                  AppLocalizations.of(context)!.startNavigation,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
@@ -509,24 +502,39 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
         return AlertDialog(
           backgroundColor: theme.cardColor,
           title: Text(
-            'Bina Türlerini Filtrele',
+            AppLocalizations.of(context)!.filterBuildingTypes,
             style: TextStyle(color: theme.colorScheme.primary),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildFilterOption('Tümü', theme),
-              _buildFilterOption('Akademik Binalar', theme),
-              _buildFilterOption('İdari Binalar', theme),
-              _buildFilterOption('Sosyal Alanlar', theme),
-              _buildFilterOption('Spor Tesisleri', theme),
-              _buildFilterOption('Servis Durakları', theme),
+              _buildFilterOption(AppLocalizations.of(context)!.all, theme),
+              _buildFilterOption(
+                AppLocalizations.of(context)!.academicBuildings,
+                theme,
+              ),
+              _buildFilterOption(
+                AppLocalizations.of(context)!.administrativeBuildings,
+                theme,
+              ),
+              _buildFilterOption(
+                AppLocalizations.of(context)!.socialAreas,
+                theme,
+              ),
+              _buildFilterOption(
+                AppLocalizations.of(context)!.sportsFacilities,
+                theme,
+              ),
+              _buildFilterOption(
+                AppLocalizations.of(context)!.shuttleStops,
+                theme,
+              ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Kapat'),
+              child: Text(AppLocalizations.of(context)!.close),
             ),
           ],
         );
@@ -586,43 +594,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     if (_mapError) {
       return _buildMapErrorWidget(theme);
     }
-    
-    return Stack(
-      children: [
-        GoogleMap(
-          onMapCreated: (GoogleMapController controller) {
-            debugPrint('onMapCreated called - starting map setup');
-            try {
-              if (mounted) {
-                _mapController = controller;
-                _timeoutTimer?.cancel(); // Cancel timeout since map loaded successfully
-                debugPrint('Timer cancelled, setting _isInitializing = false');
-                setState(() {
-                  _isInitializing = false;
-                  _mapError = false; // Ensure error state is cleared
-                });
-                if (theme.brightness == Brightness.dark && _darkMapStyle != null) {
-                  controller.setMapStyle(_darkMapStyle);
-                } else {
-                  controller.setMapStyle(null);
-                }
-                debugPrint('Google Maps initialized successfully');
-              }
-            } catch (e) {
-              debugPrint('Google Maps initialization error: $e');
-              if (mounted) {
-                _timeoutTimer?.cancel();
-                setState(() {
-                  _mapError = true;
-                  _isInitializing = false;
-                });
-              }
-            }
-          },
-          onCameraMove: (CameraPosition position) {},
-          initialCameraPosition: const CameraPosition(
-            target: _medipolCenter,
-            zoom: 16.0,
+
           ),
           markers: _showShuttleLayer
               ? {..._buildingMarkers, ..._shuttleStops}
@@ -632,27 +604,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
           zoomControlsEnabled: false,
           mapToolbarEnabled: false,
         ),
-        if (_isInitializing)
-          Container(
-            color: theme.cardColor.withOpacity(0.8),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: theme.colorScheme.primary),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Harita yükleniyor...',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-      ],
+
     );
   }
 
@@ -670,7 +622,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Harita Yüklenemedi',
+              AppLocalizations.of(context)!.mapNotLoaded,
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -679,7 +631,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Google Maps yüklenemedi.',
+              AppLocalizations.of(context)!.googleMapsNotLoaded,
               style: TextStyle(
                 fontSize: 16,
                 color: theme.textTheme.bodyLarge?.color?.withOpacity(0.7),
@@ -688,7 +640,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             ),
             const SizedBox(height: 12),
             Text(
-              'API anahtarı yapılandırmasını kontrol edin veya internet bağlantınızı doğrulayın.',
+              AppLocalizations.of(context)!.checkApiKeyOrInternet,
               style: TextStyle(
                 fontSize: 14,
                 color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
@@ -704,7 +656,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
               ),
-              child: const Text('Tekrar Dene'),
+              child: Text(AppLocalizations.of(context)!.tryAgain),
             ),
           ],
         ),
@@ -736,11 +688,36 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildBottomNavItem(Icons.location_on, 'Navigation', 0, theme),
-                _buildBottomNavItem(Icons.calendar_today, 'Calendar', 1, theme),
-                _buildBottomNavItem(Icons.home, 'Home', 2, theme),
-                _buildBottomNavItem(Icons.qr_code_scanner, 'Scan', 3, theme),
-                _buildBottomNavItem(Icons.person, 'Profile', 4, theme),
+                _buildBottomNavItem(
+                  Icons.location_on,
+                  AppLocalizations.of(context)!.navigation,
+                  0,
+                  theme,
+                ),
+                _buildBottomNavItem(
+                  Icons.calendar_today,
+                  AppLocalizations.of(context)!.calendar,
+                  1,
+                  theme,
+                ),
+                _buildBottomNavItem(
+                  Icons.home,
+                  AppLocalizations.of(context)!.home,
+                  2,
+                  theme,
+                ),
+                _buildBottomNavItem(
+                  Icons.qr_code_scanner,
+                  AppLocalizations.of(context)!.scan,
+                  3,
+                  theme,
+                ),
+                _buildBottomNavItem(
+                  Icons.person,
+                  AppLocalizations.of(context)!.profile,
+                  4,
+                  theme,
+                ),
               ],
             ),
           ),
@@ -756,6 +733,12 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     ThemeData theme,
   ) {
     final isSelected = _selectedIndex == index;
+    final Color unselectedColor = theme.brightness == Brightness.dark
+        ? Colors.white70
+        : theme.iconTheme.color ?? Colors.black;
+    final Color unselectedTextColor = theme.brightness == Brightness.dark
+        ? Colors.white70
+        : theme.textTheme.bodyMedium?.color ?? Colors.black;
     return GestureDetector(
       onTap: () {
         if (index != _selectedIndex) {
@@ -797,9 +780,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
         children: [
           Icon(
             icon,
-            color: isSelected
-                ? theme.colorScheme.primary
-                : theme.iconTheme.color,
+            color: isSelected ? theme.colorScheme.primary : unselectedColor,
             size: 24,
           ),
           const SizedBox(height: 4),
@@ -808,7 +789,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             style: TextStyle(
               color: isSelected
                   ? theme.colorScheme.primary
-                  : theme.textTheme.bodyMedium?.color,
+                  : unselectedTextColor,
               fontSize: 10,
               fontWeight: FontWeight.w500,
             ),

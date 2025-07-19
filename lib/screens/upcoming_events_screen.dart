@@ -685,7 +685,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
               ),
               const SizedBox(width: AppConstants.paddingSmall),
               Text(
-                _formatEventDate(event.eventDate),
+                _formatEventDate(context, event.eventDate),
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeMedium,
                   fontWeight: FontWeight.w500,
@@ -980,7 +980,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   // Yardımcı metotlar / Helper methods
 
   /// Tarih formatla / Format date
-  String _formatEventDate(DateTime date) {
+  String _formatEventDate(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final difference = date.difference(now);
 
@@ -990,13 +990,13 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       return 'Yarın, ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     } else if (difference.inDays < 7) {
       final days = [
-        'Pazartesi',
-        'Salı',
-        'Çarşamba',
-        'Perşembe',
-        'Cuma',
-        'Cumartesi',
-        'Pazar',
+        AppLocalizations.of(context)!.monday,
+        AppLocalizations.of(context)!.tuesday,
+        AppLocalizations.of(context)!.wednesday,
+        AppLocalizations.of(context)!.thursday,
+        AppLocalizations.of(context)!.friday,
+        AppLocalizations.of(context)!.saturday,
+        AppLocalizations.of(context)!.sunday,
       ];
       return '${days[date.weekday - 1]}, ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     } else {

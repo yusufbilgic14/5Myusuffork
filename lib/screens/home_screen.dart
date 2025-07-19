@@ -1151,23 +1151,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Cafeteria paneli widget'ı
   Widget _buildCafeteriaPanel(BuildContext context) {
+    final theme = Theme.of(context);
     return Material(
       elevation: 8,
-      color: Colors.white,
+      color: theme.cardColor,
       borderRadius: const BorderRadius.only(
         bottomLeft: Radius.circular(24),
         bottomRight: Radius.circular(24),
       ),
       child: Stack(
         children: [
-          // Panel içeriği: CafeteriaMenuScreen'in ana gövdesi veya özet menü
-          SizedBox(height: 400, child: CafeteriaMenuScreen()),
+          // Panel içeriği: Sadece yazılı menü özeti
+          SizedBox(height: 400, child: _buildCafeteriaMenuSummary(context)),
           // Kapatma butonu
           Positioned(
             right: 8,
             top: 8,
             child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.black),
+              icon: Icon(Icons.close, color: theme.iconTheme.color),
               onPressed: () {
                 setState(() {
                   _showCafeteriaMenu = false;
@@ -1176,6 +1177,122 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // Sadece yazılı menü özeti gösteren widget
+  Widget _buildCafeteriaMenuSummary(BuildContext context) {
+    final theme = Theme.of(context);
+    final now = DateTime.now();
+    final weekdayNames = [
+      AppLocalizations.of(context)!.mondayShort,
+      AppLocalizations.of(context)!.tuesdayShort,
+      AppLocalizations.of(context)!.wednesdayShort,
+      AppLocalizations.of(context)!.thursdayShort,
+      AppLocalizations.of(context)!.fridayShort,
+      AppLocalizations.of(context)!.saturdayShort,
+      AppLocalizations.of(context)!.sundayShort,
+    ];
+    // Örnek menü verisi (gerçek uygulamada API'den çekilebilir)
+    final menus = [
+      [
+        'Naneli Yoğurt Çorba 171 KCAL',
+        'Köfteli Izgara Patlıcan Beğendi ile 378 KCAL',
+        'Soslu Piliç But 335 KCAL',
+        'Sade Pirinç Pilavı 330 KCAL',
+        'Soslu Spagetti 276 KCAL',
+        'Kolatalı Vanilyalı Dondurma 207 KCAL',
+        'Salata Bar',
+        'Göbek Salata',
+        'Karışık Turşu',
+      ],
+      [
+        'Ezogelin Çorba 150 KCAL',
+        'Izgara Tavuk 320 KCAL',
+        'Fırın Makarna 250 KCAL',
+        'Pirinç Pilavı 300 KCAL',
+        'Mevsim Salata',
+        'Ayran',
+      ],
+      [
+        'Mercimek Çorba 140 KCAL',
+        'Etli Türlü 350 KCAL',
+        'Bulgur Pilavı 280 KCAL',
+        'Yoğurt',
+        'Çoban Salata',
+      ],
+      [
+        'Domates Çorba 120 KCAL',
+        'Karnıyarık 400 KCAL',
+        'Şehriyeli Pilav 290 KCAL',
+        'Cacık',
+        'Mevsim Meyve',
+      ],
+    ];
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(4, (i) {
+            final date = now.add(Duration(days: i));
+            final weekday = weekdayNames[date.weekday - 1];
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.restaurant,
+                      color: AppThemes.getPrimaryColor(context),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      AppLocalizations.of(context)!.cafeteriaMenu,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: theme.textTheme.titleLarge?.color,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year} $weekday',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        color: theme.textTheme.bodyMedium?.color,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  AppLocalizations.of(context)!.lunch,
+                  style: TextStyle(
+                    color: Colors.green[700],
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ...menus[i % menus.length].map(
+                  (item) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Text(
+                      item,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                    ),
+                  ),
+                ),
+                if (i < 3) const Divider(height: 28),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }

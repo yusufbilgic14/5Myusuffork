@@ -30,35 +30,43 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   // Talep kategorileri / Request categories
   final List<Map<String, dynamic>> _talepCategories = [
-    {'name': 'Akademik Destek', 'icon': Icons.school, 'color': Colors.blue},
-    {'name': 'Teknik Yardım', 'icon': Icons.build, 'color': Colors.orange},
     {
-      'name': 'Kütüphane Hizmetleri',
+      'nameKey': 'requestCategoryAcademicSupport',
+      'icon': Icons.school,
+      'color': Colors.blue,
+    },
+    {
+      'nameKey': 'requestCategoryTechnicalHelp',
+      'icon': Icons.build,
+      'color': Colors.orange,
+    },
+    {
+      'nameKey': 'requestCategoryLibrary',
       'icon': Icons.library_books,
       'color': Colors.green,
     },
     {
-      'name': 'Yemekhane Hizmetleri',
+      'nameKey': 'requestCategoryCafeteria',
       'icon': Icons.restaurant,
       'color': Colors.red,
     },
     {
-      'name': 'Ulaşım Talebi',
+      'nameKey': 'requestCategoryTransport',
       'icon': Icons.directions_bus,
       'color': Colors.purple,
     },
     {
-      'name': 'Güvenlik Desteği',
+      'nameKey': 'requestCategorySecurity',
       'icon': Icons.security,
       'color': Colors.red[700],
     },
     {
-      'name': 'Mali İşler',
+      'nameKey': 'requestCategoryFinance',
       'icon': Icons.account_balance_wallet,
       'color': Colors.indigo,
     },
     {
-      'name': 'Genel Talep',
+      'nameKey': 'requestCategoryGeneral',
       'icon': Icons.chat_bubble_outline,
       'color': Colors.grey[600],
     },
@@ -66,22 +74,38 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   // Geri bildirim kategorileri / Feedback categories
   final List<Map<String, dynamic>> _geriBildirimCategories = [
-    {'name': 'Hata Bildirimi', 'icon': Icons.bug_report, 'color': Colors.red},
-    {'name': 'Öneri', 'icon': Icons.lightbulb, 'color': Colors.orange},
-    {'name': 'Şikayet', 'icon': Icons.error_outline, 'color': Colors.red[700]},
-    {'name': 'Takdir', 'icon': Icons.thumb_up, 'color': Colors.green},
     {
-      'name': 'Özellik İsteği',
+      'nameKey': 'feedbackCategoryBugReport',
+      'icon': Icons.bug_report,
+      'color': Colors.red,
+    },
+    {
+      'nameKey': 'feedbackCategorySuggestion',
+      'icon': Icons.lightbulb,
+      'color': Colors.orange,
+    },
+    {
+      'nameKey': 'feedbackCategoryComplaint',
+      'icon': Icons.error_outline,
+      'color': Colors.red[700],
+    },
+    {
+      'nameKey': 'feedbackCategoryAppreciation',
+      'icon': Icons.thumb_up,
+      'color': Colors.green,
+    },
+    {
+      'nameKey': 'feedbackCategoryFeatureRequest',
       'icon': Icons.add_circle_outline,
       'color': Colors.blue,
     },
     {
-      'name': 'Uygulama Yorumu',
+      'nameKey': 'feedbackCategoryAppReview',
       'icon': Icons.rate_review,
       'color': Colors.purple,
     },
     {
-      'name': 'Genel Geri Bildirim',
+      'nameKey': 'feedbackCategoryGeneral',
       'icon': Icons.chat_bubble_outline,
       'color': Colors.grey[600],
     },
@@ -327,7 +351,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      category['name'],
+                      _localizedCategoryName(context, category['nameKey']),
                       style: TextStyle(
                         color: isSelected
                             ? theme.colorScheme.onPrimary
@@ -948,6 +972,43 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     });
   }
 
+  String _localizedCategoryName(BuildContext context, String key) {
+    switch (key) {
+      case 'requestCategoryAcademicSupport':
+        return AppLocalizations.of(context)!.requestCategoryAcademicSupport;
+      case 'requestCategoryTechnicalHelp':
+        return AppLocalizations.of(context)!.requestCategoryTechnicalHelp;
+      case 'requestCategoryLibrary':
+        return AppLocalizations.of(context)!.requestCategoryLibrary;
+      case 'requestCategoryCafeteria':
+        return AppLocalizations.of(context)!.requestCategoryCafeteria;
+      case 'requestCategoryTransport':
+        return AppLocalizations.of(context)!.requestCategoryTransport;
+      case 'requestCategorySecurity':
+        return AppLocalizations.of(context)!.requestCategorySecurity;
+      case 'requestCategoryFinance':
+        return AppLocalizations.of(context)!.requestCategoryFinance;
+      case 'requestCategoryGeneral':
+        return AppLocalizations.of(context)!.requestCategoryGeneral;
+      case 'feedbackCategoryBugReport':
+        return AppLocalizations.of(context)!.feedbackCategoryBugReport;
+      case 'feedbackCategorySuggestion':
+        return AppLocalizations.of(context)!.feedbackCategorySuggestion;
+      case 'feedbackCategoryComplaint':
+        return AppLocalizations.of(context)!.feedbackCategoryComplaint;
+      case 'feedbackCategoryAppreciation':
+        return AppLocalizations.of(context)!.feedbackCategoryAppreciation;
+      case 'feedbackCategoryFeatureRequest':
+        return AppLocalizations.of(context)!.feedbackCategoryFeatureRequest;
+      case 'feedbackCategoryAppReview':
+        return AppLocalizations.of(context)!.feedbackCategoryAppReview;
+      case 'feedbackCategoryGeneral':
+        return AppLocalizations.of(context)!.feedbackCategoryGeneral;
+      default:
+        return key;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -959,9 +1020,19 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       appBar: AppBar(
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
-        title: Text(
-          AppLocalizations.of(context)!.feedback,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+        titleSpacing: 0,
+        title: Row(
+          children: [
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context)!.feedback,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+              ),
+            ),
+          ],
         ),
         elevation: 0,
         actions: [
@@ -1005,14 +1076,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           size: 28,
                         ),
                         const SizedBox(width: 12),
-                        Text(
-                          AppLocalizations.of(
-                            context,
-                          )!.your_feedback_is_valuable,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(
+                              context,
+                            )!.your_feedback_is_valuable,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
                           ),
                         ),
                       ],

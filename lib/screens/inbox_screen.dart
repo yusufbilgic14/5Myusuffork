@@ -18,49 +18,26 @@ class _InboxScreenState extends State<InboxScreen> {
   final List<Map<String, dynamic>> _messages = [
     {
       'id': 1,
-      'subject': 'Öğrenci Belgesi Talebiniz Hakkında',
-      'sender': 'Öğrenci İşleri',
+      'subjectKey': 'inboxSubject1',
+      'senderKey': 'inboxSender1',
       'senderEmail': 'ogrenciisleri@medipol.edu.tr',
       'date': '24.06.2025',
       'time': '14:30',
       'isRead': false,
       'hasAttachment': true,
-      'content': '''Sayın Elif Yılmaz,
-
-24.06.2025 tarihinde talepte bulunduğunuz öğrenci belgesi hazırlanmıştır. 
-
-Belgenizi aşağıdaki şekillerde temin edebilirsiniz:
-• Öğrenci İşleri ofisimizden şahsen teslim alabilirsiniz
-• Kargo ile adresinize göndermek için ek ücret karşılığında başvurabilirsiniz
-
-Ofis saatleri: Pazartesi-Cuma 09:00-17:00
-
-Saygılarımızla,
-Öğrenci İşleri Müdürlüğü''',
+      'contentKey': 'inboxContent1',
       'attachments': ['ogrenci_belgesi_2025.pdf'],
     },
     {
       'id': 2,
-      'subject': 'Burs Başvuru Sonucu',
-      'sender': 'Burs ve Yardım İşleri',
+      'subjectKey': 'inboxSubject2',
+      'senderKey': 'inboxSender2',
       'senderEmail': 'burs@medipol.edu.tr',
       'date': '22.06.2025',
       'time': '10:15',
       'isRead': false,
       'hasAttachment': false,
-      'content': '''Sayın Elif Yılmaz,
-
-2024-2025 Akademik Yılı Başarı Bursu başvurunuz değerlendirilmiş olup, başvurunuzun KABUL edildiğini bildiririz.
-
-Burs Detayları:
-• Burs Türü: Başarı Bursu (%25)
-• Geçerli Dönem: 2025-2026 Güz Dönemi
-• Ödeme Tarihi: Kayıt yenileme sonrası
-
-Burs hakkinizı kullanabilmek için kayıt yenileme işlemlerinizi zamanında tamamlamanız gerekmektedir.
-
-Tebrikler!
-Burs ve Yardım İşleri Müdürlüğü''',
+      'contentKey': 'inboxContent2',
       'attachments': [],
     },
     {
@@ -138,6 +115,36 @@ Protokol Birimi''',
     },
   ];
 
+  bool _isSearching = false;
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
+
+  String _localizedInboxField(
+    BuildContext context,
+    Map<String, dynamic> message,
+    String key,
+  ) {
+    if (message.containsKey(key + 'Key')) {
+      switch (message[key + 'Key']) {
+        case 'inboxSubject1':
+          return AppLocalizations.of(context)!.inboxSubject1;
+        case 'inboxSender1':
+          return AppLocalizations.of(context)!.inboxSender1;
+        case 'inboxContent1':
+          return AppLocalizations.of(context)!.inboxContent1;
+        case 'inboxSubject2':
+          return AppLocalizations.of(context)!.inboxSubject2;
+        case 'inboxSender2':
+          return AppLocalizations.of(context)!.inboxSender2;
+        case 'inboxContent2':
+          return AppLocalizations.of(context)!.inboxContent2;
+        default:
+          return '';
+      }
+    }
+    return message[key] ?? '';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -154,6 +161,27 @@ Protokol Birimi''',
     }
   }
 
+  List<Map<String, dynamic>> get _filteredMessages {
+    if (_searchQuery.isEmpty) return _messages;
+    final query = _searchQuery.toLowerCase();
+    return _messages.where((msg) {
+      final subject = _localizedInboxField(
+        context,
+        msg,
+        'subject',
+      ).toLowerCase();
+      final sender = _localizedInboxField(context, msg, 'sender').toLowerCase();
+      final content = _localizedInboxField(
+        context,
+        msg,
+        'content',
+      ).toLowerCase();
+      return subject.contains(query) ||
+          sender.contains(query) ||
+          content.contains(query);
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,27 +193,70 @@ Protokol Birimi''',
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          AppLocalizations.of(context)!.inbox,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: _isSearching
+            ? Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      autofocus: true,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                        ),
+                        hintText: AppLocalizations.of(
+                          context,
+                        )!.searchBuildingOrLocation,
+                        hintStyle: const TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              )
+            : Text(
+                AppLocalizations.of(context)!.inbox,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white),
-            onPressed: () {
-              // TODO: Arama functionality
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: () {
-              // TODO: Yenileme functionality
-            },
-          ),
+          if (_isSearching)
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.white),
+              onPressed: () {
+                setState(() {
+                  _isSearching = false;
+                  _searchQuery = '';
+                  _searchController.clear();
+                });
+              },
+            )
+          else ...[
+            IconButton(
+              icon: const Icon(Icons.search, color: Colors.white),
+              onPressed: () {
+                setState(() {
+                  _isSearching = true;
+                });
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh, color: Colors.white),
+              onPressed: () {
+                // TODO: Yenileme functionality
+              },
+            ),
+          ],
         ],
       ),
       body: AnimatedContainer(
@@ -246,9 +317,12 @@ Protokol Birimi''',
                     // Mesaj listesi / Message list
                     Expanded(
                       child: ListView.builder(
-                        itemCount: _messages.length,
+                        itemCount: _filteredMessages.length,
                         itemBuilder: (context, index) {
-                          return _buildMessageItem(_messages[index], index);
+                          return _buildMessageItem(
+                            _filteredMessages[index],
+                            _messages.indexOf(_filteredMessages[index]),
+                          );
                         },
                       ),
                     ),
@@ -305,7 +379,7 @@ Protokol Birimi''',
               children: [
                 Expanded(
                   child: Text(
-                    message['sender'],
+                    _localizedInboxField(context, message, 'sender'),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey[600],
@@ -337,7 +411,7 @@ Protokol Birimi''',
                   ),
                 Expanded(
                   child: Text(
-                    message['subject'],
+                    _localizedInboxField(context, message, 'subject'),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: message['isRead']
@@ -358,9 +432,11 @@ Protokol Birimi''',
 
             // Mesaj önizleme / Message preview
             Text(
-              message['content'].split(
-                '\n',
-              )[0], // İlk satırı göster / Show first line
+              _localizedInboxField(
+                context,
+                message,
+                'content',
+              ).split('\n')[0], // İlk satırı göster / Show first line
               style: TextStyle(
                 fontSize: 13,
                 color: Colors.grey[600],
@@ -417,7 +493,7 @@ Protokol Birimi''',
                       ),
                       Expanded(
                         child: Text(
-                          message['subject'],
+                          _localizedInboxField(context, message, 'subject'),
                           style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -445,7 +521,7 @@ Protokol Birimi''',
                         ),
                         child: Center(
                           child: Text(
-                            message['sender'][0],
+                            _localizedInboxField(context, message, 'sender')[0],
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -463,7 +539,7 @@ Protokol Birimi''',
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              message['sender'],
+                              _localizedInboxField(context, message, 'sender'),
                               style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
@@ -586,7 +662,7 @@ Protokol Birimi''',
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Text(
-                  message['content'],
+                  _localizedInboxField(context, message, 'content'),
                   style: const TextStyle(
                     fontSize: 15,
                     height: 1.6,
@@ -657,4 +733,32 @@ Protokol Birimi''',
       ),
     );
   }
+}
+
+// Uzun gün ismi (Pazartesi, Monday vs.)
+String getLocalizedDayName(BuildContext context, DateTime date) {
+  final dayNames = [
+    AppLocalizations.of(context)!.monday,
+    AppLocalizations.of(context)!.tuesday,
+    AppLocalizations.of(context)!.wednesday,
+    AppLocalizations.of(context)!.thursday,
+    AppLocalizations.of(context)!.friday,
+    AppLocalizations.of(context)!.saturday,
+    AppLocalizations.of(context)!.sunday,
+  ];
+  return dayNames[date.weekday - 1];
+}
+
+// Kısa gün ismi (Pzt, Mon vs.)
+String getLocalizedDayShortName(BuildContext context, DateTime date) {
+  final dayShortNames = [
+    AppLocalizations.of(context)!.monShort,
+    AppLocalizations.of(context)!.tueShort,
+    AppLocalizations.of(context)!.wedShort,
+    AppLocalizations.of(context)!.thuShort,
+    AppLocalizations.of(context)!.friShort,
+    AppLocalizations.of(context)!.satShort,
+    AppLocalizations.of(context)!.sunShort,
+  ];
+  return dayShortNames[date.weekday - 1];
 }
