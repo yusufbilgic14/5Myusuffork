@@ -147,22 +147,36 @@ class _LoginScreenState extends State<LoginScreen>
     final safeAreaTop = MediaQuery.of(context).padding.top;
 
     final languageProvider = Provider.of<LanguageProvider>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgGradient = isDark
+        ? [
+            const Color(0xFF181F2A),
+            const Color(0xFF232B3E),
+            const Color(0xFF1A2233),
+          ]
+        : [
+            const Color(0xFFF3F6FB),
+            const Color(0xFFE9F0FA),
+            const Color(0xFFD6E4F0),
+          ];
+    final cardColor = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final inputFill = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final inputBorder = isDark ? Colors.white12 : Colors.grey.shade200;
+    final textColor = isDark ? Colors.white : Colors.black;
+    final hintColor = isDark ? Colors.white54 : Colors.grey.shade400;
+    final labelColor = isDark ? Colors.white : AppConstants.primaryColor;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: isDark ? const Color(0xFF181F2A) : Colors.grey.shade50,
       resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFF3F6FB),
-                  Color(0xFFE9F0FA),
-                  Color(0xFFD6E4F0),
-                ],
+                colors: bgGradient,
               ),
             ),
             child: SafeArea(
@@ -318,15 +332,20 @@ class _LoginScreenState extends State<LoginScreen>
   /// Giriş kartı widget'ı / Login card widget
   Widget _buildLoginCard() {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black;
     return Container(
       width: double.infinity,
       constraints: const BoxConstraints(maxWidth: 320),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.10),
+            color: isDark
+                ? Colors.black.withOpacity(0.25)
+                : Colors.black.withOpacity(0.10),
             blurRadius: 40,
             offset: const Offset(0, 18),
             spreadRadius: 0,
@@ -347,7 +366,7 @@ class _LoginScreenState extends State<LoginScreen>
                   style: TextStyle(
                     fontSize: AppConstants.fontSizeXXLarge,
                     fontWeight: FontWeight.w800,
-                    color: AppConstants.primaryColor,
+                    color: isDark ? Colors.white : AppConstants.primaryColor,
                     letterSpacing: 0.2,
                   ),
                 ),
@@ -357,7 +376,7 @@ class _LoginScreenState extends State<LoginScreen>
                 l10n.loginSubtitle,
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeMedium,
-                  color: Colors.grey.shade600,
+                  color: isDark ? Colors.white70 : Colors.grey.shade600,
                   fontWeight: FontWeight.w400,
                 ),
               ),
@@ -452,6 +471,11 @@ class _LoginScreenState extends State<LoginScreen>
     TextInputType textInputType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inputFill = isDark ? const Color(0xFF232B3E) : Colors.white;
+    final inputBorder = isDark ? Colors.white12 : Colors.grey.shade200;
+    final labelColor = isDark ? Colors.white : AppConstants.primaryColor;
+    final hintColor = isDark ? Colors.white54 : Colors.grey.shade400;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -460,7 +484,7 @@ class _LoginScreenState extends State<LoginScreen>
           style: TextStyle(
             fontSize: AppConstants.fontSizeSmall,
             fontWeight: FontWeight.w600,
-            color: AppConstants.primaryColor,
+            color: labelColor,
           ),
         ),
         const SizedBox(height: AppConstants.paddingSmall),
@@ -476,12 +500,14 @@ class _LoginScreenState extends State<LoginScreen>
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: Colors.grey.shade400,
+              color: hintColor,
               fontWeight: FontWeight.normal,
             ),
             prefixIcon: Icon(
               icon,
-              color: AppConstants.primaryColor.withValues(alpha: 0.7),
+              color: isDark
+                  ? Colors.white54
+                  : AppConstants.primaryColor.withValues(alpha: 0.7),
               size: 22,
             ),
             suffixIcon: isPassword
@@ -490,7 +516,9 @@ class _LoginScreenState extends State<LoginScreen>
                       _isPasswordVisible
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: AppConstants.primaryColor.withValues(alpha: 0.7),
+                      color: isDark
+                          ? Colors.white54
+                          : AppConstants.primaryColor.withValues(alpha: 0.7),
                       size: 22,
                     ),
                     onPressed: () {
@@ -501,19 +529,19 @@ class _LoginScreenState extends State<LoginScreen>
                   )
                 : null,
             filled: true,
-            fillColor: Colors.white,
+            fillColor: inputFill,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade200, width: 1),
+              borderSide: BorderSide(color: inputBorder, width: 1),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade200, width: 1),
+              borderSide: BorderSide(color: inputBorder, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
-                color: AppConstants.primaryColor,
+                color: isDark ? Colors.white54 : AppConstants.primaryColor,
                 width: 1.5,
               ),
             ),

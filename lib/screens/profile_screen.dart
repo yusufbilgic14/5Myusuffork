@@ -13,6 +13,7 @@ import 'help_support_screen.dart'; // Yardım ve Destek ekranı importu
 import 'kampuse_ulasim_screen.dart'; // Kampüse Ulaşım ekranı importu
 import '../l10n/app_localizations.dart';
 import '../providers/language_provider.dart'; // Dil ayarları için provider eklendi
+import '../widgets/common/app_bar_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -30,18 +31,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       key: _scaffoldKey,
       backgroundColor: AppThemes.getBackgroundColor(context),
       // Navy renkli AppBar / Navy colored AppBar
-      appBar: AppBar(
-        backgroundColor: AppConstants.primaryColor,
-        foregroundColor: AppConstants.textColorLight,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.profile,
-          style: const TextStyle(
-            fontSize: AppConstants.fontSizeXLarge,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.profile,
         leading: Builder(
           builder: (BuildContext context) {
             return GestureDetector(
@@ -52,7 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             );
           },
         ),
-        automaticallyImplyLeading: false,
+        centerTitle: true,
       ),
 
       // Ana sayfa drawer'ı / Main drawer

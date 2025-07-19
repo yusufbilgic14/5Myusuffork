@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 class KampuseUlasimScreen extends StatelessWidget {
   const KampuseUlasimScreen({Key? key}) : super(key: key);
@@ -94,10 +95,10 @@ class KampuseUlasimScreen extends StatelessWidget {
       ['', '14M', 'KAVACIK YENİ CAMİİ-KADIKÖY'],
     ];
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.campusTransport),
-        backgroundColor: const Color(0xFF1E3A8A),
-        foregroundColor: Colors.white,
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.campusTransport,
+        leading: BackButton(color: Colors.white),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(0),

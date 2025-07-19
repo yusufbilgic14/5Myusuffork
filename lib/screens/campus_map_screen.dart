@@ -9,6 +9,7 @@ import 'calendar_screen.dart';
 import 'qr_access_screen.dart';
 import 'profile_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 class CampusMapScreen extends StatefulWidget {
   const CampusMapScreen({super.key});
@@ -32,7 +33,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   void initState() {
     super.initState();
     _loadDarkMapStyle();
-    
+
     // Set timeout for map initialization
     _timeoutTimer = Timer(const Duration(seconds: 10), () {
       if (mounted) {
@@ -54,7 +55,9 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   // Koyu tema map style'ını yükle - hata durumunda sessizce devam et
   Future<void> _loadDarkMapStyle() async {
     try {
-      _darkMapStyle = await rootBundle.loadString('assets/map_styles/dark_map_style.json');
+      _darkMapStyle = await rootBundle.loadString(
+        'assets/map_styles/dark_map_style.json',
+      );
     } catch (e) {
       debugPrint('Dark map style could not be loaded: $e');
       _darkMapStyle = null;
@@ -160,6 +163,18 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.navigation,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
+      ),
       body: SafeArea(
         child: Stack(
           children: [
@@ -580,7 +595,9 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               'Mobil uygulamada harita tam fonksiyoneldir.',
               style: TextStyle(
                 fontSize: 14,
-                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                color: theme.textTheme.bodyMedium?.color?.withValues(
+                  alpha: 0.7,
+                ),
               ),
             ),
           ],
@@ -628,7 +645,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
         _mapError = false;
       });
     }
-    
+
     // Timeout timer'ını yeniden başlat / Restart timeout timer
     _timeoutTimer?.cancel();
     _timeoutTimer = Timer(const Duration(seconds: 10), () {
@@ -677,7 +694,9 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
               AppLocalizations.of(context)!.checkApiKeyOrInternet,
               style: TextStyle(
                 fontSize: 14,
-                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                color: theme.textTheme.bodyMedium?.color?.withValues(
+                  alpha: 0.7,
+                ),
               ),
               textAlign: TextAlign.center,
             ),
