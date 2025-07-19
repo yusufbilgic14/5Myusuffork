@@ -97,8 +97,15 @@ class KampuseUlasimScreen extends StatelessWidget {
     return Scaffold(
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.campusTransport,
-        leading: BackButton(color: Colors.white),
-        centerTitle: true,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(0),

@@ -58,8 +58,15 @@ class _NotificationSettingsScreenState
     return Scaffold(
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.notificationSettings,
-        leading: BackButton(color: Colors.white),
-        centerTitle: true,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
       ),
       body: Stack(
         children: [

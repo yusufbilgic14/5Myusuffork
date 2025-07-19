@@ -35,15 +35,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: AppLocalizations.of(context)!.profile,
         leading: Builder(
           builder: (BuildContext context) {
-            return GestureDetector(
-              onTap: () {
-                _scaffoldKey.currentState?.openDrawer();
-              },
-              child: const Icon(Icons.menu, color: Colors.white, size: 24),
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+              tooltip: 'Menü',
             );
           },
         ),
-        centerTitle: true,
       ),
 
       // Ana sayfa drawer'ı / Main drawer
@@ -82,6 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // Menü öğeleri başlığı / Menu items title
               Text(
                 AppLocalizations.of(context)!.accountSettings,
+                textAlign: TextAlign.left, // Sola hizala
                 style: TextStyle(
                   fontSize: AppConstants.fontSizeXLarge,
                   fontWeight: FontWeight.bold,
