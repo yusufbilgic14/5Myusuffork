@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/common/app_bar_widget.dart';
+import '../constants/app_constants.dart';
+import '../themes/app_themes.dart';
+import '../widgets/common/bottom_navigation_widget.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({Key? key}) : super(key: key);
@@ -46,6 +49,7 @@ class _NotificationSettingsScreenState
           content: Text(
             AppLocalizations.of(context)!.notificationSettingsSaved,
           ),
+          backgroundColor: AppThemes.getPrimaryColor(context),
         ),
       );
       await Future.delayed(const Duration(milliseconds: 500));
@@ -53,60 +57,156 @@ class _NotificationSettingsScreenState
     }
   }
 
+  Widget _buildNotificationItem({
+    required String title,
+    required IconData icon,
+    required bool value,
+    required ValueChanged<bool?> onChanged,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppThemes.getSurfaceColor(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade200,
+          width: 1,
+        ),
+      ),
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: AppThemes.getPrimaryColor(context),
+          size: 22,
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: AppThemes.getTextColor(context),
+          ),
+        ),
+        trailing: Switch(
+          value: value,
+          onChanged: onChanged,
+          activeColor: AppThemes.getPrimaryColor(context),
+          activeTrackColor: AppThemes.getPrimaryColor(context).withOpacity(0.2),
+          inactiveThumbColor: isDark ? Colors.white70 : Colors.grey.shade400,
+          inactiveTrackColor: isDark
+              ? Colors.white.withOpacity(0.2)
+              : Colors.grey.shade200,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppThemes.getBackgroundColor(context),
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.notificationSettings,
-        leading: BackButton(color: Colors.white),
-        centerTitle: true,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
       ),
-      body: Stack(
+      body: Column(
         children: [
-          ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              CheckboxListTile(
-                title: Text(AppLocalizations.of(context)!.eventNotifications),
-                value: eventNotifications,
-                onChanged: (val) {
-                  setState(() => eventNotifications = val ?? false);
-                },
+          // Basit açıklama
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text(
+              'Bildirim tercihlerinizi yönetin',
+              style: TextStyle(
+                fontSize: 14,
+                color: AppThemes.getSecondaryTextColor(context),
+                fontWeight: FontWeight.w500,
               ),
-              CheckboxListTile(
-                title: Text(AppLocalizations.of(context)!.gradeNotifications),
-                value: gradeNotifications,
-                onChanged: (val) {
-                  setState(() => gradeNotifications = val ?? false);
-                },
-              ),
-              CheckboxListTile(
-                title: Text(AppLocalizations.of(context)!.messageNotifications),
-                value: messageNotifications,
-                onChanged: (val) {
-                  setState(() => messageNotifications = val ?? false);
-                },
-              ),
-              CheckboxListTile(
-                title: Text(AppLocalizations.of(context)!.clubNotifications),
-                value: clubNotifications,
-                onChanged: (val) {
-                  setState(() => clubNotifications = val ?? false);
-                },
-              ),
-            ],
+            ),
           ),
-          Positioned(
-            right: 24,
-            bottom: 24,
-            child: FloatingActionButton.extended(
-              onPressed: _saveSettings,
-              backgroundColor: const Color(0xFF1E3A8A),
-              icon: const Icon(Icons.save),
-              label: Text(AppLocalizations.of(context)!.save),
+
+          // Bildirim seçenekleri
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: [
+                _buildNotificationItem(
+                  title: AppLocalizations.of(context)!.eventNotifications,
+                  icon: Icons.event_outlined,
+                  value: eventNotifications,
+                  onChanged: (val) {
+                    setState(() => eventNotifications = val ?? false);
+                  },
+                ),
+                _buildNotificationItem(
+                  title: AppLocalizations.of(context)!.gradeNotifications,
+                  icon: Icons.school_outlined,
+                  value: gradeNotifications,
+                  onChanged: (val) {
+                    setState(() => gradeNotifications = val ?? false);
+                  },
+                ),
+                _buildNotificationItem(
+                  title: AppLocalizations.of(context)!.messageNotifications,
+                  icon: Icons.mail_outlined,
+                  value: messageNotifications,
+                  onChanged: (val) {
+                    setState(() => messageNotifications = val ?? false);
+                  },
+                ),
+                _buildNotificationItem(
+                  title: AppLocalizations.of(context)!.clubNotifications,
+                  icon: Icons.group_outlined,
+                  value: clubNotifications,
+                  onChanged: (val) {
+                    setState(() => clubNotifications = val ?? false);
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          // Kaydet butonu
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _saveSettings,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppThemes.getPrimaryColor(context),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  AppLocalizations.of(context)!.save,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: const BottomNavigationWidget(
+        currentIndex: AppConstants.navIndexProfile,
       ),
     );
   }

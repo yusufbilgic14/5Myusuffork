@@ -11,19 +11,53 @@ class InitialLoadingScreen extends StatefulWidget {
   State<InitialLoadingScreen> createState() => _InitialLoadingScreenState();
 }
 
-class _InitialLoadingScreenState extends State<InitialLoadingScreen> {
+class _InitialLoadingScreenState extends State<InitialLoadingScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
-    // 3 saniye sonra login ekranına geç / Navigate to login screen after 3 seconds
-    Timer(const Duration(seconds: 2), () {
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    _scaleAnimation = Tween<double>(
+      begin: 0.7,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
+    _controller.forward();
+
+    // 2 saniye sonra login ekranına geçişte fade-out animasyonu
+    Future.delayed(const Duration(seconds: 2), () async {
+      await _controller.reverse();
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const LoginScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+            transitionDuration: const Duration(milliseconds: 700),
+          ),
         );
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -32,16 +66,21 @@ class _InitialLoadingScreenState extends State<InitialLoadingScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Logo ortada / Logo in center
-          const Center(
-            child: MedipolLogoWidget(
-              size: 150,
-              isRounded: true,
-              showFallbackText: true,
+          // Logo ortada animasyonlu
+          Center(
+            child: ScaleTransition(
+              scale: _scaleAnimation,
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: const MedipolLogoWidget(
+                  size: 150,
+                  isRounded: true,
+                  showFallbackText: true,
+                ),
+              ),
             ),
           ),
-
-          // Alt copyright metni / Bottom copyright text
+          // Alt copyright metni
           Positioned(
             bottom: AppConstants.paddingXLarge + 6,
             left: 0,

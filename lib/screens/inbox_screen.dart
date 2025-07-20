@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/common/app_bar_widget.dart';
+import '../widgets/common/app_drawer_widget.dart';
+import '../widgets/common/bottom_navigation_widget.dart';
 
 class InboxScreen extends StatefulWidget {
   final int? selectedMessageId; // Seçili mesaj ID'si / Selected message ID
@@ -224,6 +226,8 @@ Protokol Birimi''',
           },
         ),
       ),
+      drawer: const AppDrawerWidget(currentPageIndex: -1),
+      bottomNavigationBar: const BottomNavigationWidget(currentIndex: -1),
       body: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,

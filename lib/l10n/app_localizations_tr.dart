@@ -657,6 +657,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get monthView => 'Ay Görünümü';
 
   @override
+  String get monthlyCalendar => 'Aylık Takvim';
+
+  @override
   String get campusQrTitle => 'Kampüs Giriş QR Kodu';
 
   @override
@@ -847,4 +850,38 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get sunday => 'Pazar';
+
+  @override
+  String get halicCampus => 'Haliç Yerleşkesi';
+  @override
+  String get halicCampusDesc =>
+      'Yerleşke; Medipol Üniversitesi Haliç Yerleşkesi';
+  @override
+  String get bagcilarCampus => 'Bağcılar Yerleşkesi';
+  @override
+  String get bagcilarCampusDesc =>
+      'Yerleşke; Üniversite Hastanesi (Bağcılar Yerleşkesi)';
+  @override
+  String get healthResearchCenters => 'Sağlık Uygulama Araştırma Merkezleri';
+  @override
+  String get healthResearchCentersDent => 'Sağlık UA Merkezi Diş Hastanesi';
+  @override
+  String get healthResearchCentersVatan => 'Sağlık UA Merkezi Vatan Kliniği';
+  @override
+  String get healthResearchCentersEsenler =>
+      'Sağlık UA Merkezi Esenler Hastanesi';
+  @override
+  String get fax => 'Faks:';
+  @override
+  String get faxRectorate => 'Faks (Rektörlük):';
+  @override
+  String get faxAccounting => 'Faks (Muhasebe):';
+  @override
+  String get faxFaculties => 'Faks (Fakülteler):';
+  @override
+  String get phoneInternal => 'Telefon (Dahili):';
+  @override
+  String get website => 'İnternet Sitesi:';
+  @override
+  String get address => 'Adres:';
 }

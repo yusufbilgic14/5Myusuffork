@@ -111,6 +111,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
             );
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_month, color: Colors.white),
+            tooltip: AppLocalizations.of(context)!.monthlyCalendar,
+            onPressed: () {
+              setState(() {
+                _isGridView = !_isGridView;
+              });
+            },
+          ),
+        ],
       ),
       drawer: const AppDrawerWidget(
         currentPageIndex: AppConstants.navIndexCalendar,
@@ -137,8 +148,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final startOfWeek = _selectedDate.subtract(
       Duration(days: _selectedDate.weekday - 1),
     );
-    // Sadece İngilizce gün kısaltmaları
-    final weekdayShorts = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+    final l10n = AppLocalizations.of(context)!;
+    final weekdayShorts = [
+      l10n.mondayShort,
+      l10n.tuesdayShort,
+      l10n.wednesdayShort,
+      l10n.thursdayShort,
+      l10n.fridayShort,
+      l10n.saturdayShort,
+      l10n.sundayShort,
+    ];
     return Container(
       height: 100,
       decoration: BoxDecoration(
@@ -261,6 +280,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildMonthNavigation(ThemeData theme) {
+    final locale = Localizations.localeOf(context).toString();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -278,7 +298,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           color: theme.colorScheme.primary,
         ),
         Text(
-          DateFormat('MMMM yyyy', 'tr_TR').format(_selectedDate),
+          DateFormat('MMMM yyyy', locale).format(_selectedDate),
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -303,7 +323,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildWeekdayHeaders(ThemeData theme) {
-    final weekdays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+    final l10n = AppLocalizations.of(context)!;
+    final weekdays = [
+      l10n.mondayShort,
+      l10n.tuesdayShort,
+      l10n.wednesdayShort,
+      l10n.thursdayShort,
+      l10n.fridayShort,
+      l10n.saturdayShort,
+      l10n.sundayShort,
+    ];
     return Row(
       children: weekdays
           .map(

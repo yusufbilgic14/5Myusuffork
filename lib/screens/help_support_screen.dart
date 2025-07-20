@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/common/app_bar_widget.dart';
+import '../widgets/common/app_drawer_widget.dart';
+import '../widgets/common/bottom_navigation_widget.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({Key? key}) : super(key: key);
@@ -80,9 +82,18 @@ class HelpSupportScreen extends StatelessWidget {
     return Scaffold(
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.helpSupport,
-        leading: BackButton(color: Colors.white),
-        centerTitle: true,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
       ),
+      drawer: const AppDrawerWidget(currentPageIndex: -1),
+      bottomNavigationBar: const BottomNavigationWidget(currentIndex: -1),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -125,17 +136,17 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             _buildContactRow(
               icon: Icons.print,
-              label: 'Faks (Rektörlük):',
+              label: AppLocalizations.of(context)!.faxRectorate,
               value: '0212 531 75 55',
             ),
             _buildContactRow(
               icon: Icons.print,
-              label: 'Faks (Muhasebe):',
+              label: AppLocalizations.of(context)!.faxAccounting,
               value: '0212 521 28 52',
             ),
             _buildContactRow(
               icon: Icons.print,
-              label: 'Faks (Fakülteler):',
+              label: AppLocalizations.of(context)!.faxFaculties,
               value: '0212 521 23 77',
             ),
             _buildContactRow(
@@ -146,7 +157,7 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             _buildContactRow(
               icon: Icons.location_on,
-              label: 'Adres:',
+              label: AppLocalizations.of(context)!.address,
               value:
                   'Kavacık Mah. Ekinciler Cad. No: 19, Kavacık Kavşağı, 34810 Beykoz, İstanbul',
               onTap: () => _launchMaps(
@@ -155,18 +166,18 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             // Haliç Yerleşkesi
-            const Text(
-              'Haliç Yerleşkesi',
-              style: TextStyle(
+            Text(
+              AppLocalizations.of(context)!.halicCampus,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF1E3A8A),
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Yerleşke; Medipol Üniversitesi Haliç Yerleşkesi',
-              style: TextStyle(fontSize: 16),
+            Text(
+              AppLocalizations.of(context)!.halicCampusDesc,
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 4),
             _buildContactRow(
@@ -177,22 +188,22 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             _buildContactRow(
               icon: Icons.print,
-              label: 'Faks (Rektörlük):',
+              label: AppLocalizations.of(context)!.faxRectorate,
               value: '0212 531 75 55',
             ),
             _buildContactRow(
               icon: Icons.print,
-              label: 'Faks (Muhasebe):',
+              label: AppLocalizations.of(context)!.faxAccounting,
               value: '0212 521 28 52',
             ),
             _buildContactRow(
               icon: Icons.print,
-              label: 'Faks (Fakülteler):',
+              label: AppLocalizations.of(context)!.faxFaculties,
               value: '0212 521 23 77',
             ),
             _buildContactRow(
               icon: Icons.location_on,
-              label: 'Adres:',
+              label: AppLocalizations.of(context)!.address,
               value:
                   'Cibali Mah. Atatürk Bulvarı No: 25, 34083 Fatih, İstanbul',
               onTap: () => _launchMaps(
@@ -201,8 +212,8 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             // Bağcılar Yerleşkesi
-            const Text(
-              'Bağcılar Yerleşkesi',
+            Text(
+              AppLocalizations.of(context)!.bagcilarCampus,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -210,8 +221,8 @@ class HelpSupportScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Yerleşke; Üniversite Hastanesi (Bağcılar Yerleşkesi)',
+            Text(
+              AppLocalizations.of(context)!.bagcilarCampusDesc,
               style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 4),
@@ -223,17 +234,17 @@ class HelpSupportScreen extends StatelessWidget {
             ),
             _buildContactRow(
               icon: Icons.phone,
-              label: 'Telefon (Dahili):',
+              label: AppLocalizations.of(context)!.phoneInternal,
               value: '0212 460 77 77 - (7578)',
             ),
             _buildContactRow(
               icon: Icons.print,
-              label: 'Faks:',
+              label: AppLocalizations.of(context)!.faxFaculties,
               value: '0212 521 23 77',
             ),
             _buildContactRow(
               icon: Icons.location_on,
-              label: 'Adres:',
+              label: AppLocalizations.of(context)!.address,
               value:
                   'TEM Avrupa Otoyolu Göztepe Çıkışı No: 1, 34214 Bağcılar, İstanbul',
               onTap: () => _launchMaps(
@@ -243,9 +254,9 @@ class HelpSupportScreen extends StatelessWidget {
             const SizedBox(height: 32),
             // Sağlık Uygulama Araştırma Merkezleri
             ExpansionTile(
-              title: const Text(
-                'Sağlık Uygulama Araştırma Merkezleri',
-                style: TextStyle(
+              title: Text(
+                AppLocalizations.of(context)!.healthResearchCenters,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF1E3A8A),
@@ -253,9 +264,9 @@ class HelpSupportScreen extends StatelessWidget {
               ),
               children: [
                 ListTile(
-                  title: const Text(
-                    'Sağlık UA Merkezi Diş Hastanesi',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  title: Text(
+                    AppLocalizations.of(context)!.healthResearchCentersDent,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,7 +284,7 @@ class HelpSupportScreen extends StatelessWidget {
                       ),
                       _buildContactRow(
                         icon: Icons.location_on,
-                        label: 'Adres:',
+                        label: AppLocalizations.of(context)!.address,
                         value:
                             'Unkapanı, Atatürk Bulvarı No:27 34083 Fatih-İstanbul',
                         onTap: () => _launchMaps(
@@ -285,9 +296,9 @@ class HelpSupportScreen extends StatelessWidget {
                 ),
                 Divider(),
                 ListTile(
-                  title: const Text(
-                    'Sağlık UA Merkezi Vatan Kliniği',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  title: Text(
+                    AppLocalizations.of(context)!.healthResearchCentersVatan,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,7 +316,7 @@ class HelpSupportScreen extends StatelessWidget {
                       ),
                       _buildContactRow(
                         icon: Icons.language,
-                        label: 'İnternet Sitesi:',
+                        label: AppLocalizations.of(context)!.website,
                         value: 'http://vatan.medipol.edu.tr/',
                         onTap: () async {
                           final url = Uri.parse('http://vatan.medipol.edu.tr/');
@@ -316,7 +327,7 @@ class HelpSupportScreen extends StatelessWidget {
                       ),
                       _buildContactRow(
                         icon: Icons.location_on,
-                        label: 'Adres:',
+                        label: AppLocalizations.of(context)!.address,
                         value:
                             'Vatan Cad. Halıcılar Köşkü Sk. No:11 Aksaray, Fatih-İstanbul',
                         onTap: () => _launchMaps(
@@ -328,9 +339,9 @@ class HelpSupportScreen extends StatelessWidget {
                 ),
                 Divider(),
                 ListTile(
-                  title: const Text(
-                    'Sağlık UA Merkezi Esenler Hastanesi',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  title: Text(
+                    AppLocalizations.of(context)!.healthResearchCentersEsenler,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -343,7 +354,7 @@ class HelpSupportScreen extends StatelessWidget {
                       ),
                       _buildContactRow(
                         icon: Icons.location_on,
-                        label: 'Adres:',
+                        label: AppLocalizations.of(context)!.address,
                         value: 'Birlik Mah. Bahçeler Cd. No:5 ESENLER/İSTANBUL',
                         onTap: () => _launchMaps(
                           'Birlik Mah. Bahçeler Cd. No:5 ESENLER/İSTANBUL',

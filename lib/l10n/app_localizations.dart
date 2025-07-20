@@ -1328,6 +1328,12 @@ abstract class AppLocalizations {
   /// **'Month View'**
   String get monthView;
 
+  /// No description provided for @monthlyCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Calendar'**
+  String get monthlyCalendar;
+
   /// No description provided for @campusQrTitle.
   ///
   /// In en, this message translates to:
@@ -1717,6 +1723,51 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change the application language.'**
   String get languageDesc;
+
+  /// No description provided for @halicCampus.
+  String get halicCampus;
+
+  /// No description provided for @halicCampusDesc.
+  String get halicCampusDesc;
+
+  /// No description provided for @bagcilarCampus.
+  String get bagcilarCampus;
+
+  /// No description provided for @bagcilarCampusDesc.
+  String get bagcilarCampusDesc;
+
+  /// No description provided for @healthResearchCenters.
+  String get healthResearchCenters;
+
+  /// No description provided for @healthResearchCentersDent.
+  String get healthResearchCentersDent;
+
+  /// No description provided for @healthResearchCentersVatan.
+  String get healthResearchCentersVatan;
+
+  /// No description provided for @healthResearchCentersEsenler.
+  String get healthResearchCentersEsenler;
+
+  /// No description provided for @fax.
+  String get fax;
+
+  /// No description provided for @faxRectorate.
+  String get faxRectorate;
+
+  /// No description provided for @faxAccounting.
+  String get faxAccounting;
+
+  /// No description provided for @faxFaculties.
+  String get faxFaculties;
+
+  /// No description provided for @phoneInternal.
+  String get phoneInternal;
+
+  /// No description provided for @website.
+  String get website;
+
+  /// No description provided for @address.
+  String get address;
 }
 
 class _AppLocalizationsDelegate
