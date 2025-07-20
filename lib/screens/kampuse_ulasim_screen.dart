@@ -74,7 +74,7 @@ class KampuseUlasimScreen extends StatelessWidget {
       ['', '122V', '4.LEVENT-VEYSEL KARANİ'],
       ['', '522B', 'MECİDİYEKÖY-YENİDOĞAN'],
       ['', '522ST', 'MECİDİYEKÖY-SULTANBEYLİ'],
-      ['', '522', 'MECİDİYEKÖY-YENİDOĞAN'],
+      ['', '622', 'MECİDİYEKÖY-YENİDOĞAN'],
       ['', 'E-3', '4.LEVENT-SABİHA GÖKÇEN H.L.'],
     ];
     final anadoluRows = [
@@ -92,7 +92,7 @@ class KampuseUlasimScreen extends StatelessWidget {
       ['', '136B', 'HEKİMBAŞI-BEYKOZ TAŞOCAKLARI'],
       ['', '135A', 'KAVACIK-ACARKENT'],
       ['', '135T', 'ARKBOYU-TOKATKÖY'],
-      ['', '1556R', 'KAVACIK-RİVA'],
+      ['', '136R', 'KAVACIK-RİVA'],
       ['', '11ÇB', 'KAVACIK-ÜMRANİYE E.A.H'],
       ['', '14M', 'KAVACIK YENİ CAMİİ-KADIKÖY'],
     ];

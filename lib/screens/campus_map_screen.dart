@@ -163,18 +163,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: ModernAppBar(
-        title: AppLocalizations.of(context)!.navigation,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu_rounded, color: Colors.white),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-              tooltip: 'Menü',
-            );
-          },
-        ),
-      ),
+      // appBar kaldırıldı
       body: SafeArea(
         child: Stack(
           children: [

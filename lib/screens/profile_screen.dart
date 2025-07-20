@@ -22,25 +22,315 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  // LoginScreen'deki gibi dropdown için değişkenler
+  bool _isLanguageDropdownOpen = false;
+  late AnimationController _languageDropdownController;
+  late Animation<double> _languageDropdownAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _languageDropdownController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _languageDropdownAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _languageDropdownController,
+        curve: Curves.easeOutCubic,
+      ),
+    );
+  }
+
+  void _toggleLanguageDropdown() {
+    setState(() {
+      _isLanguageDropdownOpen = !_isLanguageDropdownOpen;
+    });
+    if (_isLanguageDropdownOpen) {
+      _languageDropdownController.forward();
+    } else {
+      _languageDropdownController.reverse();
+    }
+  }
+
+  void _selectLanguage(Locale locale) {
+    final languageProvider = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    );
+    languageProvider.setLocale(locale);
+    _toggleLanguageDropdown();
+  }
+
+  Widget _buildLanguageDropdown() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currentLocale = Provider.of<LanguageProvider>(context).locale;
+    final isTurkish = currentLocale.languageCode == 'tr';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        GestureDetector(
+          onTap: _toggleLanguageDropdown,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.white.withOpacity(0.1)
+                  : Colors.white.withOpacity(0.9),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark ? Colors.white24 : Colors.grey.shade300,
+                width: 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.language,
+                  style: TextStyle(
+                    fontSize: AppConstants.fontSizeSmall,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : Colors.black87,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                AnimatedRotation(
+                  turns: _isLanguageDropdownOpen ? 0.5 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    Icons.keyboard_arrow_down,
+                    size: 16,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        AnimatedBuilder(
+          animation: _languageDropdownAnimation,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _languageDropdownAnimation.value,
+              alignment: Alignment.topCenter,
+              child: Opacity(
+                opacity: _languageDropdownAnimation.value,
+                child: _isLanguageDropdownOpen
+                    ? Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        decoration: BoxDecoration(
+                          color: isDark
+                              ? const Color(0xFF2A3441)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildLanguageOption(
+                              imagePath: 'assets/images/turkey.png',
+                              label: AppLocalizations.of(
+                                context,
+                              )!.languageTurkish,
+                              isSelected: isTurkish,
+                              onTap: () => _selectLanguage(const Locale('tr')),
+                            ),
+                            Divider(
+                              height: 1,
+                              color: isDark
+                                  ? Colors.white12
+                                  : Colors.grey.shade200,
+                            ),
+                            _buildLanguageOption(
+                              imagePath: 'assets/images/uk.png',
+                              label: AppLocalizations.of(
+                                context,
+                              )!.languageEnglish,
+                              isSelected: !isTurkish,
+                              onTap: () => _selectLanguage(const Locale('en')),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLanguageOption({
+    required String imagePath,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? (isDark
+                    ? AppConstants.primaryColor.withOpacity(0.2)
+                    : AppConstants.primaryColor.withOpacity(0.1))
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(imagePath, width: 24, height: 18, fit: BoxFit.cover),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: AppConstants.fontSizeSmall,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected
+                    ? (isDark ? Colors.white : AppConstants.primaryColor)
+                    : (isDark ? Colors.white70 : Colors.black87),
+              ),
+            ),
+            if (isSelected) ...[
+              const SizedBox(width: 8),
+              Icon(
+                Icons.check,
+                size: 16,
+                color: isDark ? Colors.white : AppConstants.primaryColor,
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLanguageModal() {
+    final currentLocale = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    ).locale;
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildLanguageOption(
+              imagePath: 'assets/images/turkey.png',
+              label: AppLocalizations.of(context)!.languageTurkish,
+              isSelected: currentLocale.languageCode == 'tr',
+              onTap: () {
+                Provider.of<LanguageProvider>(
+                  context,
+                  listen: false,
+                ).setLocale(const Locale('tr'));
+                Navigator.pop(context);
+              },
+            ),
+            _buildLanguageOption(
+              imagePath: 'assets/images/uk.png',
+              label: AppLocalizations.of(context)!.languageEnglish,
+              isSelected: currentLocale.languageCode == 'en',
+              onTap: () {
+                Provider.of<LanguageProvider>(
+                  context,
+                  listen: false,
+                ).setLocale(const Locale('en'));
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showLanguagePopup(TapDownDetails details) async {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final currentLocale = Provider.of<LanguageProvider>(
+      context,
+      listen: false,
+    ).locale;
+    final selected = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+        details.globalPosition & const Size(40, 40),
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        PopupMenuItem(
+          value: 'tr',
+          child: Row(
+            children: [
+              Image.asset('assets/images/turkey.png', width: 24, height: 18),
+              const SizedBox(width: 8),
+              Text(AppLocalizations.of(context)!.languageTurkish),
+              if (currentLocale.languageCode == 'tr')
+                const Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Icon(Icons.check, color: Colors.blue, size: 16),
+                ),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'en',
+          child: Row(
+            children: [
+              Image.asset('assets/images/uk.png', width: 24, height: 18),
+              const SizedBox(width: 8),
+              Text(AppLocalizations.of(context)!.languageEnglish),
+              if (currentLocale.languageCode == 'en')
+                const Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Icon(Icons.check, color: Colors.blue, size: 16),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+    if (selected != null) {
+      Provider.of<LanguageProvider>(
+        context,
+        listen: false,
+      ).setLocale(Locale(selected));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: AppThemes.getBackgroundColor(context),
-      // Modern AppBar / Modern AppBar
+      // Navy renkli AppBar / Navy colored AppBar
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.profile,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-              tooltip: 'Menü',
-            );
-          },
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white),
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+          tooltip: 'Menü',
         ),
       ),
 
@@ -50,40 +340,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
 
       body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(AppConstants.paddingMedium),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Modern üst kullanıcı bilgi kartı / Modern top user info card
-              _buildModernUserInfoCard(),
+              // Üst kullanıcı bilgi kartı / Top user info card
+              _buildUserInfoCard(),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: AppConstants.paddingXLarge),
 
-              // Modern istatistik kartları başlığı / Modern stats cards title
-              _buildModernSectionTitle(
+              // İstatistik kartları başlığı / Stats cards title
+              Text(
                 AppLocalizations.of(context)!.quickStats,
-                Icons.analytics_outlined,
+                style: TextStyle(
+                  fontSize: AppConstants.fontSizeXLarge,
+                  fontWeight: FontWeight.bold,
+                  color: AppThemes.getPrimaryColor(context),
+                ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppConstants.paddingMedium),
 
-              // Modern yatay kaydırılabilir istatistik kartları / Modern horizontal scrollable stats cards
-              _buildModernStatsCards(context),
+              // Yatay kaydırılabilir istatistik kartları / Horizontal scrollable stats cards
+              _buildStatsCards(context),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: AppConstants.paddingXLarge),
 
-              // Modern menü öğeleri başlığı / Modern menu items title
-              _buildModernSectionTitle(
+              // Menü öğeleri başlığı / Menu items title
+              Text(
                 AppLocalizations.of(context)!.accountSettings,
-                Icons.settings_outlined,
+                textAlign: TextAlign.left, // Sola hizala
+                style: TextStyle(
+                  fontSize: AppConstants.fontSizeXLarge,
+                  fontWeight: FontWeight.bold,
+                  color: AppThemes.getPrimaryColor(context),
+                ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppConstants.paddingMedium),
 
-              // Modern menü öğeleri listesi / Modern menu items list
-              _buildModernMenuItems(),
+              // Menü öğeleri listesi / Menu items list
+              _buildMenuItems(),
 
               const SizedBox(
                 height: 80,
@@ -100,215 +398,179 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Modern kullanıcı bilgi kartı / Modern user info card
-  Widget _buildModernUserInfoCard() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  // Kullanıcı bilgi kartı / User info card
+  Widget _buildUserInfoCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppConstants.paddingLarge),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E2634) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withOpacity(0.2)
-                : Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.shade100,
-          width: 1,
-        ),
+        color: AppThemes.getSurfaceColor(context),
+        borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
+        boxShadow: AppThemes.getCardShadow(context),
       ),
       child: const UserInfoWidget(showStudentId: true),
     );
   }
 
-  // Modern bölüm başlığı / Modern section title
-  Widget _buildModernSectionTitle(String title, IconData icon) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Row(
-      children: [
-        Icon(icon, color: AppConstants.primaryColor, size: 20),
-        const SizedBox(width: 12),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: isDark ? Colors.white : AppConstants.primaryColor,
-            letterSpacing: -0.2,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Modern istatistik kartları / Modern stats cards
-  Widget _buildModernStatsCards(BuildContext context) {
+  // İstatistik kartları / Stats cards
+  Widget _buildStatsCards(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return SizedBox(
-      height: 110, // Yüksekliği artırdım
+      height: 94,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
         children: [
-          _buildModernStatCard(
-            icon: Icons.event_outlined,
+          _buildStatCard(
+            icon: Icons.event,
             title: l10n.statsEvents,
             value: '12',
-            color: const Color(0xFF3B82F6),
+            color: Colors.blue,
           ),
           const SizedBox(width: 12),
-          _buildModernStatCard(
-            icon: Icons.school_outlined,
+          _buildStatCard(
+            icon: Icons.school,
             title: l10n.statsGpa,
             value: '3.67',
-            color: const Color(0xFF10B981),
+            color: Colors.green,
           ),
           const SizedBox(width: 12),
-          _buildModernStatCard(
-            icon: Icons.feedback_outlined,
+          _buildStatCard(
+            icon: Icons.feedback,
             title: l10n.statsComplaints,
             value: '2',
-            color: const Color(0xFFF59E0B),
+            color: Colors.orange,
           ),
           const SizedBox(width: 12),
-          _buildModernStatCard(
-            icon: Icons.assignment_outlined,
+          _buildStatCard(
+            icon: Icons.assignment,
             title: l10n.statsAssignments,
             value: '28',
-            color: const Color(0xFF8B5CF6),
+            color: Colors.purple,
           ),
         ],
       ),
     );
   }
 
-  // Modern istatistik kartı / Modern stat card
-  Widget _buildModernStatCard({
+  // İstatistik kartı / Stat card
+  Widget _buildStatCard({
     required IconData icon,
     required String title,
     required String value,
     required Color color,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      width: 130,
-      height: 100, // Sabit yükseklik ekledim
-      padding: const EdgeInsets.all(12), // Padding'i azalttım
+      width: 140,
+      padding: const EdgeInsets.all(
+        AppConstants.paddingSmall + 2,
+      ), // Reduced padding
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A3441) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withOpacity(0.15)
-                : Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.shade100,
-          width: 1,
-        ),
+        color: AppThemes.getSurfaceColor(context),
+        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+        boxShadow: AppThemes.getCardShadow(context),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: 18, // İkon boyutunu küçülttüm
+          Container(
+            width: 28, // Reduced from 32 to 28
+            height: 28, // Reduced from 32 to 28
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 18, // Reduced from 20 to 18
+            ),
           ),
-          const SizedBox(height: 4), // Spacing'i azalttım
+          const SizedBox(height: 4), // Reduced from 6 to 4
           Text(
             value,
             style: TextStyle(
-              fontSize: 15, // Font boyutunu küçülttüm
-              fontWeight: FontWeight.w600,
+              fontSize: 16, // Reduced from 18 to 16
+              fontWeight: FontWeight.bold,
               color: color,
             ),
           ),
-          const SizedBox(height: 2), // Spacing'i azalttım
-          Flexible(
-            // Flexible widget ekledim
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 9, // Font boyutunu küçülttüm
-                color: isDark
-                    ? Colors.white.withOpacity(0.6)
-                    : Colors.grey.shade600,
-                fontWeight: FontWeight.w500,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+          const SizedBox(height: 2),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 10, // Reduced from 11 to 10
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
             ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
     );
   }
 
-  // Modern bayrak butonu / Modern flag button
-  Widget _buildModernFlagButton({
-    required String imagePath,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: isSelected ? AppConstants.primaryColor : Colors.transparent,
-            width: 1.5,
-          ),
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Image.asset(imagePath, width: 32, height: 24, fit: BoxFit.cover),
-      ),
-    );
-  }
-
-  // Modern menü öğeleri / Modern menu items
-  Widget _buildModernMenuItems() {
+  // Menü öğeleri / Menu items
+  Widget _buildMenuItems() {
     final languageProvider = Provider.of<LanguageProvider>(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A3441) : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withOpacity(0.15)
-                : Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.06) : Colors.grey.shade100,
-          width: 1,
-        ),
+        color: AppThemes.getSurfaceColor(context),
+        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+        boxShadow: AppThemes.getCardShadow(context),
       ),
       child: Column(
         children: [
-          _buildModernDivider(),
-          // Modern dil seçici
-          _buildModernLanguageSelector(languageProvider),
-          _buildModernDivider(),
-          _buildModernMenuItem(
-            icon: Icons.notifications_outlined,
+          _buildDivider(),
+          // Dil seçici
+          ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            leading: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppConstants.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+              ),
+              child: Icon(
+                Icons.language,
+                color: AppConstants.primaryColor,
+                size: 20,
+              ),
+            ),
+            title: Text(
+              AppLocalizations.of(context)!.language,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppThemes.getTextColor(context),
+              ),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context)!.languageDesc,
+              style: TextStyle(
+                fontSize: 12,
+                color: AppThemes.getSecondaryTextColor(context),
+              ),
+            ),
+            trailing: GestureDetector(
+              onTapDown: _showLanguagePopup,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.language, color: AppConstants.primaryColor),
+                  Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                ],
+              ),
+            ),
+          ),
+          _buildDivider(),
+          _buildMenuItem(
+            icon: Icons.notifications,
             title: AppLocalizations.of(context)!.notificationSettings,
             subtitle: AppLocalizations.of(context)!.notificationSettingsDesc,
             onTap: () {
@@ -320,9 +582,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          _buildModernDivider(),
-          _buildModernMenuItem(
-            icon: Icons.help_outline,
+          _buildDivider(),
+          _buildMenuItem(
+            icon: Icons.help,
             title: AppLocalizations.of(context)!.helpSupport,
             subtitle: AppLocalizations.of(context)!.helpSupportDesc,
             onTap: () {
@@ -334,9 +596,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          _buildModernDivider(),
-          _buildModernMenuItem(
-            icon: Icons.directions_bus_outlined,
+          _buildDivider(),
+          _buildMenuItem(
+            icon: Icons.directions_bus,
             title: AppLocalizations.of(context)!.campusTransport,
             subtitle: AppLocalizations.of(context)!.campusTransportDesc,
             onTap: () {
@@ -348,17 +610,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
           ),
-          _buildModernDivider(),
-          _buildModernThemeToggleItem(),
-          _buildModernDivider(),
-          _buildModernMenuItem(
-            icon: Icons.logout_outlined,
+          _buildDivider(),
+          _buildThemeToggleItem(),
+          _buildDivider(),
+          _buildMenuItem(
+            icon: Icons.logout,
             title: AppLocalizations.of(context)!.logout,
             subtitle: AppLocalizations.of(context)!.logoutDesc,
-            iconColor: const Color(0xFFEF4444),
-            textColor: const Color(0xFFEF4444),
+            iconColor: Colors.red,
+            textColor: Colors.red,
             onTap: () {
-              _showModernLogoutDialog();
+              _showLogoutDialog();
             },
           ),
         ],
@@ -366,282 +628,91 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Modern dil seçici / Modern language selector
-  Widget _buildModernLanguageSelector(LanguageProvider languageProvider) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final currentLocale = languageProvider.locale;
-    final isTurkish = currentLocale.languageCode == 'tr';
-
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      leading: Icon(
-        Icons.language_outlined,
-        color: AppConstants.primaryColor,
-        size: 22,
-      ),
-      title: Text(
-        AppLocalizations.of(context)!.language,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: isDark ? Colors.white : Colors.black87,
-        ),
-      ),
-      subtitle: Text(
-        AppLocalizations.of(context)!.languageDesc,
-        style: TextStyle(
-          fontSize: 12,
-          color: isDark ? Colors.white.withOpacity(0.6) : Colors.grey.shade600,
-        ),
-      ),
-      trailing: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade100,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isDark
-                ? Colors.white.withOpacity(0.2)
-                : Colors.grey.shade300,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              isTurkish ? 'TR' : 'EN',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Icon(
-              Icons.keyboard_arrow_down,
-              size: 16,
-              color: isDark
-                  ? Colors.white.withOpacity(0.6)
-                  : Colors.grey.shade600,
-            ),
-          ],
-        ),
-      ),
-      onTap: () {
-        _showLanguageSelectorDialog(languageProvider);
-      },
-    );
-  }
-
-  // Dil seçici dialog'u / Language selector dialog
-  void _showLanguageSelectorDialog(LanguageProvider languageProvider) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final currentLocale = languageProvider.locale;
-    final isTurkish = currentLocale.languageCode == 'tr';
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          backgroundColor: isDark ? const Color(0xFF2A3441) : Colors.white,
-          title: Row(
-            children: [
-              Icon(
-                Icons.language_outlined,
-                color: AppConstants.primaryColor,
-                size: 20,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                AppLocalizations.of(context)!.language,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildLanguageOption(
-                languageCode: 'tr',
-                languageName: 'Türkçe',
-                isSelected: isTurkish,
-                onTap: () {
-                  languageProvider.setLocale(const Locale('tr'));
-                  Navigator.pop(context);
-                },
-              ),
-              const SizedBox(height: 8),
-              _buildLanguageOption(
-                languageCode: 'en',
-                languageName: 'English',
-                isSelected: !isTurkish,
-                onTap: () {
-                  languageProvider.setLocale(const Locale('en'));
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // Dil seçenek widget'ı / Language option widget
-  Widget _buildLanguageOption({
-    required String languageCode,
-    required String languageName,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppConstants.primaryColor.withOpacity(0.1)
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected
-                ? AppConstants.primaryColor
-                : isDark
-                ? Colors.white.withOpacity(0.1)
-                : Colors.grey.shade200,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppConstants.primaryColor
-                    : isDark
-                    ? Colors.white.withOpacity(0.1)
-                    : Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: isSelected
-                  ? Icon(Icons.check, size: 16, color: Colors.white)
-                  : null,
-            ),
-            const SizedBox(width: 12),
-            Text(
-              languageName,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected
-                    ? AppConstants.primaryColor
-                    : (isDark ? Colors.white : Colors.black87),
-              ),
-            ),
-            const Spacer(),
-            Text(
-              languageCode.toUpperCase(),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: isDark
-                    ? Colors.white.withOpacity(0.6)
-                    : Colors.grey.shade600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Modern menü öğesi / Modern menu item
-  Widget _buildModernMenuItem({
+  // Menü öğesi / Menu item
+  Widget _buildMenuItem({
     required IconData icon,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
     Color? iconColor,
     Color? textColor,
-    Widget? trailing,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      leading: Icon(
-        icon,
-        color: iconColor ?? AppConstants.primaryColor,
-        size: 22,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: (iconColor ?? AppConstants.primaryColor).withValues(
+            alpha: 0.1,
+          ),
+          borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+        ),
+        child: Icon(
+          icon,
+          color: iconColor ?? AppConstants.primaryColor,
+          size: 20,
+        ),
       ),
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 15,
+          fontSize: 16,
           fontWeight: FontWeight.w600,
-          color: textColor ?? (isDark ? Colors.white : Colors.black87),
+          color: textColor ?? AppThemes.getTextColor(context),
         ),
       ),
       subtitle: Text(
         subtitle,
         style: TextStyle(
           fontSize: 12,
-          color: isDark ? Colors.white.withOpacity(0.6) : Colors.grey.shade600,
+          color: AppThemes.getSecondaryTextColor(context),
         ),
       ),
-      trailing:
-          trailing ??
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 14,
-            color: isDark
-                ? Colors.white.withOpacity(0.4)
-                : Colors.grey.shade400,
-          ),
+      trailing: Icon(
+        Icons.arrow_forward_ios,
+        size: 16,
+        color: Colors.grey[400],
+      ),
       onTap: onTap,
     );
   }
 
-  // Modern tema değiştirme öğesi / Modern theme toggle item
-  Widget _buildModernThemeToggleItem() {
+  // Tema değiştirme öğesi / Theme toggle item
+  Widget _buildThemeToggleItem() {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
         return ListTile(
           contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 10,
+            horizontal: 16,
+            vertical: 8,
           ),
-          leading: Icon(
-            themeProvider.themeIcon,
-            color: AppConstants.primaryColor,
-            size: 22,
+          leading: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+            ),
+            child: Icon(
+              themeProvider.themeIcon,
+              color: AppThemes.getPrimaryColor(context),
+              size: 20,
+            ),
           ),
           title: Text(
             AppLocalizations.of(context)!.theme,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: isDark ? Colors.white : Colors.black87,
+              color: AppThemes.getTextColor(context),
             ),
           ),
           subtitle: Text(
             AppLocalizations.of(context)!.themeDesc,
             style: TextStyle(
               fontSize: 12,
-              color: isDark
-                  ? Colors.white.withOpacity(0.6)
-                  : Colors.grey.shade600,
+              color: AppThemes.getSecondaryTextColor(context),
             ),
           ),
           trailing: Switch(
@@ -649,12 +720,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onChanged: (value) async {
               await themeProvider.toggleTheme();
             },
-            activeColor: AppConstants.primaryColor,
-            activeTrackColor: AppConstants.primaryColor.withOpacity(0.2),
-            inactiveThumbColor: isDark ? Colors.white70 : Colors.grey.shade400,
-            inactiveTrackColor: isDark
-                ? Colors.white.withOpacity(0.2)
-                : Colors.grey.shade200,
+            activeColor: AppThemes.getPrimaryColor(context),
           ),
           onTap: () async {
             await themeProvider.toggleTheme();
@@ -664,64 +730,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Modern ayırıcı çizgi / Modern divider
-  Widget _buildModernDivider() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  // Ayırıcı çizgi / Divider
+  Widget _buildDivider() {
     return Divider(
       height: 1,
-      color: isDark ? Colors.white.withOpacity(0.08) : Colors.grey.shade200,
-      indent: 66,
-      endIndent: 20,
+      color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+      indent: 72,
+      endIndent: 16,
     );
   }
 
-  // Modern çıkış yapma dialog'u / Modern logout dialog
-  void _showModernLogoutDialog() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  // Çıkış yapma dialog'u / Logout dialog
+  void _showLogoutDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+          title: Text(
+            AppLocalizations.of(context)!.logout,
+            style: const TextStyle(color: AppConstants.primaryColor),
           ),
-          backgroundColor: isDark ? const Color(0xFF2A3441) : Colors.white,
-          title: Row(
-            children: [
-              Icon(
-                Icons.logout_outlined,
-                color: const Color(0xFFEF4444),
-                size: 20,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                AppLocalizations.of(context)!.logout,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          content: Text(
-            AppLocalizations.of(context)!.logoutConfirm,
-            style: TextStyle(
-              color: isDark
-                  ? Colors.white.withOpacity(0.7)
-                  : Colors.grey.shade600,
-            ),
-          ),
+          content: Text(AppLocalizations.of(context)!.logoutConfirm),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(
-                AppLocalizations.of(context)!.cancel,
-                style: TextStyle(
-                  color: isDark
-                      ? Colors.white.withOpacity(0.6)
-                      : Colors.grey.shade600,
-                ),
-              ),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -734,11 +767,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFEF4444),
+                backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
               ),
               child: Text(AppLocalizations.of(context)!.logout),
             ),
