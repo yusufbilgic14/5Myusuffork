@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/common/app_bar_widget.dart';
+import '../widgets/common/bottom_navigation_widget.dart';
+import '../constants/app_constants.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({Key? key}) : super(key: key);
@@ -361,8 +363,12 @@ class HelpSupportScreen extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 80), // Alt navigasyon için boşluk
           ],
         ),
+      ),
+      bottomNavigationBar: const BottomNavigationWidget(
+        currentIndex: AppConstants.navIndexProfile,
       ),
     );
   }

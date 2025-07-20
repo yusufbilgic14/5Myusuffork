@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/common/app_bar_widget.dart';
+import '../widgets/common/bottom_navigation_widget.dart';
+import '../constants/app_constants.dart';
 
 class KampuseUlasimScreen extends StatelessWidget {
   const KampuseUlasimScreen({Key? key}) : super(key: key);
@@ -68,12 +70,12 @@ class KampuseUlasimScreen extends StatelessWidget {
       ['', '122M', 'MECİDİYEKÖY-ŞAHİNBEY'],
       ['', '122Y', 'MECİDİYEKÖY-ÇEKMEKÖY'],
       ['', '122D', 'MECİDİYEKÖY-ATATÜRK MAHALLESİ'],
-      ['', '122H', '4.LEVENT-SABIHA GÖKÇEN H.L.'],
+      ['', '122H', '4.LEVENT-SABİHA GÖKÇEN H.L.'],
       ['', '122V', '4.LEVENT-VEYSEL KARANİ'],
       ['', '522B', 'MECİDİYEKÖY-YENİDOĞAN'],
       ['', '522ST', 'MECİDİYEKÖY-SULTANBEYLİ'],
       ['', '522', 'MECİDİYEKÖY-YENİDOĞAN'],
-      ['', 'E-3', '4.LEVENT-SABIHA GÖKÇEN H.L.'],
+      ['', 'E-3', '4.LEVENT-SABİHA GÖKÇEN H.L.'],
     ];
     final anadoluRows = [
       ['ANADOLU YAKASI', '15BK', 'DERESEKİ-KADIKÖY'],
@@ -151,11 +153,15 @@ class KampuseUlasimScreen extends StatelessWidget {
                     ),
                     children: [_buildTable(anadoluRows)],
                   ),
+                  const SizedBox(height: 80), // Alt navigasyon için boşluk
                 ],
               ),
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: const BottomNavigationWidget(
+        currentIndex: AppConstants.navIndexProfile,
       ),
     );
   }
