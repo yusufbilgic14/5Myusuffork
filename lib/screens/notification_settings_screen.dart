@@ -111,13 +111,10 @@ class _NotificationSettingsScreenState
       backgroundColor: AppThemes.getBackgroundColor(context),
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.notificationSettings,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu_rounded, color: Colors.white),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-              tooltip: 'Menü',
-            );
+        leading: BackButton(
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
           },
         ),
       ),
