@@ -88,7 +88,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.qrAccess,
         leading: BackButton(color: Colors.white),
-        centerTitle: true,
+        centerTitle: false,
       ),
 
       // Ana sayfa drawer'ı / Main drawer
