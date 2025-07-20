@@ -287,9 +287,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(width: 8),
               Text(AppLocalizations.of(context)!.languageTurkish),
               if (currentLocale.languageCode == 'tr')
-                const Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Icon(Icons.check, color: Colors.blue, size: 16),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Icon(Icons.check, color: Theme.of(context).colorScheme.primary, size: 16),
                 ),
             ],
           ),
@@ -302,9 +302,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(width: 8),
               Text(AppLocalizations.of(context)!.languageEnglish),
               if (currentLocale.languageCode == 'en')
-                const Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Icon(Icons.check, color: Colors.blue, size: 16),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Icon(Icons.check, color: Theme.of(context).colorScheme.primary, size: 16),
                 ),
             ],
           ),
@@ -533,12 +533,12 @@ class _ProfileScreenState extends State<ProfileScreen>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppConstants.primaryColor.withOpacity(0.1),
+                color: AppConstants.getIconColor(context).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
               child: Icon(
                 Icons.language,
-                color: AppConstants.primaryColor,
+                color: AppConstants.getIconColor(context),
                 size: 20,
               ),
             ),
@@ -562,8 +562,8 @@ class _ProfileScreenState extends State<ProfileScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.language, color: AppConstants.primaryColor),
-                  Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                  Icon(Icons.language, color: AppConstants.getIconColor(context)),
+                  Icon(Icons.keyboard_arrow_down, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
                 ],
               ),
             ),
@@ -643,14 +643,14 @@ class _ProfileScreenState extends State<ProfileScreen>
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: (iconColor ?? AppConstants.primaryColor).withValues(
+          color: (iconColor ?? AppConstants.getIconColor(context)).withValues(
             alpha: 0.1,
           ),
           borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
         ),
         child: Icon(
           icon,
-          color: iconColor ?? AppConstants.primaryColor,
+          color: iconColor ?? AppConstants.getIconColor(context),
           size: 20,
         ),
       ),
@@ -691,12 +691,12 @@ class _ProfileScreenState extends State<ProfileScreen>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+              color: AppConstants.getIconColor(context).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
             ),
             child: Icon(
               themeProvider.themeIcon,
-              color: AppThemes.getPrimaryColor(context),
+              color: AppConstants.getIconColor(context),
               size: 20,
             ),
           ),

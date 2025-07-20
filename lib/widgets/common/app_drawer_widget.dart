@@ -210,9 +210,9 @@ class AppDrawerWidget extends StatelessWidget {
                       color: Colors.grey.shade300,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.person,
-                      color: Colors.grey,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                       size: 40,
                     ),
                   );
@@ -303,19 +303,19 @@ class AppDrawerWidget extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFFEF4444).withOpacity(0.2),
+            color: Theme.of(context).colorScheme.error.withOpacity(0.2),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.logout_outlined,
-            color: Color(0xFFEF4444),
+            color: Theme.of(context).colorScheme.error,
             size: 18,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Çıkış Yap',
           style: TextStyle(
-            color: Color(0xFFEF4444),
+            color: Theme.of(context).colorScheme.error,
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -345,7 +345,7 @@ class AppDrawerWidget extends StatelessWidget {
             children: [
               Icon(
                 Icons.logout_outlined,
-                color: const Color(0xFFEF4444),
+                color: Theme.of(context).colorScheme.error,
                 size: 20,
               ),
               const SizedBox(width: 12),

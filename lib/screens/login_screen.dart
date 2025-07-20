@@ -773,7 +773,7 @@ class _LoginScreenState extends State<LoginScreen>
             Icon(
               FontAwesomeIcons.earthAmericas,
               size: 18,
-              color: AppConstants.primaryColor,
+              color: AppConstants.getIconColor(context),
             ),
             const SizedBox(width: 4),
             AnimatedRotation(
