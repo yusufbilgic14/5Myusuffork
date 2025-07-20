@@ -20,7 +20,7 @@ class CampusMapScreen extends StatefulWidget {
 
 class _CampusMapScreenState extends State<CampusMapScreen> {
   GoogleMapController? _mapController;
-  bool _showShuttleLayer = false;
+  bool _showShuttleLayer = true;
   bool _showRoutePanel = false;
   String _selectedBuildingType = 'Tümü';
   int _selectedIndex = 0; // Navigation tab is selected
