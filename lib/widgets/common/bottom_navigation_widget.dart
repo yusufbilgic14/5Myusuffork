@@ -97,9 +97,12 @@ class BottomNavigationWidget extends StatelessWidget {
 
   /// Navigasyon işlemi / Navigation operation
   void _handleNavigation(BuildContext context, int index) {
-    if (index == currentIndex)
-      return; // Aynı ekrandaysa hiçbir şey yapma / Do nothing if on same screen
-
+    // Eğer ana sayfa ikonuna tıklanırsa, her zaman HomeScreen'e yönlendir
+    if (index == AppConstants.navIndexHome) {
+      NavigationService.goToHome(context);
+      return;
+    }
+    if (index == currentIndex) return;
     NavigationService.navigateToIndex(context, index);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
+import '../widgets/common/app_bar_widget.dart';
 
 class QRScannerScreen extends StatefulWidget {
   const QRScannerScreen({super.key});
@@ -153,19 +154,10 @@ class _QRScannerScreenState extends State<QRScannerScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'QR Kod Tarayıcısı',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
+      appBar: ModernAppBar(
+        title: 'QR Kod Tara',
+        leading: BackButton(color: Colors.white),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
       ),
 
       body: _buildCameraView(),

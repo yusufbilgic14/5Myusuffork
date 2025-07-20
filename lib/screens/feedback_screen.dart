@@ -3,6 +3,7 @@ import '../constants/app_constants.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -1017,31 +1018,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       drawer: const AppDrawerWidget(
         currentPageIndex: -1,
       ), // Feedback sayfası navigasyon dışında / Feedback page is outside navigation
-      appBar: AppBar(
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
-        titleSpacing: 0,
-        title: Row(
-          children: [
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                AppLocalizations.of(context)!.feedback,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-          ],
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.feedback,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
         ),
-        elevation: 0,
-        actions: [
-          IconButton(
-            onPressed: _clearForm,
-            icon: Icon(Icons.refresh, color: theme.iconTheme.color),
-            tooltip: AppLocalizations.of(context)!.clear_form,
-          ),
-        ],
       ),
       body: Form(
         key: _formKey,

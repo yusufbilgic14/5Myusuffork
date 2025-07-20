@@ -4,6 +4,7 @@ import '../themes/app_themes.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 /// Yemekhane Menü Sayfası / Cafeteria Menu Screen
 class CafeteriaMenuScreen extends StatefulWidget {
@@ -188,51 +189,16 @@ class _CafeteriaMenuScreenState extends State<CafeteriaMenuScreen>
       key: _scaffoldKey,
       backgroundColor: AppThemes.getBackgroundColor(context),
       // Navy renkli AppBar / Navy colored AppBar
-      appBar: AppBar(
-        backgroundColor: AppConstants.primaryColor,
-        foregroundColor: AppConstants.textColorLight,
-        elevation: 0,
-        title: Text(
-          AppLocalizations.of(context)!.cafeteriaMenu,
-          style: const TextStyle(
-            fontSize: AppConstants.fontSizeXLarge,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: true,
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.cafeteriaMenu,
         leading: Builder(
           builder: (BuildContext context) {
-            return GestureDetector(
-              onTap: () {
-                _scaffoldKey.currentState?.openDrawer();
-              },
-              child: const Icon(Icons.menu, color: Colors.white, size: 24),
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
             );
           },
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
-          labelStyle: const TextStyle(
-            fontSize: AppConstants.fontSizeMedium,
-            fontWeight: FontWeight.w600,
-          ),
-          tabs: [
-            Tab(
-              text: AppLocalizations.of(context)!.breakfast,
-              icon: const Icon(Icons.free_breakfast, size: 20),
-            ),
-            Tab(
-              text: AppLocalizations.of(context)!.lunch,
-              icon: const Icon(Icons.lunch_dining, size: 20),
-            ),
-            Tab(
-              text: AppLocalizations.of(context)!.dinner,
-              icon: const Icon(Icons.dinner_dining, size: 20),
-            ),
-          ],
         ),
       ),
 

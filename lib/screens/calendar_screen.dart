@@ -100,20 +100,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CommonAppBar(
-        title: DateFormat('MMMM yyyy', locale).format(_selectedDate),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.calendar,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
         ),
         actions: [
           IconButton(
-            icon: Icon(
-              _isGridView ? Icons.view_timeline : Icons.calendar_view_month,
-            ),
-            tooltip: _isGridView
-                ? AppLocalizations.of(context)!.timelineView
-                : AppLocalizations.of(context)!.monthView,
+            icon: const Icon(Icons.calendar_month, color: Colors.white),
+            tooltip: AppLocalizations.of(context)!.monthlyCalendar,
             onPressed: () {
               setState(() {
                 _isGridView = !_isGridView;
@@ -147,8 +148,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final startOfWeek = _selectedDate.subtract(
       Duration(days: _selectedDate.weekday - 1),
     );
-    // Sadece İngilizce gün kısaltmaları
-    final weekdayShorts = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+    final l10n = AppLocalizations.of(context)!;
+    final weekdayShorts = [
+      l10n.mondayShort,
+      l10n.tuesdayShort,
+      l10n.wednesdayShort,
+      l10n.thursdayShort,
+      l10n.fridayShort,
+      l10n.saturdayShort,
+      l10n.sundayShort,
+    ];
     return Container(
       height: 100,
       decoration: BoxDecoration(
@@ -271,6 +280,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildMonthNavigation(ThemeData theme) {
+    final locale = Localizations.localeOf(context).toString();
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -288,7 +298,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           color: theme.colorScheme.primary,
         ),
         Text(
-          DateFormat('MMMM yyyy', 'tr_TR').format(_selectedDate),
+          DateFormat('MMMM yyyy', locale).format(_selectedDate),
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -313,7 +323,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Widget _buildWeekdayHeaders(ThemeData theme) {
-    final weekdays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+    final l10n = AppLocalizations.of(context)!;
+    final weekdays = [
+      l10n.mondayShort,
+      l10n.tuesdayShort,
+      l10n.wednesdayShort,
+      l10n.thursdayShort,
+      l10n.fridayShort,
+      l10n.saturdayShort,
+      l10n.sundayShort,
+    ];
     return Row(
       children: weekdays
           .map(

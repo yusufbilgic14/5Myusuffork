@@ -208,7 +208,18 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppThemes.getBackgroundColor(context),
-      appBar: CommonAppBar(title: AppLocalizations.of(context)!.courseGrades),
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.courseGrades,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
+      ),
       drawer: const AppDrawerWidget(
         currentPageIndex: -1,
       ), // Ders notları sayfası navigasyon dışında / Course grades page is outside navigation

@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import 'cafeteria_menu_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../widgets/common/app_bar_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,11 +23,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentAnnouncementIndex = 0;
   late PageController _pageController;
   Timer? _autoAdvanceTimer;
-  bool _showNotifications =
-      false; // Bildirim popup'ını kontrol etmek için / To control notification popup
-  bool _showCafeteriaMenu = false; // Cafeteria popup'ı
+  bool _showNotifications = false;
+  bool _showCafeteriaMenu = false;
 
-  // Duyuru listesi / Announcements list
+  // Duyuru listesi
   final List<Map<String, String>> _announcements = [
     {
       'title': 'Mezuniyet Töreni 2025',
@@ -71,9 +72,8 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  // Bildirim listesi / Notifications list
+  // Bildirim listesi
   final List<Map<String, dynamic>> _notifications = [
-    // Inbox mesajları / Inbox messages
     {
       'title': 'Öğrenci Belgesi Talebiniz Hakkında',
       'message': 'Öğrenci İşleri müdürlüğünden yeni bir mesaj aldınız.',
@@ -114,11 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
       'type': 'email',
       'inboxId': 5,
     },
-    // Ek bildirimler / Additional notifications
     {
       'title': 'Visual Programming Final Notunuz Paylaşılmıştır',
       'message':
-          'Visual Programming dersi final sınavı notunuz sisteme yüklenmiştir. Notunuzu kontrol edebilirsiniz.',
+          'Visual Programming dersi final sınavı notunuz sisteme yüklenmiştir.',
       'time': '2 saat önce',
       'isRead': false,
       'type': 'grade',
@@ -126,7 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {
       'title': 'Kütüphane Kitap İade Hatırlatması',
       'message':
-          'Ödünç aldığınız "Algorithm Design" kitabının iade tarihi yaklaşmaktadır. Lütfen 3 gün içinde iade ediniz.',
+          'Ödünç aldığınız "Algorithm Design" kitabının iade tarihi yaklaşmaktadır.',
       'time': '5 saat önce',
       'isRead': false,
       'type': 'reminder',
@@ -141,23 +140,21 @@ class _HomeScreenState extends State<HomeScreen> {
     },
     {
       'title': 'Burs Başvuru Sonucu',
-      'message':
-          'Başarı bursu başvurunuz değerlendirme aşamasındadır. Sonuç 1 hafta içinde bildirilecektir.',
+      'message': 'Başarı bursu başvurunuz değerlendirme aşamasındadır.',
       'time': '2 gün önce',
       'isRead': true,
       'type': 'scholarship',
     },
     {
       'title': 'Yeni Duyuru: Mezuniyet Töreni',
-      'message':
-          'Mezuniyet töreni için kayıt işlemleri başlamıştır. Detaylı bilgi için öğrenci işleri ile iletişime geçiniz.',
+      'message': 'Mezuniyet töreni için kayıt işlemleri başlamıştır.',
       'time': '3 gün önce',
       'isRead': true,
       'type': 'announcement',
     },
   ];
 
-  // Günün dersleri / Today's courses
+  // Günün dersleri
   final List<Map<String, dynamic>> _todaysCourses = [
     {
       'name': 'Visual Programming',
@@ -211,7 +208,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // Otomatik duyuru geçişini başlat / Start auto-advance
   void _startAutoAdvance() {
     _autoAdvanceTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (!mounted) {
@@ -230,7 +226,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // Belirli bir duyuruya git / Go to specific announcement
   void _goToAnnouncement(int index) {
     if (!mounted || !_pageController.hasClients) return;
 
@@ -249,60 +244,104 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: const AppDrawerWidget(
         currentPageIndex: AppConstants.navIndexHome,
       ),
-      body: Stack(
+      appBar: ModernAppBar(
+        title: l10n.homeWelcome,
+        subtitle: AppConstants.userName,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.restaurant, color: Colors.white),
+            tooltip: l10n.cafeteriaMenu,
+            onPressed: () {
+              setState(() {
+                _showCafeteriaMenu = !_showCafeteriaMenu;
+                _showNotifications = false;
+              });
+            },
+          ),
+          IconButton(
+            icon: Stack(
+              children: [
+                const Icon(Icons.notifications_rounded, color: Colors.white),
+                if (_notifications.where((n) => !n['isRead']).isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.red[500],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '${_notifications.where((n) => !n['isRead']).length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            tooltip: 'Bildirimler',
+            onPressed: () {
+              setState(() {
+                _showNotifications = !_showNotifications;
+                _showCafeteriaMenu = false;
+              });
+            },
+          ),
+        ],
+        centerTitle: false,
+      ),
+      body: Column(
         children: [
-          Column(
-            children: [
-              // Modern header / Modern başlık
-              _buildModernHeader(context),
-
-              // Bildirim paneli / Notification panel
-              AnimatedContainer(
-                duration: AppConstants.animationNormal,
-                curve: Curves.easeInOut,
-                height: _showNotifications ? 350 : 0,
-                child: _showNotifications
-                    ? _buildNotificationPanel(context)
-                    : null,
+          // Bildirim paneli
+          AnimatedContainer(
+            duration: AppConstants.animationNormal,
+            curve: Curves.easeInOut,
+            height: _showNotifications ? 350 : 0,
+            child: _showNotifications ? _buildNotificationPanel(context) : null,
+          ),
+          // Cafeteria paneli
+          AnimatedContainer(
+            duration: AppConstants.animationNormal,
+            curve: Curves.easeInOut,
+            height: _showCafeteriaMenu ? 400 : 0,
+            child: _showCafeteriaMenu ? _buildCafeteriaPanel(context) : null,
+          ),
+          // Ana içerik
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 20),
+                  // Duyurular bölümü
+                  _buildAnnouncementsSection(context),
+                  const SizedBox(height: 32),
+                  // Günün dersleri bölümü
+                  _buildTodaysCoursesSection(context),
+                  const SizedBox(height: 100),
+                ],
               ),
-
-              // Cafeteria paneli
-              AnimatedContainer(
-                duration: AppConstants.animationNormal,
-                curve: Curves.easeInOut,
-                height: _showCafeteriaMenu ? 400 : 0,
-                child: _showCafeteriaMenu
-                    ? _buildCafeteriaPanel(context)
-                    : null,
-              ),
-
-              // Ana içerik / Main content
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppConstants.paddingMedium,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: AppConstants.paddingMedium),
-
-                      // Duyurular bölümü / Announcements section
-                      _buildAnnouncementsSection(context),
-
-                      const SizedBox(height: AppConstants.paddingXLarge),
-
-                      // Günün dersleri bölümü / Today's courses section
-                      _buildTodaysCoursesSection(context),
-
-                      const SizedBox(
-                        height: 100,
-                      ), // Alt navigasyon için boşluk / Space for bottom navigation
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -312,199 +351,53 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Modern header widget / Modern başlık widget
-  Widget _buildModernHeader(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppThemes.getPrimaryColor(context),
-            AppThemes.getPrimaryColor(context).withValues(alpha: 0.8),
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.3),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.all(AppConstants.paddingMedium),
-          child: Row(
-            children: [
-              // Hamburger menü / Hamburger menu
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
-                ),
-                child: Builder(
-                  builder: (BuildContext context) {
-                    return IconButton(
-                      onPressed: () => Scaffold.of(context).openDrawer(),
-                      icon: const Icon(Icons.menu_rounded, color: Colors.white),
-                      tooltip: 'Menü',
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(width: AppConstants.paddingMedium),
-
-              // Kullanıcı bilgileri / User info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.homeWelcome,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.9),
-                        fontSize: AppConstants.fontSizeMedium,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    const Text(
-                      AppConstants.userName,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: AppConstants.fontSizeXXLarge,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${AppConstants.userDepartment} • ${AppConstants.userGrade}',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: AppConstants.fontSizeSmall,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Çatal-bıçak ikon butonu
-              IconButton(
-                icon: const Icon(Icons.restaurant, color: Colors.white),
-                tooltip: AppLocalizations.of(context)!.cafeteriaMenu,
-                onPressed: () {
-                  setState(() {
-                    _showCafeteriaMenu = !_showCafeteriaMenu;
-                    _showNotifications = false;
-                  });
-                },
-              ),
-
-              // Bildirim butonu / Notification button
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
-                ),
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _showNotifications = !_showNotifications;
-                    });
-                  },
-                  icon: Stack(
-                    children: [
-                      const Icon(
-                        Icons.notifications_rounded,
-                        color: Colors.white,
-                      ),
-                      // Okunmamış bildirim badge'i / Unread notification badge
-                      if (_notifications.where((n) => !n['isRead']).isNotEmpty)
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: Colors.red[500],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 16,
-                              minHeight: 16,
-                            ),
-                            child: Text(
-                              '${_notifications.where((n) => !n['isRead']).length}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  tooltip: 'Bildirimler',
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Duyurular bölümü / Announcements section
+  // Duyurular bölümü
   Widget _buildAnnouncementsSection(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Bölüm başlığı / Section title
+        // Bölüm başlığı
         Row(
           children: [
             Icon(
-              Icons.campaign_rounded,
+              Icons.campaign_outlined,
               color: AppThemes.getPrimaryColor(context),
-              size: 24,
+              size: 20,
             ),
-            const SizedBox(width: AppConstants.paddingSmall),
+            const SizedBox(width: 8),
             Text(
               l10n.announcements,
               style: TextStyle(
-                fontSize: AppConstants.fontSizeXLarge,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
                 color: AppThemes.getTextColor(context),
               ),
             ),
             const Spacer(),
             TextButton(
-              onPressed: () {
-                // Tüm duyuruları göster / Show all announcements
+              onPressed: () async {
+                final url = Uri.parse('https://www.medipol.edu.tr/duyurular');
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
               },
               child: Text(
                 l10n.seeAll,
                 style: TextStyle(
                   color: AppThemes.getPrimaryColor(context),
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
           ],
         ),
 
-        const SizedBox(height: AppConstants.paddingMedium),
+        const SizedBox(height: 16),
 
-        // Duyuru kartları / Announcement cards
+        // Duyuru kartları
         SizedBox(
-          height: 200,
+          height: 180,
           child: PageView.builder(
             controller: _pageController,
             onPageChanged: (index) {
@@ -518,18 +411,20 @@ class _HomeScreenState extends State<HomeScreen> {
               return Container(
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    AppConstants.radiusMedium,
+                  color: AppThemes.getSurfaceColor(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppThemes.getSecondaryTextColor(
+                      context,
+                    ).withOpacity(0.1),
+                    width: 1,
                   ),
-                  boxShadow: AppThemes.getCardShadow(context),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(
-                    AppConstants.radiusMedium,
-                  ),
+                  borderRadius: BorderRadius.circular(12),
                   child: Stack(
                     children: [
-                      // Arka plan resmi / Background image
+                      // Arka plan resmi
                       Positioned.fill(
                         child: Image.asset(
                           announcement['image']!,
@@ -544,14 +439,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                     AppThemes.getPrimaryColor(context),
                                     AppThemes.getPrimaryColor(
                                       context,
-                                    ).withValues(alpha: 0.7),
+                                    ).withOpacity(0.7),
                                   ],
                                 ),
                               ),
                               child: const Center(
                                 child: Icon(
-                                  Icons.campaign_rounded,
-                                  size: 48,
+                                  Icons.campaign_outlined,
+                                  size: 40,
                                   color: Colors.white,
                                 ),
                               ),
@@ -560,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      // Gradient overlay / Gradient kaplama
+                      // Gradient overlay
                       Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
@@ -569,48 +464,44 @@ class _HomeScreenState extends State<HomeScreen> {
                               end: Alignment.bottomCenter,
                               colors: [
                                 Colors.transparent,
-                                Colors.black.withValues(alpha: 0.7),
+                                Colors.black.withOpacity(0.6),
                               ],
                             ),
                           ),
                         ),
                       ),
 
-                      // Tarih etiketi / Date badge
+                      // Tarih etiketi
                       Positioned(
-                        top: AppConstants.paddingMedium,
-                        right: AppConstants.paddingMedium,
+                        top: 12,
+                        right: 12,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: AppConstants.paddingSmall,
+                            horizontal: 8,
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            borderRadius: BorderRadius.circular(
-                              AppConstants.radiusSmall,
-                            ),
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             announcement['date']!,
                             style: TextStyle(
                               color: AppThemes.getPrimaryColor(context),
-                              fontSize: AppConstants.fontSizeSmall,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
 
-                      // İçerik / Content
+                      // İçerik
                       Positioned(
                         bottom: 0,
                         left: 0,
                         right: 0,
                         child: Padding(
-                          padding: const EdgeInsets.all(
-                            AppConstants.paddingMedium,
-                          ),
+                          padding: const EdgeInsets.all(16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
@@ -619,8 +510,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 announcement['title']!,
                                 style: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: AppConstants.fontSizeLarge,
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -629,9 +520,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 announcement['description'] ?? '',
                                 style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  fontSize: AppConstants.fontSizeSmall,
-                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w400,
                                 ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -648,9 +539,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
 
-        const SizedBox(height: AppConstants.paddingMedium),
+        const SizedBox(height: 16),
 
-        // Sayfa göstergeleri / Page indicators
+        // Sayfa göstergeleri
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(_announcements.length, (index) {
@@ -658,16 +549,16 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: () => _goToAnnouncement(index),
               child: AnimatedContainer(
                 duration: AppConstants.animationFast,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: index == _currentAnnouncementIndex ? 24 : 8,
-                height: 8,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: index == _currentAnnouncementIndex ? 20 : 6,
+                height: 6,
                 decoration: BoxDecoration(
                   color: index == _currentAnnouncementIndex
                       ? AppThemes.getPrimaryColor(context)
                       : AppThemes.getSecondaryTextColor(
                           context,
-                        ).withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(4),
+                        ).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               ),
             );
@@ -677,56 +568,51 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Günün dersleri bölümü / Today's courses section
+  // Günün dersleri bölümü
   Widget _buildTodaysCoursesSection(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Bölüm başlığı / Section title
+        // Bölüm başlığı
         Row(
           children: [
             Icon(
-              Icons.schedule_rounded,
+              Icons.schedule_outlined,
               color: AppThemes.getPrimaryColor(context),
-              size: 24,
+              size: 20,
             ),
-            const SizedBox(width: AppConstants.paddingSmall),
+            const SizedBox(width: 8),
             Text(
               l10n.todaysCourses,
               style: TextStyle(
-                fontSize: AppConstants.fontSizeXLarge,
-                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
                 color: AppThemes.getTextColor(context),
               ),
             ),
             const Spacer(),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppConstants.paddingSmall,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppThemes.getPrimaryColor(
-                  context,
-                ).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                color: AppThemes.getPrimaryColor(context).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 l10n.todayDate,
                 style: TextStyle(
                   color: AppThemes.getPrimaryColor(context),
-                  fontSize: AppConstants.fontSizeSmall,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
           ],
         ),
 
-        const SizedBox(height: AppConstants.paddingMedium),
+        const SizedBox(height: 16),
 
-        // Ders kartları / Course cards
+        // Ders kartları
         ...List.generate(_todaysCourses.length, (index) {
           final course = _todaysCourses[index];
           return _buildCourseCard(context, course, index);
@@ -735,7 +621,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Ders kartı / Course card
+  // Ders kartı
   Widget _buildCourseCard(
     BuildContext context,
     Map<String, dynamic> course,
@@ -744,65 +630,62 @@ class _HomeScreenState extends State<HomeScreen> {
     final isQuiz = course['type'] == 'quiz';
 
     return Container(
-      margin: const EdgeInsets.only(bottom: AppConstants.paddingMedium),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
-        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-        boxShadow: AppThemes.getCardShadow(context),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: course['color'].withValues(alpha: 0.2),
+          color: AppThemes.getSecondaryTextColor(context).withOpacity(0.1),
           width: 1,
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(AppConstants.paddingMedium),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            // Zaman göstergesi / Time indicator
+            // Zaman göstergesi
             SizedBox(
-              width: 60,
+              width: 50,
               child: Text(
-                course['time'].split(
-                  ' - ',
-                )[0], // Sadece başlama saati / Only start time
+                course['time'].split(' - ')[0],
                 style: TextStyle(
-                  fontSize: AppConstants.fontSizeSmall,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                   color: AppThemes.getSecondaryTextColor(context),
                 ),
               ),
             ),
 
-            // Renk çubuğu / Color bar
+            // Renk çubuğu
             Container(
-              width: 4,
-              height: 60,
+              width: 3,
+              height: 50,
               decoration: BoxDecoration(
                 color: course['color'],
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
 
-            const SizedBox(width: AppConstants.paddingMedium),
+            const SizedBox(width: 12),
 
-            // Ders ikonu / Course icon
+            // Ders ikonu
             Container(
-              width: 48,
-              height: 48,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: course['color'].withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                color: course['color'].withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
-                isQuiz ? Icons.quiz_rounded : Icons.book_rounded,
+                isQuiz ? Icons.quiz_outlined : Icons.book_outlined,
                 color: course['color'],
-                size: 24,
+                size: 20,
               ),
             ),
 
-            const SizedBox(width: AppConstants.paddingMedium),
+            const SizedBox(width: 12),
 
-            // Ders bilgileri / Course information
+            // Ders bilgileri
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -810,8 +693,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     course['name'],
                     style: TextStyle(
-                      fontSize: AppConstants.fontSizeMedium,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
                       color: AppThemes.getTextColor(context),
                     ),
                   ),
@@ -820,8 +703,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       course['code'],
                       style: TextStyle(
-                        fontSize: AppConstants.fontSizeSmall,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
                         color: course['color'],
                       ),
                     ),
@@ -830,8 +713,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     children: [
                       Icon(
-                        Icons.person_rounded,
-                        size: 14,
+                        Icons.person_outline,
+                        size: 12,
                         color: AppThemes.getSecondaryTextColor(context),
                       ),
                       const SizedBox(width: 4),
@@ -839,7 +722,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text(
                           course['instructor'],
                           style: TextStyle(
-                            fontSize: AppConstants.fontSizeSmall,
+                            fontSize: 12,
                             color: AppThemes.getSecondaryTextColor(context),
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -851,15 +734,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   Row(
                     children: [
                       Icon(
-                        Icons.location_on_rounded,
-                        size: 14,
+                        Icons.location_on_outlined,
+                        size: 12,
                         color: AppThemes.getSecondaryTextColor(context),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         course['room'],
                         style: TextStyle(
-                          fontSize: AppConstants.fontSizeSmall,
+                          fontSize: 12,
                           color: AppThemes.getSecondaryTextColor(context),
                         ),
                       ),
@@ -869,21 +752,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            // Süre bilgisi / Duration info
+            // Süre bilgisi
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppConstants.paddingSmall,
-                vertical: 4,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: course['color'].withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                color: course['color'].withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
                 course['time'],
                 style: TextStyle(
-                  fontSize: AppConstants.fontSizeSmall,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                   color: course['color'],
                 ),
               ),
@@ -894,52 +774,45 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Bildirim paneli / Notification panel
+  // Bildirim paneli
   Widget _buildNotificationPanel(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
-        boxShadow: AppThemes.getCardShadow(context),
+        border: Border(
+          bottom: BorderSide(
+            color: AppThemes.getSecondaryTextColor(context).withOpacity(0.1),
+            width: 1,
+          ),
+        ),
       ),
       child: Column(
         children: [
-          // Panel başlığı / Panel header
+          // Panel başlığı
           Container(
-            padding: const EdgeInsets.all(AppConstants.paddingMedium),
-            decoration: BoxDecoration(
-              color: AppThemes.getBackgroundColor(context),
-              border: Border(
-                bottom: BorderSide(
-                  color: AppThemes.getSecondaryTextColor(
-                    context,
-                  ).withValues(alpha: 0.2),
-                  width: 1,
-                ),
-              ),
-            ),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Icon(
-                  Icons.notifications_rounded,
+                  Icons.notifications_outlined,
                   color: AppThemes.getPrimaryColor(context),
-                  size: 20,
+                  size: 18,
                 ),
-                const SizedBox(width: AppConstants.paddingSmall),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     l10n.notifications,
                     style: TextStyle(
                       color: AppThemes.getPrimaryColor(context),
-                      fontSize: AppConstants.fontSizeMedium,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 TextButton(
                   onPressed: () {
                     setState(() {
-                      // Tüm bildirimleri okundu olarak işaretle / Mark all notifications as read
                       for (var notification in _notifications) {
                         notification['isRead'] = true;
                       }
@@ -949,8 +822,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     l10n.markAllRead,
                     style: TextStyle(
                       color: AppThemes.getPrimaryColor(context),
-                      fontSize: AppConstants.fontSizeSmall,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -961,15 +834,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     });
                   },
                   icon: Icon(
-                    Icons.keyboard_arrow_up_rounded,
+                    Icons.keyboard_arrow_up_outlined,
                     color: AppThemes.getPrimaryColor(context),
+                    size: 20,
                   ),
                 ),
               ],
             ),
           ),
 
-          // Bildirim listesi / Notification list
+          // Bildirim listesi
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.zero,
@@ -985,7 +859,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  /// Bildirim öğesi / Notification item
+  // Bildirim öğesi
   Widget _buildNotificationItem(
     BuildContext context,
     Map<String, dynamic> notification,
@@ -994,19 +868,19 @@ class _HomeScreenState extends State<HomeScreen> {
     IconData getNotificationIcon(String type) {
       switch (type) {
         case 'grade':
-          return Icons.grade_rounded;
+          return Icons.grade_outlined;
         case 'reminder':
-          return Icons.schedule_rounded;
+          return Icons.schedule_outlined;
         case 'assignment':
-          return Icons.assignment_rounded;
+          return Icons.assignment_outlined;
         case 'scholarship':
-          return Icons.account_balance_wallet_rounded;
+          return Icons.account_balance_wallet_outlined;
         case 'announcement':
-          return Icons.campaign_rounded;
+          return Icons.campaign_outlined;
         case 'email':
-          return Icons.email_rounded;
+          return Icons.email_outlined;
         default:
-          return Icons.notifications_rounded;
+          return Icons.notifications_outlined;
       }
     }
 
@@ -1035,7 +909,6 @@ class _HomeScreenState extends State<HomeScreen> {
           _notifications[index]['isRead'] = true;
         });
 
-        // E-posta tipindeki bildirimler için inbox'a git / Navigate to inbox for email notifications
         if (notification['type'] == 'email' &&
             notification['inboxId'] != null) {
           Navigator.push(
@@ -1048,16 +921,14 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       },
       child: Container(
-        padding: const EdgeInsets.all(AppConstants.paddingMedium),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: notification['isRead']
               ? AppThemes.getSurfaceColor(context)
-              : AppThemes.getPrimaryColor(context).withValues(alpha: 0.05),
+              : AppThemes.getPrimaryColor(context).withOpacity(0.05),
           border: Border(
             bottom: BorderSide(
-              color: AppThemes.getSecondaryTextColor(
-                context,
-              ).withValues(alpha: 0.1),
+              color: AppThemes.getSecondaryTextColor(context).withOpacity(0.1),
               width: 1,
             ),
           ),
@@ -1065,26 +936,26 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bildirim ikonu / Notification icon
+            // Bildirim ikonu
             Container(
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: getNotificationColor(
                   notification['type'],
-                ).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                ).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
                 getNotificationIcon(notification['type']),
                 color: getNotificationColor(notification['type']),
-                size: 20,
+                size: 18,
               ),
             ),
 
-            const SizedBox(width: AppConstants.paddingMedium),
+            const SizedBox(width: 12),
 
-            // Bildirim içeriği / Notification content
+            // Bildirim içeriği
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1095,18 +966,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text(
                           notification['title'],
                           style: TextStyle(
-                            fontSize: AppConstants.fontSizeMedium,
+                            fontSize: 14,
                             fontWeight: notification['isRead']
                                 ? FontWeight.w500
-                                : FontWeight.bold,
+                                : FontWeight.w600,
                             color: AppThemes.getTextColor(context),
                           ),
                         ),
                       ),
                       if (!notification['isRead'])
                         Container(
-                          width: 8,
-                          height: 8,
+                          width: 6,
+                          height: 6,
                           decoration: BoxDecoration(
                             color: AppThemes.getPrimaryColor(context),
                             shape: BoxShape.circle,
@@ -1120,7 +991,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     notification['message'],
                     style: TextStyle(
-                      fontSize: AppConstants.fontSizeSmall,
+                      fontSize: 12,
                       color: AppThemes.getSecondaryTextColor(context),
                       fontWeight: FontWeight.w400,
                     ),
@@ -1128,15 +999,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
 
                   Text(
                     notification['time'],
                     style: TextStyle(
-                      fontSize: AppConstants.fontSizeSmall,
+                      fontSize: 11,
                       color: AppThemes.getSecondaryTextColor(
                         context,
-                      ).withValues(alpha: 0.7),
+                      ).withOpacity(0.7),
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -1149,26 +1020,24 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Cafeteria paneli widget'ı
+  // Cafeteria paneli
   Widget _buildCafeteriaPanel(BuildContext context) {
     final theme = Theme.of(context);
     return Material(
-      elevation: 8,
+      elevation: 4,
       color: theme.cardColor,
       borderRadius: const BorderRadius.only(
-        bottomLeft: Radius.circular(24),
-        bottomRight: Radius.circular(24),
+        bottomLeft: Radius.circular(16),
+        bottomRight: Radius.circular(16),
       ),
       child: Stack(
         children: [
-          // Panel içeriği: Sadece yazılı menü özeti
           SizedBox(height: 400, child: _buildCafeteriaMenuSummary(context)),
-          // Kapatma butonu
           Positioned(
             right: 8,
             top: 8,
             child: IconButton(
-              icon: Icon(Icons.close, color: theme.iconTheme.color),
+              icon: Icon(Icons.close_outlined, color: theme.iconTheme.color),
               onPressed: () {
                 setState(() {
                   _showCafeteriaMenu = false;
@@ -1181,7 +1050,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Sadece yazılı menü özeti gösteren widget
+  // Cafeteria menü özeti
   Widget _buildCafeteriaMenuSummary(BuildContext context) {
     final theme = Theme.of(context);
     final now = DateTime.now();
@@ -1194,7 +1063,7 @@ class _HomeScreenState extends State<HomeScreen> {
       AppLocalizations.of(context)!.saturdayShort,
       AppLocalizations.of(context)!.sundayShort,
     ];
-    // Örnek menü verisi (gerçek uygulamada API'den çekilebilir)
+
     final menus = [
       [
         'Naneli Yoğurt Çorba 171 KCAL',
@@ -1230,8 +1099,9 @@ class _HomeScreenState extends State<HomeScreen> {
         'Mevsim Meyve',
       ],
     ];
+
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1244,15 +1114,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   children: [
                     Icon(
-                      Icons.restaurant,
+                      Icons.restaurant_outlined,
                       color: AppThemes.getPrimaryColor(context),
+                      size: 18,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       AppLocalizations.of(context)!.cafeteriaMenu,
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                         color: theme.textTheme.titleLarge?.color,
                       ),
                     ),
@@ -1262,6 +1133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         color: theme.textTheme.bodyMedium?.color,
+                        fontSize: 12,
                       ),
                     ),
                   ],
@@ -1272,7 +1144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     color: Colors.green[700],
                     fontWeight: FontWeight.w600,
-                    fontSize: 15,
+                    fontSize: 14,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -1282,13 +1154,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text(
                       item,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         color: theme.textTheme.bodyLarge?.color,
                       ),
                     ),
                   ),
                 ),
-                if (i < 3) const Divider(height: 28),
+                if (i < 3) const Divider(height: 24),
               ],
             );
           }),

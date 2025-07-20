@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
+import '../widgets/common/app_bar_widget.dart';
+import '../widgets/common/bottom_navigation_widget.dart';
+import '../constants/app_constants.dart';
 
 class KampuseUlasimScreen extends StatelessWidget {
   const KampuseUlasimScreen({Key? key}) : super(key: key);
@@ -67,12 +70,12 @@ class KampuseUlasimScreen extends StatelessWidget {
       ['', '122M', 'MECİDİYEKÖY-ŞAHİNBEY'],
       ['', '122Y', 'MECİDİYEKÖY-ÇEKMEKÖY'],
       ['', '122D', 'MECİDİYEKÖY-ATATÜRK MAHALLESİ'],
-      ['', '122H', '4.LEVENT-SABIHA GÖKÇEN H.L.'],
+      ['', '122H', '4.LEVENT-SABİHA GÖKÇEN H.L.'],
       ['', '122V', '4.LEVENT-VEYSEL KARANİ'],
       ['', '522B', 'MECİDİYEKÖY-YENİDOĞAN'],
       ['', '522ST', 'MECİDİYEKÖY-SULTANBEYLİ'],
-      ['', '522', 'MECİDİYEKÖY-YENİDOĞAN'],
-      ['', 'E-3', '4.LEVENT-SABIHA GÖKÇEN H.L.'],
+      ['', '622', 'MECİDİYEKÖY-YENİDOĞAN'],
+      ['', 'E-3', '4.LEVENT-SABİHA GÖKÇEN H.L.'],
     ];
     final anadoluRows = [
       ['ANADOLU YAKASI', '15BK', 'DERESEKİ-KADIKÖY'],
@@ -89,15 +92,22 @@ class KampuseUlasimScreen extends StatelessWidget {
       ['', '136B', 'HEKİMBAŞI-BEYKOZ TAŞOCAKLARI'],
       ['', '135A', 'KAVACIK-ACARKENT'],
       ['', '135T', 'ARKBOYU-TOKATKÖY'],
-      ['', '1556R', 'KAVACIK-RİVA'],
+      ['', '136R', 'KAVACIK-RİVA'],
       ['', '11ÇB', 'KAVACIK-ÜMRANİYE E.A.H'],
       ['', '14M', 'KAVACIK YENİ CAMİİ-KADIKÖY'],
     ];
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.campusTransport),
-        backgroundColor: const Color(0xFF1E3A8A),
-        foregroundColor: Colors.white,
+      appBar: ModernAppBar(
+        title: AppLocalizations.of(context)!.campusTransport,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+              tooltip: 'Menü',
+            );
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(0),
@@ -143,11 +153,15 @@ class KampuseUlasimScreen extends StatelessWidget {
                     ),
                     children: [_buildTable(anadoluRows)],
                   ),
+                  const SizedBox(height: 80), // Alt navigasyon için boşluk
                 ],
               ),
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: const BottomNavigationWidget(
+        currentIndex: AppConstants.navIndexProfile,
       ),
     );
   }
