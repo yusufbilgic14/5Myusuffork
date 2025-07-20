@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../widgets/common/app_bar_widget.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import '../themes/app_themes.dart';
+import '../providers/theme_provider.dart';
 import '../l10n/app_localizations.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -15,11 +17,16 @@ class CalendarScreen extends StatefulWidget {
   State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends State<CalendarScreen>
+    with TickerProviderStateMixin {
   DateTime _selectedDate = DateTime.now();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isLocaleInitialized = false;
-  bool _isGridView = false; // Takvim görünüm modu / Calendar view mode
+  bool _isGridView = false;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late ScrollController _timelineScrollController;
+  DateTime _currentWeekStart = DateTime.now();
 
   // Örnek ders verisi / Sample course data
   final List<Map<String, dynamic>> _courses = [
@@ -69,43 +76,99 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void initState() {
     super.initState();
     _initializeLocale();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+    _timelineScrollController = ScrollController();
+    _currentWeekStart = _getWeekStart(_selectedDate);
+    _scrollToCurrentTime();
   }
 
-  // Türkçe yerel ayarlarını başlat / Initialize Turkish locale
   void _initializeLocale() async {
     await initializeDateFormatting('tr_TR', null);
     if (mounted) {
       setState(() {
         _isLocaleInitialized = true;
       });
+      _animationController.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _timelineScrollController.dispose();
+    super.dispose();
+  }
+
+  DateTime _getWeekStart(DateTime date) {
+    return date.subtract(Duration(days: date.weekday - 1));
+  }
+
+  void _scrollToCurrentTime() {
+    if (_isViewingToday() && !_isGridView) {
+      final now = DateTime.now();
+      if (now.hour >= 7 && now.hour <= 21) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final position = (now.hour - 7) * 60.0 + (now.minute / 60.0 * 60.0);
+          if (_timelineScrollController.hasClients) {
+            _timelineScrollController.animateTo(
+              position - 100,
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInOut,
+            );
+          }
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final locale = Localizations.localeOf(context).languageCode;
-    // Eğer locale henüz yüklenmemişse loading göster / Show loading if locale not loaded yet
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_isLocaleInitialized) {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: theme.colorScheme.onPrimary,
           elevation: 0,
-          title: Text(AppLocalizations.of(context)!.calendar),
+          title: Text(l10n.calendar),
           centerTitle: true,
         ),
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              const SizedBox(height: 16),
+              Text(
+                l10n.mapLoading,
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ),
       );
     }
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: ModernAppBar(
-        title: AppLocalizations.of(context)!.calendar,
+        title: l10n.calendar,
         leading: Builder(
           builder: (BuildContext context) {
             return IconButton(
-              icon: const Icon(Icons.menu_rounded, color: Colors.white),
+              icon: Icon(
+                Icons.menu_rounded,
+                color: theme.colorScheme.onPrimary,
+              ),
               onPressed: () => Scaffold.of(context).openDrawer(),
               tooltip: 'Menü',
             );
@@ -113,29 +176,49 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.calendar_month, color: Colors.white),
-            tooltip: AppLocalizations.of(context)!.monthlyCalendar,
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              child: Icon(
+                _isGridView ? Icons.view_agenda : Icons.calendar_month,
+                key: ValueKey(_isGridView),
+                color: theme.colorScheme.onPrimary,
+              ),
+            ),
+            tooltip: _isGridView ? l10n.timelineView : l10n.monthView,
             onPressed: () {
               setState(() {
                 _isGridView = !_isGridView;
               });
+              if (!_isGridView) {
+                _scrollToCurrentTime();
+              }
             },
           ),
+          
         ],
       ),
       drawer: const AppDrawerWidget(
         currentPageIndex: AppConstants.navIndexCalendar,
       ),
       backgroundColor: theme.scaffoldBackgroundColor,
-      body: Column(
-        children: [
-          if (!_isGridView) _buildHorizontalDatePicker(theme),
-          Expanded(
-            child: _isGridView
-                ? _buildGridView(theme)
-                : _buildTimelineView(theme),
-          ),
-        ],
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: Column(
+          children: [
+            _buildModernHeader(theme, l10n),
+            if (!_isGridView) _buildWeeklyDatePicker(theme, l10n),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 400),
+                switchInCurve: Curves.easeInOut,
+                switchOutCurve: Curves.easeInOut,
+                child: _isGridView
+                    ? _buildModernGridView(theme, l10n)
+                    : _buildModernTimelineView(theme, l10n),
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: const BottomNavigationWidget(
         currentIndex: AppConstants.navIndexCalendar,
@@ -143,12 +226,83 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  Widget _buildHorizontalDatePicker(ThemeData theme) {
-    final today = DateTime.now();
-    final startOfWeek = _selectedDate.subtract(
-      Duration(days: _selectedDate.weekday - 1),
+  Widget _buildModernHeader(ThemeData theme, AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        border: Border(
+          bottom: BorderSide(
+            color: theme.dividerColor.withOpacity(0.1),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  DateFormat('MMMM yyyy', Localizations.localeOf(context).toString())
+                      .format(_selectedDate),
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _isGridView ? l10n.monthView : l10n.timelineView,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isGridView) ...[
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedDate = DateTime(
+                    _selectedDate.year,
+                    _selectedDate.month - 1,
+                    1,
+                  );
+                });
+              },
+              icon: Icon(
+                Icons.chevron_left,
+                color: theme.colorScheme.primary,
+                size: 28,
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _selectedDate = DateTime(
+                    _selectedDate.year,
+                    _selectedDate.month + 1,
+                    1,
+                  );
+                });
+              },
+              icon: Icon(
+                Icons.chevron_right,
+                color: theme.colorScheme.primary,
+                size: 28,
+              ),
+            ),
+          ],
+        ],
+      ),
     );
-    final l10n = AppLocalizations.of(context)!;
+  }
+
+  Widget _buildWeeklyDatePicker(ThemeData theme, AppLocalizations l10n) {
+    final today = DateTime.now();
     final weekdayShorts = [
       l10n.mondayShort,
       l10n.tuesdayShort,
@@ -158,172 +312,252 @@ class _CalendarScreenState extends State<CalendarScreen> {
       l10n.saturdayShort,
       l10n.sundayShort,
     ];
+
     return Container(
-      height: 100,
+      height: 110,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: theme.cardColor,
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.08),
+            color: theme.shadowColor.withOpacity(0.1),
             offset: const Offset(0, 2),
-            blurRadius: 4,
+            blurRadius: 8,
+            spreadRadius: 0,
           ),
         ],
       ),
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        scrollDirection: Axis.horizontal,
-        itemCount: 7,
-        itemBuilder: (context, index) {
-          final date = startOfWeek.add(Duration(days: index));
-          final isSelected =
-              DateFormat('yyyy-MM-dd').format(date) ==
-              DateFormat('yyyy-MM-dd').format(_selectedDate);
-          final isToday =
-              DateFormat('yyyy-MM-dd').format(date) ==
-              DateFormat('yyyy-MM-dd').format(today);
-          return GestureDetector(
-            onTap: () {
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {
               setState(() {
-                _selectedDate = date;
+                _currentWeekStart = _currentWeekStart.subtract(const Duration(days: 7));
+                _selectedDate = _currentWeekStart;
               });
             },
-            child: Container(
-              width: 50,
-              margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 16),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-                border: isToday && !isSelected
-                    ? Border.all(color: theme.colorScheme.primary, width: 1)
-                    : isSelected
-                    ? null
-                    : Border.all(color: Colors.transparent, width: 1),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    weekdayShorts[date.weekday - 1],
-                    style: TextStyle(
-                      color: isSelected
-                          ? theme.colorScheme.onPrimary
-                          : isToday
-                          ? theme.colorScheme.primary
-                          : theme.textTheme.bodyLarge?.color,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    date.day.toString(),
-                    style: TextStyle(
-                      color: isSelected
-                          ? theme.colorScheme.onPrimary
-                          : isToday
-                          ? theme.colorScheme.primary
-                          : theme.textTheme.bodyLarge?.color,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+            icon: Icon(
+              Icons.chevron_left,
+              color: theme.colorScheme.primary,
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 7,
+              itemBuilder: (context, index) {
+                final date = _currentWeekStart.add(Duration(days: index));
+                final isSelected = _isSameDay(date, _selectedDate);
+                final isToday = _isToday(date);
+                final hasEvents = _hasEventsOnDate(date);
+
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedDate = date;
+                    });
+                    _scrollToCurrentTime();
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 60,
+                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? theme.colorScheme.primary
+                          : isToday
+                          ? theme.colorScheme.primary.withOpacity(0.1)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: isToday && !isSelected
+                          ? Border.all(
+                              color: theme.colorScheme.primary,
+                              width: 2,
+                            )
+                          : null,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          weekdayShorts[date.weekday - 1],
+                          style: TextStyle(
+                            color: isSelected
+                                ? theme.colorScheme.onPrimary
+                                : isToday
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurface.withOpacity(0.7),
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          date.day.toString(),
+                          style: TextStyle(
+                            color: isSelected
+                                ? theme.colorScheme.onPrimary
+                                : isToday
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurface,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        if (hasEvents)
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? theme.colorScheme.onPrimary
+                                  : theme.colorScheme.primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _currentWeekStart = _currentWeekStart.add(const Duration(days: 7));
+                _selectedDate = _currentWeekStart;
+              });
+            },
+            icon: Icon(
+              Icons.chevron_right,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildTimelineView(ThemeData theme) {
+  Widget _buildModernTimelineView(ThemeData theme, AppLocalizations l10n) {
     if (_courses.isEmpty) {
-      return Center(child: Text(AppLocalizations.of(context)!.noCoursesToday));
+      return _buildEmptyState(theme, l10n);
     }
+
     return Container(
-      color: theme.cardColor,
-      child: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                ...List.generate(15, (index) {
-                  final hour = 7 + index;
-                  return _buildTimeSlot(hour, theme);
-                }),
-              ],
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadowColor.withOpacity(0.1),
+            offset: const Offset(0, 2),
+            blurRadius: 8,
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: SingleChildScrollView(
+          controller: _timelineScrollController,
+          child: Stack(
+            children: [
+              Column(
+                children: [
+                  ...List.generate(15, (index) {
+                    final hour = 7 + index;
+                    return _buildModernTimeSlot(hour, theme);
+                  }),
+                ],
+              ),
+              ..._buildModernCourseCards(theme, l10n),
+              if (_isViewingToday()) _buildNowIndicator(theme),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme, AppLocalizations l10n) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: theme.shadowColor.withOpacity(0.1),
+              offset: const Offset(0, 2),
+              blurRadius: 8,
             ),
-            ..._buildAllCourseCards(theme),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.event_busy,
+              size: 64,
+              color: theme.colorScheme.primary.withOpacity(0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.noCoursesToday,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Bu tarih için herhangi bir ders planlanmamış.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGridView(ThemeData theme) {
+  Widget _buildModernGridView(ThemeData theme, AppLocalizations l10n) {
     return Container(
-      color: theme.cardColor,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          _buildMonthNavigation(theme),
-          const SizedBox(height: 16),
-          _buildWeekdayHeaders(theme),
-          const SizedBox(height: 8),
-          Expanded(child: _buildCalendarGrid(theme)),
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: theme.shadowColor.withOpacity(0.1),
+            offset: const Offset(0, 2),
+            blurRadius: 8,
+            spreadRadius: 0,
+          ),
         ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Column(
+          children: [
+            _buildModernWeekdayHeaders(theme, l10n),
+            Expanded(child: _buildModernCalendarGrid(theme, l10n)),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMonthNavigation(ThemeData theme) {
-    final locale = Localizations.localeOf(context).toString();
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        IconButton(
-          onPressed: () {
-            setState(() {
-              _selectedDate = DateTime(
-                _selectedDate.year,
-                _selectedDate.month - 1,
-                1,
-              );
-            });
-          },
-          icon: const Icon(Icons.chevron_left),
-          color: theme.colorScheme.primary,
-        ),
-        Text(
-          DateFormat('MMMM yyyy', locale).format(_selectedDate),
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        IconButton(
-          onPressed: () {
-            setState(() {
-              _selectedDate = DateTime(
-                _selectedDate.year,
-                _selectedDate.month + 1,
-                1,
-              );
-            });
-          },
-          icon: const Icon(Icons.chevron_right),
-          color: theme.colorScheme.primary,
-        ),
-      ],
-    );
-  }
 
-  Widget _buildWeekdayHeaders(ThemeData theme) {
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildModernWeekdayHeaders(ThemeData theme, AppLocalizations l10n) {
     final weekdays = [
       l10n.mondayShort,
       l10n.tuesdayShort,
@@ -333,29 +567,39 @@ class _CalendarScreenState extends State<CalendarScreen> {
       l10n.saturdayShort,
       l10n.sundayShort,
     ];
-    return Row(
-      children: weekdays
-          .map(
-            (day) => Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withOpacity(0.05),
+        border: Border(
+          bottom: BorderSide(
+            color: theme.dividerColor.withOpacity(0.1),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        children: weekdays
+            .map(
+              (day) => Expanded(
                 child: Text(
                   day,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    color: theme.colorScheme.primary,
                   ),
                 ),
               ),
-            ),
-          )
-          .toList(),
+            )
+            .toList(),
+      ),
     );
   }
 
-  Widget _buildCalendarGrid(ThemeData theme) {
+  Widget _buildModernCalendarGrid(ThemeData theme, AppLocalizations l10n) {
     final firstDayOfMonth = DateTime(
       _selectedDate.year,
       _selectedDate.month,
@@ -370,10 +614,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final daysInMonth = lastDayOfMonth.day;
     final totalCells = (firstDayWeekday + daysInMonth);
     final rows = (totalCells / 7).ceil();
+    
     return GridView.builder(
+      padding: const EdgeInsets.all(8),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 1.0,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
       ),
       itemCount: rows * 7,
       itemBuilder: (context, index) {
@@ -390,24 +638,39 @@ class _CalendarScreenState extends State<CalendarScreen> {
           final isToday = _isToday(date);
           final isSelected = _isSameDay(date, _selectedDate);
           final hasEvents = _hasEventsOnDate(date);
+          
           return GestureDetector(
             onTap: () {
               setState(() {
                 _selectedDate = date;
                 _isGridView = false;
+                _currentWeekStart = _getWeekStart(date);
               });
+              _scrollToCurrentTime();
             },
-            child: Container(
-              margin: const EdgeInsets.all(2),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
                 color: isSelected
                     ? theme.colorScheme.primary
                     : isToday
                     ? theme.colorScheme.primary.withOpacity(0.1)
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
                 border: isToday && !isSelected
-                    ? Border.all(color: theme.colorScheme.primary, width: 1)
+                    ? Border.all(
+                        color: theme.colorScheme.primary,
+                        width: 2,
+                      )
+                    : null,
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: theme.colorScheme.primary.withOpacity(0.3),
+                          offset: const Offset(0, 2),
+                          blurRadius: 4,
+                        ),
+                      ]
                     : null,
               ),
               child: Column(
@@ -422,11 +685,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ? theme.colorScheme.onPrimary
                           : isToday
                           ? theme.colorScheme.primary
-                          : theme.textTheme.bodyLarge?.color,
+                          : theme.colorScheme.onSurface,
                     ),
                   ),
                   if (hasEvents) ...[
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 4),
                     Container(
                       width: 6,
                       height: 6,
@@ -448,96 +711,250 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  List<Widget> _buildAllCourseCards(ThemeData theme) {
+  List<Widget> _buildModernCourseCards(ThemeData theme, AppLocalizations l10n) {
     return _courses.map((course) {
       final startHour = course['startHour'] as int;
       final duration = (course['duration'] as num).toDouble();
-      final topPosition = (startHour - 7) * 60.0 + 6;
-      final cardHeight = duration * 60.0 - 12;
+      final topPosition = (startHour - 7) * 60.0 + 8;
+      final cardHeight = duration * 60.0 - 16;
+      
       return Positioned(
-        left: 68,
-        right: 8,
+        left: 72,
+        right: 16,
         top: topPosition,
-        child: Container(
-          height: cardHeight,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary,
-            borderRadius: BorderRadius.circular(8),
-            boxShadow: [
-              BoxShadow(
-                color: theme.shadowColor.withOpacity(0.1),
-                offset: const Offset(0, 2),
-                blurRadius: 4,
+        child: GestureDetector(
+          onTap: () {
+            _showCourseDetails(context, course, theme, l10n);
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: cardHeight,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.primary,
+                  theme.colorScheme.primary.withOpacity(0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
-            ],
-          ),
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(
-                '${course['code']} - ${_localizedCourseTitle(context, course['title'])}',
-                style: TextStyle(
-                  color: theme.colorScheme.onPrimary,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  offset: const Offset(0, 4),
+                  blurRadius: 8,
+                  spreadRadius: 0,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.room,
-                    color: theme.colorScheme.onPrimary,
-                    size: 14,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    course['room'],
+              ],
+            ),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Flexible(
+                  child: Text(
+                    '${course['code']} - ${_localizedCourseTitle(context, course['title'])}',
                     style: TextStyle(
                       color: theme.colorScheme.onPrimary,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      height: 1.2,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (cardHeight > 80) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_rounded,
+                        color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        course['room'],
+                        style: TextStyle(
+                          color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.person_rounded,
+                        color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                        size: 16,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          _localizedInstructor(context, course['instructor']),
+                          style: TextStyle(
+                            color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                            fontSize: 11,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-              Row(
-                children: [
-                  Icon(
-                    Icons.person,
-                    color: theme.colorScheme.onPrimary,
-                    size: 14,
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      _localizedInstructor(context, course['instructor']),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.access_time_rounded,
+                      color: theme.colorScheme.onPrimary,
+                      size: 14,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${course['startTime']} - ${course['endTime']}',
                       style: TextStyle(
                         color: theme.colorScheme.onPrimary,
-                        fontSize: 10,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
-              ),
-              Text(
-                '${course['startTime']} - ${course['endTime']}',
-                style: TextStyle(
-                  color: theme.colorScheme.onPrimary,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w400,
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       );
     }).toList();
+  }
+
+  void _showCourseDetails(BuildContext context, Map<String, dynamic> course, 
+      ThemeData theme, AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    course['code'],
+                    style: TextStyle(
+                      color: theme.colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _localizedCourseTitle(context, course['title']),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildDetailRow(
+              Icons.person_rounded,
+              'Instructor',
+              _localizedInstructor(context, course['instructor']),
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.location_on_rounded,
+              'Room',
+              course['room'],
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.access_time_rounded,
+              'Time',
+              '${course['startTime']} - ${course['endTime']}',
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.timelapse_rounded,
+              'Duration',
+              '${course['duration']} hours',
+              theme,
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value, ThemeData theme) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: theme.colorScheme.primary,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   String _localizedCourseTitle(BuildContext context, String key) {
@@ -570,31 +987,47 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
-  Widget _buildTimeSlot(int hour, ThemeData theme) {
+  Widget _buildModernTimeSlot(int hour, ThemeData theme) {
     final timeString = '${hour.toString().padLeft(2, '0')}:00';
+    final isCurrentHour = _isViewingToday() && DateTime.now().hour == hour;
+    
     return Container(
       height: 60,
       child: Row(
         children: [
           Container(
-            width: 60,
+            width: 64,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               timeString,
               style: TextStyle(
-                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                color: isCurrentHour
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurface.withOpacity(0.6),
                 fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontWeight: isCurrentHour ? FontWeight.bold : FontWeight.w500,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          Container(width: 1, height: 60, color: theme.dividerColor),
+          Container(
+            width: 2,
+            height: 60,
+            decoration: BoxDecoration(
+              color: isCurrentHour
+                  ? theme.colorScheme.primary.withOpacity(0.3)
+                  : theme.dividerColor.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(1),
+            ),
+          ),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(color: theme.dividerColor, width: 1),
+                  bottom: BorderSide(
+                    color: theme.dividerColor.withOpacity(0.2),
+                    width: 1,
+                  ),
                 ),
               ),
             ),
@@ -604,9 +1037,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  // "Şimdi" göstergesi / "Now" indicator
   Widget _buildNowIndicator(ThemeData theme) {
-    // Sadece bugünü görüntülüyorsak göster / Only show if viewing today
     if (!_isViewingToday()) {
       return const SizedBox.shrink();
     }
@@ -615,29 +1046,32 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final currentHour = now.hour;
     final currentMinute = now.minute;
 
-    // Sadece 7-21 saatleri arasında göster / Only show between 7-21 hours
     if (currentHour < 7 || currentHour >= 21) {
       return const SizedBox.shrink();
     }
 
-    // Göstergenin pozisyonunu hesapla / Calculate indicator position
     final hoursSince7 = currentHour - 7;
     final minuteOffset = currentMinute / 60.0;
     final topPosition = (hoursSince7 + minuteOffset) * 60.0;
 
     return Positioned(
-      left: 61, // Saat etiketinden sonra / After time label
-      right: 8, // Sağ kenardan boşluk / Margin from right
+      left: 66,
+      right: 16,
       top: topPosition,
       child: Container(
-        height: 2,
+        height: 3,
         decoration: BoxDecoration(
-          color: theme.colorScheme.error,
-          borderRadius: BorderRadius.circular(1),
+          gradient: LinearGradient(
+            colors: [
+              Colors.red.shade400,
+              Colors.red.shade600,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(2),
           boxShadow: [
             BoxShadow(
-              color: theme.colorScheme.error.withOpacity(0.3),
-              blurRadius: 2,
+              color: Colors.red.withOpacity(0.4),
+              blurRadius: 6,
               spreadRadius: 1,
             ),
           ],
@@ -645,19 +1079,36 @@ class _CalendarScreenState extends State<CalendarScreen> {
         child: Row(
           children: [
             Container(
-              width: 8,
-              height: 8,
+              width: 12,
+              height: 12,
               decoration: BoxDecoration(
-                color: theme.colorScheme.error,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.red.shade400,
+                    Colors.red.shade600,
+                  ],
+                ),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.red.withOpacity(0.5),
+                    blurRadius: 4,
+                    spreadRadius: 1,
+                  ),
+                ],
               ),
             ),
             Expanded(
               child: Container(
-                height: 2,
+                height: 3,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.error,
-                  borderRadius: BorderRadius.circular(1),
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red.shade400,
+                      Colors.red.shade600,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
@@ -667,16 +1118,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
-  // Bugünü görüntülüyor mu kontrol et / Check if viewing today
   bool _isViewingToday() {
     final today = DateTime.now();
-    // Tam tarih karşılaştırması (yıl, ay, gün) / Complete date comparison (year, month, day)
     return _selectedDate.year == today.year &&
         _selectedDate.month == today.month &&
         _selectedDate.day == today.day;
   }
 
-  // Bugün mü kontrol et / Check if today
   bool _isToday(DateTime date) {
     final today = DateTime.now();
     return date.year == today.year &&
@@ -684,16 +1132,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
         date.day == today.day;
   }
 
-  // Aynı gün mü kontrol et / Check if same day
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
   }
 
-  // Tarihte etkinlik var mı kontrol et / Check if date has events
   bool _hasEventsOnDate(DateTime date) {
-    // Basit örnek: hafta içi günlerde ders var varsayımı / Simple example: assume courses on weekdays
     return date.weekday >= 1 && date.weekday <= 5;
   }
 }
