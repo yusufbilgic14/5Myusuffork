@@ -5,7 +5,10 @@
       "Bash(npm run build:*)",
       "Bash(flutter analyze:*)",
       "Bash(rename:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(flutter test:*)",
+      "Bash(flutter pub:*)",
+      "Bash(flutter build:*)"
     ],
     "deny": []
   }

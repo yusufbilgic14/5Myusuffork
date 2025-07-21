@@ -30,7 +30,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   List<String> _attachedFiles = []; // Eklenen dosyalar / Attached files
 
   // Talep kategorileri / Request categories
-  final List<Map<String, dynamic>> _talepCategories = [
+  static final List<Map<String, dynamic>> _talepCategories = [
     {
       'nameKey': 'requestCategoryAcademicSupport',
       'icon': Icons.school,
@@ -74,7 +74,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   ];
 
   // Geri bildirim kategorileri / Feedback categories
-  final List<Map<String, dynamic>> _geriBildirimCategories = [
+  static final List<Map<String, dynamic>> _geriBildirimCategories = [
     {
       'nameKey': 'feedbackCategoryBugReport',
       'icon': Icons.bug_report,
@@ -113,7 +113,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   ];
 
   // Departman listesi / Department list
-  final List<String> _departments = [
+  static const List<String> _departments = [
     'Information Technology',
     'Academic Affairs',
     'Student Services',
@@ -127,7 +127,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   ];
 
   // Öncelik seviyeleri / Priority levels
-  final List<String> _priorities = ['Low', 'Medium', 'High', 'Urgent'];
+  static const List<String> _priorities = ['Low', 'Medium', 'High', 'Urgent'];
 
   @override
   void dispose() {
@@ -180,7 +180,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     boxShadow: _selectedType == 'talep'
                         ? [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withOpacity(0.3),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
@@ -239,7 +239,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     boxShadow: _selectedType == 'geri_bildirim'
                         ? [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withOpacity(0.3),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
@@ -333,7 +333,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(0.3),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
                             offset: const Offset(0, 2),
                             blurRadius: 8,
                           ),
@@ -387,10 +387,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.1),
+          color: theme.colorScheme.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: theme.colorScheme.primary.withOpacity(0.3),
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -425,53 +425,91 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Anonim geri bildirim seçeneği - sadece geri bildirim türü için / Anonymous feedback option - only for feedback type
-        if (_selectedType != 'talep') ...[
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)!.anonymous_feedback,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                    Text(
-                      AppLocalizations.of(context)!.keep_my_identity_private,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
-                          0.7,
-                        ),
-                        height: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Checkbox(
-                value: _isAnonymous,
-                onChanged: (value) {
-                  setState(() {
-                    _isAnonymous = value ?? false;
-                    if (_isAnonymous) {
-                      _emailController.clear();
-                    }
-                  });
-                },
-                activeColor: theme.colorScheme.primary,
-              ),
-            ],
-          ),
-          const SizedBox(height: 20), // Spacing after anonymous section
+        // Anonim geri bildirim seçeneği - sadece geri bildirim türü için
+        if (_selectedType != 'talep') _buildAnonymousSection(theme),
+        
+        // Departman seçimi
+        _buildDepartmentSelection(theme),
+        const SizedBox(height: 20),
+        
+        // Öncelik seviyesi
+        _buildPrioritySelection(theme),
+        const SizedBox(height: 20),
+        
+        // E-posta adresi (koşullu olarak)
+        if (!_isAnonymous || _selectedType == 'talep') ...[
+          _buildEmailField(theme),
+          const SizedBox(height: 20),
         ],
-        // Departman seçimi / Department selection
+        
+        // Konu
+        _buildSubjectField(theme),
+        const SizedBox(height: 20),
+        
+        // Mesaj
+        _buildMessageField(theme),
+        const SizedBox(height: 20),
+        
+        // Dosya ekleme bölümü
+        _buildFileAttachment(theme),
+      ],
+    );
+  }
+  
+  // Anonim geri bildirim seçeneği widget'ı
+  Widget _buildAnonymousSection(ThemeData theme) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.anonymous_feedback,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.keep_my_identity_private,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                      height: 1.2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Checkbox(
+              value: _isAnonymous,
+              onChanged: (value) {
+                setState(() {
+                  _isAnonymous = value ?? false;
+                  if (_isAnonymous) {
+                    _emailController.clear();
+                  }
+                });
+              },
+              activeColor: theme.colorScheme.primary,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+  
+  // Departman seçimi widget'ı
+  Widget _buildDepartmentSelection(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           AppLocalizations.of(context)!.relevant_department,
           style: TextStyle(
@@ -483,23 +521,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           value: _selectedDepartment.isEmpty ? null : _selectedDepartment,
-          decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.select_department,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: theme.dividerColor),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: theme.colorScheme.primary,
-                width: 2,
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
+          decoration: _buildStandardInputDecoration(
+            theme, 
+            AppLocalizations.of(context)!.select_department,
           ),
           items: _departments.map((department) {
             return DropdownMenuItem(value: department, child: Text(department));
@@ -516,10 +540,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             return null;
           },
         ),
-
-        const SizedBox(height: 20),
-
-        // Öncelik seviyesi / Priority level
+      ],
+    );
+  }
+  
+  // Öncelik seviyesi seçimi widget'ı
+  Widget _buildPrioritySelection(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           AppLocalizations.of(context)!.priority_level,
           style: TextStyle(
@@ -531,98 +560,82 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         const SizedBox(height: 8),
         Row(
           children: _priorities.map((priority) {
-            final isSelected = _selectedPriority == priority;
-            final color = priority == 'Low'
-                ? Colors.green
-                : priority == 'Medium'
-                ? Colors.orange
-                : priority == 'High'
-                ? Colors.red
-                : Colors.red[800]!;
-
             return Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedPriority = priority;
-                  });
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: isSelected ? color : theme.cardColor,
-                    border: Border.all(color: color, width: 2),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    priority,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: isSelected ? theme.colorScheme.onPrimary : color,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ),
+              child: _buildPriorityButton(priority, theme),
             );
           }).toList(),
         ),
-
-        const SizedBox(height: 20),
-
-        // E-posta adresi (anonim değilse veya talep türü seçildiyse) / Email address (if not anonymous or request type selected)
-        if (!_isAnonymous || _selectedType == 'talep') ...[
-          Text(
-            AppLocalizations.of(context)!.email_address,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: theme.colorScheme.primary,
-            ),
+      ],
+    );
+  }
+  
+  // Tek bir öncelik butonu widget'ı
+  Widget _buildPriorityButton(String priority, ThemeData theme) {
+    final isSelected = _selectedPriority == priority;
+    final color = _getPriorityColor(priority);
+    
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPriority = priority;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? color : theme.cardColor,
+          border: Border.all(color: color, width: 2),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          priority,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: isSelected ? theme.colorScheme.onPrimary : color,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
           ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: _emailController,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              hintText: AppLocalizations.of(context)!.example_email,
-              prefixIcon: Icon(Icons.email, color: theme.iconTheme.color),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: theme.dividerColor),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: theme.colorScheme.primary,
-                  width: 2,
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-            ),
-            validator: (!_isAnonymous || _selectedType == 'talep')
-                ? (value) {
-                    if (value == null || value.isEmpty) {
-                      return AppLocalizations.of(
-                        context,
-                      )!.email_address_required;
-                    }
-                    if (!value.contains('@')) {
-                      return AppLocalizations.of(context)!.valid_email_address;
-                    }
-                    return null;
-                  }
-                : null,
+        ),
+      ),
+    );
+  }
+  
+  // E-posta alanı widget'ı
+  Widget _buildEmailField(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.email_address,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.primary,
           ),
-          const SizedBox(height: 20),
-        ],
-
-        // Konu / Subject
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          decoration: _buildStandardInputDecoration(
+            theme,
+            AppLocalizations.of(context)!.example_email,
+            prefixIcon: Icons.email,
+          ),
+          validator: (!_isAnonymous || _selectedType == 'talep')
+              ? _validateEmail
+              : null,
+        ),
+      ],
+    );
+  }
+  
+  // Konu alanı widget'ı
+  Widget _buildSubjectField(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           AppLocalizations.of(context)!.subject,
           style: TextStyle(
@@ -634,39 +647,22 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         const SizedBox(height: 8),
         TextFormField(
           controller: _subjectController,
-          decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.feedback_subject,
-            prefixIcon: Icon(Icons.subject, color: theme.iconTheme.color),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: theme.dividerColor),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: theme.colorScheme.primary,
-                width: 2,
-              ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
+          decoration: _buildStandardInputDecoration(
+            theme,
+            AppLocalizations.of(context)!.feedback_subject,
+            prefixIcon: Icons.subject,
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return AppLocalizations.of(context)!.subject_required;
-            }
-            if (value.length < 5) {
-              return AppLocalizations.of(context)!.subject_min_length;
-            }
-            return null;
-          },
+          validator: _validateSubject,
         ),
-
-        const SizedBox(height: 20),
-
-        // Mesaj / Message
+      ],
+    );
+  }
+  
+  // Mesaj alanı widget'ı
+  Widget _buildMessageField(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Text(
           AppLocalizations.of(context)!.detailed_description,
           style: TextStyle(
@@ -695,27 +691,90 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             ),
             contentPadding: const EdgeInsets.all(16),
             counterStyle: TextStyle(
-              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+              color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
               fontSize: 12,
             ),
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return AppLocalizations.of(context)!.description_required;
-            }
-            if (value.length < 20) {
-              return AppLocalizations.of(context)!.description_min_length;
-            }
-            return null;
-          },
+          validator: _validateMessage,
         ),
-
-        const SizedBox(height: 20),
-
-        // Dosya ekleme bölümü / File attachment section
-        _buildFileAttachment(theme),
       ],
     );
+  }
+  
+  // Standart input dekorasyonu helper metodu
+  InputDecoration _buildStandardInputDecoration(
+    ThemeData theme, 
+    String hintText, {
+    IconData? prefixIcon,
+  }) {
+    return InputDecoration(
+      hintText: hintText,
+      prefixIcon: prefixIcon != null 
+          ? Icon(prefixIcon, color: theme.iconTheme.color) 
+          : null,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: theme.dividerColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(
+          color: theme.colorScheme.primary,
+          width: 2,
+        ),
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 12,
+      ),
+    );
+  }
+  
+  // Öncelik rengi helper metodu
+  Color _getPriorityColor(String priority) {
+    switch (priority) {
+      case 'Low':
+        return Colors.green;
+      case 'Medium':
+        return Colors.orange;
+      case 'High':
+        return Colors.red;
+      default:
+        return Colors.red[800]!;
+    }
+  }
+  
+  // E-posta validasyon metodu
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return AppLocalizations.of(context)!.email_address_required;
+    }
+    if (!value.contains('@')) {
+      return AppLocalizations.of(context)!.valid_email_address;
+    }
+    return null;
+  }
+  
+  // Konu validasyon metodu
+  String? _validateSubject(String? value) {
+    if (value == null || value.isEmpty) {
+      return AppLocalizations.of(context)!.subject_required;
+    }
+    if (value.length < 5) {
+      return AppLocalizations.of(context)!.subject_min_length;
+    }
+    return null;
+  }
+  
+  // Mesaj validasyon metodu
+  String? _validateMessage(String? value) {
+    if (value == null || value.isEmpty) {
+      return AppLocalizations.of(context)!.description_required;
+    }
+    if (value.length < 20) {
+      return AppLocalizations.of(context)!.description_min_length;
+    }
+    return null;
   }
 
   // Dosya ekleme widget'ı / File attachment widget
@@ -753,14 +812,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 Icon(
                   Icons.cloud_upload_outlined,
                   size: 40,
-                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context)!.click_to_select_file,
                   style: TextStyle(
                     fontSize: 14,
-                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -768,7 +827,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   AppLocalizations.of(context)!.file_types_max_size,
                   style: TextStyle(
                     fontSize: 12,
-                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+                    color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
                   ),
                 ),
               ],
@@ -782,10 +841,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primary.withOpacity(0.05),
+              color: theme.colorScheme.primary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: theme.colorScheme.primary.withOpacity(0.2),
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -973,41 +1032,29 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     });
   }
 
+  // Kategori lokalizasyon haritası / Category localization map
+  Map<String, String Function(AppLocalizations)> get _categoryLocalizationMap => {
+    'requestCategoryAcademicSupport': (l10n) => l10n.requestCategoryAcademicSupport,
+    'requestCategoryTechnicalHelp': (l10n) => l10n.requestCategoryTechnicalHelp,
+    'requestCategoryLibrary': (l10n) => l10n.requestCategoryLibrary,
+    'requestCategoryCafeteria': (l10n) => l10n.requestCategoryCafeteria,
+    'requestCategoryTransport': (l10n) => l10n.requestCategoryTransport,
+    'requestCategorySecurity': (l10n) => l10n.requestCategorySecurity,
+    'requestCategoryFinance': (l10n) => l10n.requestCategoryFinance,
+    'requestCategoryGeneral': (l10n) => l10n.requestCategoryGeneral,
+    'feedbackCategoryBugReport': (l10n) => l10n.feedbackCategoryBugReport,
+    'feedbackCategorySuggestion': (l10n) => l10n.feedbackCategorySuggestion,
+    'feedbackCategoryComplaint': (l10n) => l10n.feedbackCategoryComplaint,
+    'feedbackCategoryAppreciation': (l10n) => l10n.feedbackCategoryAppreciation,
+    'feedbackCategoryFeatureRequest': (l10n) => l10n.feedbackCategoryFeatureRequest,
+    'feedbackCategoryAppReview': (l10n) => l10n.feedbackCategoryAppReview,
+    'feedbackCategoryGeneral': (l10n) => l10n.feedbackCategoryGeneral,
+  };
+
   String _localizedCategoryName(BuildContext context, String key) {
-    switch (key) {
-      case 'requestCategoryAcademicSupport':
-        return AppLocalizations.of(context)!.requestCategoryAcademicSupport;
-      case 'requestCategoryTechnicalHelp':
-        return AppLocalizations.of(context)!.requestCategoryTechnicalHelp;
-      case 'requestCategoryLibrary':
-        return AppLocalizations.of(context)!.requestCategoryLibrary;
-      case 'requestCategoryCafeteria':
-        return AppLocalizations.of(context)!.requestCategoryCafeteria;
-      case 'requestCategoryTransport':
-        return AppLocalizations.of(context)!.requestCategoryTransport;
-      case 'requestCategorySecurity':
-        return AppLocalizations.of(context)!.requestCategorySecurity;
-      case 'requestCategoryFinance':
-        return AppLocalizations.of(context)!.requestCategoryFinance;
-      case 'requestCategoryGeneral':
-        return AppLocalizations.of(context)!.requestCategoryGeneral;
-      case 'feedbackCategoryBugReport':
-        return AppLocalizations.of(context)!.feedbackCategoryBugReport;
-      case 'feedbackCategorySuggestion':
-        return AppLocalizations.of(context)!.feedbackCategorySuggestion;
-      case 'feedbackCategoryComplaint':
-        return AppLocalizations.of(context)!.feedbackCategoryComplaint;
-      case 'feedbackCategoryAppreciation':
-        return AppLocalizations.of(context)!.feedbackCategoryAppreciation;
-      case 'feedbackCategoryFeatureRequest':
-        return AppLocalizations.of(context)!.feedbackCategoryFeatureRequest;
-      case 'feedbackCategoryAppReview':
-        return AppLocalizations.of(context)!.feedbackCategoryAppReview;
-      case 'feedbackCategoryGeneral':
-        return AppLocalizations.of(context)!.feedbackCategoryGeneral;
-      default:
-        return key;
-    }
+    final l10n = AppLocalizations.of(context)!;
+    final localizer = _categoryLocalizationMap[key];
+    return localizer?.call(l10n) ?? key;
   }
 
   @override
@@ -1046,7 +1093,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.shadowColor.withOpacity(0.08),
+                      color: theme.shadowColor.withValues(alpha: 0.08),
                       offset: const Offset(0, 2),
                       blurRadius: 8,
                     ),
@@ -1084,7 +1131,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       )!.share_your_opinions_and_suggestions_for_better_app,
                       style: TextStyle(
                         fontSize: 14,
-                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                        color: theme.textTheme.bodyMedium?.color?.withValues(alpha:
                           0.7,
                         ),
                         height: 1.4,
@@ -1110,7 +1157,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.shadowColor.withOpacity(0.08),
+                      color: theme.shadowColor.withValues(alpha: 0.08),
                       offset: const Offset(0, 2),
                       blurRadius: 8,
                     ),
@@ -1130,7 +1177,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: theme.shadowColor.withOpacity(0.08),
+                        color: theme.shadowColor.withValues(alpha: 0.08),
                         offset: const Offset(0, 2),
                         blurRadius: 8,
                       ),
@@ -1151,7 +1198,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.shadowColor.withOpacity(0.08),
+                      color: theme.shadowColor.withValues(alpha: 0.08),
                       offset: const Offset(0, 2),
                       blurRadius: 8,
                     ),

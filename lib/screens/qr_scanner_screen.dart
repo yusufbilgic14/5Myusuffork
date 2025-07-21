@@ -158,7 +158,6 @@ class _QRScannerScreenState extends State<QRScannerScreen>
       appBar: ModernAppBar(
         title: 'QR Kod Tara',
         leading: BackButton(color: Colors.white),
-        centerTitle: true,
       ),
 
       body: _buildCameraView(),

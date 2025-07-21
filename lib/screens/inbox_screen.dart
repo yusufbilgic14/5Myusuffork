@@ -196,7 +196,7 @@ Protokol Birimi''',
     final unreadColor = isDark ? Colors.blue[900]! : Colors.blue[50]!;
     final selectedColor = isDark
         ? Colors.blueGrey[900]!
-        : const Color(0xFF1E3A8A).withOpacity(0.1);
+        : const Color(0xFF1E3A8A).withValues(alpha: 0.1);
     final selectedBorder = isDark ? Colors.blue[300]! : const Color(0xFF1E3A8A);
     final attachBg = isDark ? Colors.blueGrey[800]! : Colors.blue[50]!;
     final attachBorder = isDark ? Colors.blueGrey[700]! : Colors.blue[200]!;
@@ -335,7 +335,7 @@ Protokol Birimi''',
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final selectedColor = isDark
         ? Colors.blueGrey[900]!
-        : const Color(0xFF1E3A8A).withOpacity(0.1);
+        : const Color(0xFF1E3A8A).withValues(alpha: 0.1);
     final unreadColor = isDark ? Colors.blue[900]! : Colors.blue[50]!;
     final textColor = isDark ? Colors.white : Colors.black87;
     final subTextColor = isDark ? Colors.white70 : Colors.grey[600];

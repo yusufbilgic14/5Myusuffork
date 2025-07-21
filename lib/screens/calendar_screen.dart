@@ -29,7 +29,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   DateTime _currentWeekStart = DateTime.now();
 
   // Örnek ders verisi / Sample course data
-  final List<Map<String, dynamic>> _courses = [
+  static const List<Map<String, dynamic>> _courses = [
     {
       'code': 'CS101',
       'title': 'courseVisualProgramming',
@@ -233,7 +233,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         color: theme.colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: theme.dividerColor.withOpacity(0.1),
+            color: theme.dividerColor.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -256,7 +256,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 Text(
                   _isGridView ? l10n.monthView : l10n.timelineView,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -321,7 +321,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
+            color: theme.shadowColor.withValues(alpha: 0.1),
             offset: const Offset(0, 2),
             blurRadius: 8,
             spreadRadius: 0,
@@ -367,7 +367,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                       color: isSelected
                           ? theme.colorScheme.primary
                           : isToday
-                          ? theme.colorScheme.primary.withOpacity(0.1)
+                          ? theme.colorScheme.primary.withValues(alpha: 0.1)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                       border: isToday && !isSelected
@@ -387,7 +387,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                                 ? theme.colorScheme.onPrimary
                                 : isToday
                                 ? theme.colorScheme.primary
-                                : theme.colorScheme.onSurface.withOpacity(0.7),
+                                : theme.colorScheme.onSurface.withValues(alpha: 0.7),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -453,7 +453,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
+            color: theme.shadowColor.withValues(alpha: 0.1),
             offset: const Offset(0, 2),
             blurRadius: 8,
             spreadRadius: 0,
@@ -493,7 +493,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: theme.shadowColor.withOpacity(0.1),
+              color: theme.shadowColor.withValues(alpha: 0.1),
               offset: const Offset(0, 2),
               blurRadius: 8,
             ),
@@ -505,7 +505,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             Icon(
               Icons.event_busy,
               size: 64,
-              color: theme.colorScheme.primary.withOpacity(0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -519,7 +519,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             Text(
               'Bu tarih için herhangi bir ders planlanmamış.',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -537,7 +537,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: theme.shadowColor.withOpacity(0.1),
+            color: theme.shadowColor.withValues(alpha: 0.1),
             offset: const Offset(0, 2),
             blurRadius: 8,
             spreadRadius: 0,
@@ -571,10 +571,10 @@ class _CalendarScreenState extends State<CalendarScreen>
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withOpacity(0.05),
+        color: theme.colorScheme.primary.withValues(alpha: 0.05),
         border: Border(
           bottom: BorderSide(
-            color: theme.dividerColor.withOpacity(0.1),
+            color: theme.dividerColor.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -654,7 +654,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 color: isSelected
                     ? theme.colorScheme.primary
                     : isToday
-                    ? theme.colorScheme.primary.withOpacity(0.1)
+                    ? theme.colorScheme.primary.withValues(alpha: 0.1)
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: isToday && !isSelected
@@ -666,7 +666,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
                           offset: const Offset(0, 2),
                           blurRadius: 4,
                         ),
@@ -733,7 +733,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               gradient: LinearGradient(
                 colors: [
                   theme.colorScheme.primary,
-                  theme.colorScheme.primary.withOpacity(0.8),
+                  theme.colorScheme.primary.withValues(alpha: 0.8),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -741,7 +741,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.primary.withOpacity(0.3),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
                   offset: const Offset(0, 4),
                   blurRadius: 8,
                   spreadRadius: 0,
@@ -772,14 +772,14 @@ class _CalendarScreenState extends State<CalendarScreen>
                     children: [
                       Icon(
                         Icons.location_on_rounded,
-                        color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                        color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
                         size: 16,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         course['room'],
                         style: TextStyle(
-                          color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                          color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                         ),
@@ -791,7 +791,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                     children: [
                       Icon(
                         Icons.person_rounded,
-                        color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                        color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
                         size: 16,
                       ),
                       const SizedBox(width: 4),
@@ -799,7 +799,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                         child: Text(
                           _localizedInstructor(context, course['instructor']),
                           style: TextStyle(
-                            color: theme.colorScheme.onPrimary.withOpacity(0.9),
+                            color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
                             fontSize: 11,
                           ),
                           maxLines: 1,
@@ -924,7 +924,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -940,7 +940,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             Text(
               label,
               style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -1003,7 +1003,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               style: TextStyle(
                 color: isCurrentHour
                     ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurface.withOpacity(0.6),
+                    : theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 fontSize: 12,
                 fontWeight: isCurrentHour ? FontWeight.bold : FontWeight.w500,
               ),
@@ -1015,8 +1015,8 @@ class _CalendarScreenState extends State<CalendarScreen>
             height: 60,
             decoration: BoxDecoration(
               color: isCurrentHour
-                  ? theme.colorScheme.primary.withOpacity(0.3)
-                  : theme.dividerColor.withOpacity(0.3),
+                  ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                  : theme.dividerColor.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(1),
             ),
           ),
@@ -1025,7 +1025,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                    color: theme.dividerColor.withOpacity(0.2),
+                    color: theme.dividerColor.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -1070,7 +1070,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           borderRadius: BorderRadius.circular(2),
           boxShadow: [
             BoxShadow(
-              color: Colors.red.withOpacity(0.4),
+              color: Colors.red.withValues(alpha: 0.4),
               blurRadius: 6,
               spreadRadius: 1,
             ),
@@ -1091,7 +1091,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.red.withOpacity(0.5),
+                    color: Colors.red.withValues(alpha: 0.5),
                     blurRadius: 4,
                     spreadRadius: 1,
                   ),

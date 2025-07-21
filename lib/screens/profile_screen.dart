@@ -79,8 +79,8 @@ class _ProfileScreenState extends State<ProfileScreen>
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.white.withOpacity(0.9),
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.white.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isDark ? Colors.white24 : Colors.grey.shade300,
@@ -130,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -187,8 +187,8 @@ class _ProfileScreenState extends State<ProfileScreen>
         decoration: BoxDecoration(
           color: isSelected
               ? (isDark
-                    ? AppConstants.primaryColor.withOpacity(0.2)
-                    : AppConstants.primaryColor.withOpacity(0.1))
+                    ? AppConstants.primaryColor.withValues(alpha: 0.2)
+                    : AppConstants.primaryColor.withValues(alpha: 0.1))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -533,7 +533,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppConstants.getIconColor(context).withOpacity(0.1),
+                color: AppConstants.getIconColor(context).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
               child: Icon(

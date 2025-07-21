@@ -71,7 +71,7 @@ class _NotificationSettingsScreenState
         color: AppThemes.getSurfaceColor(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade200,
+          color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade200,
           width: 1,
         ),
       ),
@@ -93,10 +93,10 @@ class _NotificationSettingsScreenState
           value: value,
           onChanged: onChanged,
           activeColor: AppThemes.getPrimaryColor(context),
-          activeTrackColor: AppThemes.getPrimaryColor(context).withOpacity(0.2),
+          activeTrackColor: AppThemes.getPrimaryColor(context).withValues(alpha: 0.2),
           inactiveThumbColor: isDark ? Colors.white70 : Colors.grey.shade400,
           inactiveTrackColor: isDark
-              ? Colors.white.withOpacity(0.2)
+              ? Colors.white.withValues(alpha: 0.2)
               : Colors.grey.shade200,
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

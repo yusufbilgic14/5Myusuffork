@@ -354,14 +354,14 @@ class _LoginScreenState extends State<LoginScreen>
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.3)
-                : Colors.black.withOpacity(0.06),
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.06),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
         ],
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.08) : Colors.grey.shade100,
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.shade100,
           width: 1,
         ),
       ),
@@ -393,7 +393,7 @@ class _LoginScreenState extends State<LoginScreen>
                       style: TextStyle(
                         fontSize: 15,
                         color: isDark
-                            ? Colors.white.withOpacity(0.6)
+                            ? Colors.white.withValues(alpha: 0.6)
                             : Colors.grey.shade600,
                         fontWeight: FontWeight.w400,
                         height: 1.3,
@@ -476,7 +476,7 @@ class _LoginScreenState extends State<LoginScreen>
                       l10n.or,
                       style: TextStyle(
                         color: isDark
-                            ? Colors.white.withOpacity(0.4)
+                            ? Colors.white.withValues(alpha: 0.4)
                             : Colors.grey.shade500,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
@@ -517,11 +517,11 @@ class _LoginScreenState extends State<LoginScreen>
         ? const Color(0xFF2A3441)
         : const Color(0xFFF8FAFC);
     final inputBorder = isDark
-        ? Colors.white.withOpacity(0.08)
+        ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.shade200;
     final labelColor = isDark ? Colors.white : Colors.black87;
     final hintColor = isDark
-        ? Colors.white.withOpacity(0.4)
+        ? Colors.white.withValues(alpha: 0.4)
         : Colors.grey.shade500;
 
     return Column(
@@ -557,7 +557,7 @@ class _LoginScreenState extends State<LoginScreen>
             prefixIcon: Icon(
               icon,
               color: isDark
-                  ? Colors.white.withOpacity(0.4)
+                  ? Colors.white.withValues(alpha: 0.4)
                   : Colors.grey.shade500,
               size: 20,
             ),
@@ -568,7 +568,7 @@ class _LoginScreenState extends State<LoginScreen>
                           ? Icons.visibility_off
                           : Icons.visibility,
                       color: isDark
-                          ? Colors.white.withOpacity(0.4)
+                          ? Colors.white.withValues(alpha: 0.4)
                           : Colors.grey.shade500,
                       size: 20,
                     ),
@@ -629,7 +629,7 @@ class _LoginScreenState extends State<LoginScreen>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          disabledBackgroundColor: AppConstants.primaryColor.withOpacity(0.6),
+          disabledBackgroundColor: AppConstants.primaryColor.withValues(alpha: 0.6),
         ),
         child: _isLoading
             ? const SizedBox(
@@ -759,8 +759,8 @@ class _LoginScreenState extends State<LoginScreen>
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isDark
-              ? Colors.white.withOpacity(0.1)
-              : Colors.white.withOpacity(0.9),
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isDark ? Colors.white24 : Colors.grey.shade300,
@@ -816,7 +816,7 @@ class _LoginScreenState extends State<LoginScreen>
                 color: isDark
                     ? const Color(0xFF2A3441)
                     : Colors.white,
-                shadowColor: Colors.black.withOpacity(0.5),
+                shadowColor: Colors.black.withValues(alpha: 0.5),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -864,8 +864,8 @@ class _LoginScreenState extends State<LoginScreen>
         decoration: BoxDecoration(
           color: isSelected
               ? (isDark
-                    ? AppConstants.primaryColor.withOpacity(0.2)
-                    : AppConstants.primaryColor.withOpacity(0.1))
+                    ? AppConstants.primaryColor.withValues(alpha: 0.2)
+                    : AppConstants.primaryColor.withValues(alpha: 0.1))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),

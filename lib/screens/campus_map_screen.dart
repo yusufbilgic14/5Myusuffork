@@ -4,12 +4,12 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'home_screen.dart';
-import 'calendar_screen.dart';
-import 'qr_access_screen.dart';
-import 'profile_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/common/app_bar_widget.dart';
+import '../widgets/common/bottom_navigation_widget.dart';
+import '../constants/app_constants.dart';
+import '../services/navigation_service.dart';
+import 'home_screen.dart';
 
 class CampusMapScreen extends StatefulWidget {
   const CampusMapScreen({super.key});
@@ -23,7 +23,6 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
   bool _showShuttleLayer = true;
   bool _showRoutePanel = false;
   String _selectedBuildingType = 'Tümü';
-  int _selectedIndex = 0; // Navigation tab is selected
   bool _mapError = false; // Google Maps error state
   bool _isInitializing = true; // Map initialization state
   String? _darkMapStyle;
@@ -172,9 +171,11 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
             _buildBackButton(theme),
             _buildShuttleToggle(theme),
             if (_showRoutePanel) _buildRoutePanel(theme),
-            _buildBottomNavigation(theme),
           ],
         ),
+      ),
+      bottomNavigationBar: const BottomNavigationWidget(
+        currentIndex: AppConstants.navIndexNavigation,
       ),
     );
   }
@@ -284,7 +285,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
 
   Widget _buildShuttleToggle(ThemeData theme) {
     return Positioned(
-      bottom: _showRoutePanel ? 240 : 140,
+      bottom: _showRoutePanel ? 300 : 200,
       right: 16,
       child: FloatingActionButton(
         backgroundColor: _showShuttleLayer
@@ -310,7 +311,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
 
   Widget _buildRoutePanel(ThemeData theme) {
     return Positioned(
-      bottom: 60,
+      bottom: 120,
       left: 0,
       right: 0,
       child: Container(
@@ -323,7 +324,7 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
           ),
           boxShadow: [
             BoxShadow(
-              color: theme.shadowColor.withOpacity(0.1),
+              color: theme.shadowColor.withValues(alpha: 0.1),
               offset: const Offset(0, -2),
               blurRadius: 8,
             ),
@@ -706,138 +707,4 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
     );
   }
 
-  Widget _buildBottomNavigation(ThemeData theme) {
-    return Positioned(
-      bottom: 0,
-      left: 0,
-      right: 0,
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          boxShadow: [
-            BoxShadow(
-              color: theme.shadowColor.withValues(alpha: 0.2),
-              spreadRadius: 0,
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Container(
-            height: 60,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildBottomNavItem(
-                  Icons.location_on,
-                  AppLocalizations.of(context)!.navigation,
-                  0,
-                  theme,
-                ),
-                _buildBottomNavItem(
-                  Icons.calendar_today,
-                  AppLocalizations.of(context)!.calendar,
-                  1,
-                  theme,
-                ),
-                _buildBottomNavItem(
-                  Icons.home,
-                  AppLocalizations.of(context)!.home,
-                  2,
-                  theme,
-                ),
-                _buildBottomNavItem(
-                  Icons.qr_code_scanner,
-                  AppLocalizations.of(context)!.scan,
-                  3,
-                  theme,
-                ),
-                _buildBottomNavItem(
-                  Icons.person,
-                  AppLocalizations.of(context)!.profile,
-                  4,
-                  theme,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBottomNavItem(
-    IconData icon,
-    String label,
-    int index,
-    ThemeData theme,
-  ) {
-    final isSelected = _selectedIndex == index;
-    final Color unselectedColor = theme.brightness == Brightness.dark
-        ? Colors.white70
-        : theme.iconTheme.color ?? Colors.black;
-    final Color unselectedTextColor = theme.brightness == Brightness.dark
-        ? Colors.white70
-        : theme.textTheme.bodyMedium?.color ?? Colors.black;
-    return GestureDetector(
-      onTap: () {
-        if (index != _selectedIndex) {
-          switch (index) {
-            case 0:
-              break;
-            case 1:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const CalendarScreen()),
-              );
-              break;
-            case 2:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
-              break;
-            case 3:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const QRAccessScreen()),
-              );
-              break;
-            case 4:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
-              break;
-          }
-        }
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: isSelected ? theme.colorScheme.primary : unselectedColor,
-            size: 24,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              color: isSelected
-                  ? theme.colorScheme.primary
-                  : unselectedTextColor,
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
