@@ -84,13 +84,10 @@ class HelpSupportScreen extends StatelessWidget {
     return Scaffold(
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.helpSupport,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-              tooltip: 'Menü',
-            );
+        leading: BackButton(
+          color: Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
           },
         ),
       ),

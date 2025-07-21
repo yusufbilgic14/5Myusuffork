@@ -87,12 +87,7 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
       // Navy renkli AppBar / Navy colored AppBar
       appBar: ModernAppBar(
         title: AppLocalizations.of(context)!.qrAccess,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-          tooltip: 'Menü',
-        ),
-        centerTitle: true,
+
       ),
 
       // Ana sayfa drawer'ı / Main drawer
