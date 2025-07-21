@@ -1,7 +1,7 @@
 # 🎓 Medipol Yanında - Üniversite Kampüs Uygulaması by 5MASKETEERS
 
 <div align="center">
-  <img src="assets/images/medipol_logo.png" alt="Medipol Üniversitesi Logo" width="200"/>
+  <img src="assets/images/app_icon.png" alt="Medipol Üniversitesi Logo" width="200"/>
   <!-- 5 MASKETEERS logosu eklendi -->
   <img src="assets/images/5MASKETEERS.png" alt="5 MASKETEERS Logo" width="200"/>
   <br><br>
