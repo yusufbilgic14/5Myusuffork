@@ -1,17 +1,16 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:async';
 
 import '../models/user_model.dart';
 import 'secure_storage_service.dart';
 
-/// Firebase kimlik doğrulama servisi - Microsoft OAuth ile entegre
-/// Firebase authentication service integrated with Microsoft OAuth
+/// Firebase kimlik doğrulama servisi - Bağımsız ve Microsoft OAuth entegrasyonu
+/// Firebase authentication service - Standalone and Microsoft OAuth integration
 /// 
-/// Bu servis Firebase Console kurulumu tamamlandıktan sonra aktif olacak
-/// This service will be active after Firebase Console setup is completed
+/// Bu servis hem bağımsız Firebase Auth hem de Microsoft OAuth'u destekler
+/// This service supports both standalone Firebase Auth and Microsoft OAuth
 class FirebaseAuthService {
   // Singleton pattern implementation
   static final FirebaseAuthService _instance = FirebaseAuthService._internal();
@@ -39,6 +38,14 @@ class FirebaseAuthService {
   
   // Firestore instance for user data / Kullanıcı verileri için Firestore örneği
   FirebaseFirestore? _firestore;
+  
+  // Google Sign-In instance for OAuth / Google OAuth için GoogleSignIn örneği
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+  );
+  
+  // Current authentication method / Mevcut kimlik doğrulama yöntemi
+  AuthenticationMethod _currentAuthMethod = AuthenticationMethod.none;
 
   // Firebase Authentication state stream / Firebase kimlik doğrulama durumu stream'i
   Stream<FirebaseAuthState> get authStateChanges => _authStateController.stream;
@@ -48,6 +55,9 @@ class FirebaseAuthService {
   
   // Authentication status / Kimlik doğrulama durumu
   bool get isAuthenticated => _currentAppUser != null && _isFirebaseConfigured;
+  
+  // Current authentication method / Mevcut kimlik doğrulama yöntemi
+  AuthenticationMethod get currentAuthMethod => _currentAuthMethod;
   
   // Firebase configuration status / Firebase konfigürasyon durumu
   bool get isFirebaseConfigured => _isFirebaseConfigured;
@@ -241,6 +251,358 @@ class FirebaseAuthService {
     }
   }
 
+  /// Email ve şifre ile Firebase'e kayıt ol / Sign up to Firebase with email and password
+  Future<FirebaseAuthResult> signUpWithEmailAndPassword({
+    required String email,
+    required String password,
+    required String displayName,
+    String? studentId,
+    String? department,
+    String? phoneNumber,
+    UserRole role = UserRole.student,
+  }) async {
+    try {
+      print('🚀 FirebaseAuthService: Starting email/password sign up...');
+      _emitAuthState(FirebaseAuthState.loading);
+
+      if (!_isFirebaseConfigured || _firebaseAuth == null) {
+        final errorMsg = 'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
+        _emitAuthState(FirebaseAuthState.error(errorMsg));
+        return FirebaseAuthResult.error(errorMsg);
+      }
+
+      // Create Firebase user account / Firebase kullanıcı hesabı oluştur
+      final userCredential = await _firebaseAuth!.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final firebaseUser = userCredential.user;
+      if (firebaseUser == null) {
+        throw Exception('Kullanıcı hesabı oluşturulamadı');
+      }
+
+      // Update Firebase profile / Firebase profilini güncelle
+      await firebaseUser.updateDisplayName(displayName);
+
+      // Send email verification / Email doğrulama gönder
+      await firebaseUser.sendEmailVerification();
+
+      // Create AppUser object / AppUser nesnesi oluştur
+      final appUser = AppUser(
+        id: firebaseUser.uid,
+        displayName: displayName,
+        email: email,
+        userPrincipalName: email,
+        firebaseUid: firebaseUser.uid,
+        userRole: role,
+        isActive: true,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+
+      // Store user data in Firestore / Kullanıcı verilerini Firestore'a kaydet
+      await _createStandaloneUserDocument(
+        appUser,
+        studentId: studentId,
+        department: department,
+        phoneNumber: phoneNumber,
+      );
+
+      _currentAppUser = appUser;
+      _currentAuthMethod = AuthenticationMethod.firebaseEmail;
+      
+      // Store auth state / Kimlik doğrulama durumunu sakla
+      await _storage.storeAuthState(true);
+      
+      // Store user data with safe JSON conversion / Güvenli JSON dönüştürmeyle kullanıcı verilerini sakla
+      try {
+        await _storage.storeUserData(appUser.toJson());
+      } catch (e) {
+        print('⚠️ Failed to store user data locally: $e');
+        // Continue without storing locally - user data is still in Firestore
+      }
+
+      _emitAuthState(FirebaseAuthState.authenticated(appUser));
+      
+      print('🎉 FirebaseAuthService: Successfully created user account: $email');
+      return FirebaseAuthResult.success(appUser);
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'weak-password':
+          errorMessage = 'Şifre çok zayıf. Lütfen daha güçlü bir şifre seçin.';
+          break;
+        case 'email-already-in-use':
+          errorMessage = 'Bu email adresi zaten kullanımda.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Geçersiz email adresi.';
+          break;
+        default:
+          errorMessage = 'Kayıt sırasında bir hata oluştu: ${e.message}';
+      }
+      print('❌ FirebaseAuthService: Sign up failed - $errorMessage');
+      _emitAuthState(FirebaseAuthState.error(errorMessage));
+      return FirebaseAuthResult.error(errorMessage);
+    } catch (e) {
+      final errorMsg = 'Kayıt sırasında beklenmeyen bir hata oluştu: $e';
+      print('❌ FirebaseAuthService: Sign up failed - $errorMsg');
+      _emitAuthState(FirebaseAuthState.error(errorMsg));
+      return FirebaseAuthResult.error(errorMsg);
+    }
+  }
+
+  /// Email ve şifre ile Firebase'e giriş yap / Sign in to Firebase with email and password
+  Future<FirebaseAuthResult> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      print('🚀 FirebaseAuthService: Starting email/password sign in...');
+      _emitAuthState(FirebaseAuthState.loading);
+
+      if (!_isFirebaseConfigured || _firebaseAuth == null) {
+        final errorMsg = 'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
+        _emitAuthState(FirebaseAuthState.error(errorMsg));
+        return FirebaseAuthResult.error(errorMsg);
+      }
+
+      // Sign in with Firebase Auth / Firebase Auth ile giriş yap
+      final userCredential = await _firebaseAuth!.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      final firebaseUser = userCredential.user;
+      if (firebaseUser == null) {
+        throw Exception('Giriş başarısız');
+      }
+
+      // Load user data from Firestore / Firestore'dan kullanıcı verilerini yükle
+      final appUser = await _loadUserDataFromFirestore(firebaseUser.uid);
+      if (appUser == null) {
+        throw Exception('Kullanıcı verileri bulunamadı');
+      }
+
+      // Update last login time / Son giriş zamanını güncelle
+      await _updateUserLastLogin(firebaseUser.uid);
+
+      _currentAppUser = appUser;
+      _currentAuthMethod = AuthenticationMethod.firebaseEmail;
+      
+      // Store auth state / Kimlik doğrulama durumunu sakla
+      await _storage.storeAuthState(true);
+      
+      // Store user data with safe JSON conversion / Güvenli JSON dönüştürmeyle kullanıcı verilerini sakla
+      try {
+        await _storage.storeUserData(appUser.toJson());
+      } catch (e) {
+        print('⚠️ Failed to store user data locally: $e');
+        // Continue without storing locally - user data is still in Firestore
+      }
+
+      _emitAuthState(FirebaseAuthState.authenticated(appUser));
+      
+      print('🎉 FirebaseAuthService: Successfully signed in user: $email');
+      return FirebaseAuthResult.success(appUser);
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'Bu email adresi ile kayıtlı kullanıcı bulunamadı.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Yanlış şifre.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Geçersiz email adresi.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'Bu kullanıcı hesabı devre dışı bırakılmıştır.';
+          break;
+        case 'too-many-requests':
+          errorMessage = 'Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.';
+          break;
+        default:
+          errorMessage = 'Giriş sırasında bir hata oluştu: ${e.message}';
+      }
+      print('❌ FirebaseAuthService: Sign in failed - $errorMessage');
+      _emitAuthState(FirebaseAuthState.error(errorMessage));
+      return FirebaseAuthResult.error(errorMessage);
+    } catch (e) {
+      final errorMsg = 'Giriş sırasında beklenmeyen bir hata oluştu: $e';
+      print('❌ FirebaseAuthService: Sign in failed - $errorMsg');
+      _emitAuthState(FirebaseAuthState.error(errorMsg));
+      return FirebaseAuthResult.error(errorMsg);
+    }
+  }
+
+  /// Google ile giriş yap / Sign in with Google
+  Future<FirebaseAuthResult> signInWithGoogle() async {
+    try {
+      print('🚀 FirebaseAuthService: Starting Google sign in...');
+      _emitAuthState(FirebaseAuthState.loading);
+
+      if (!_isFirebaseConfigured || _firebaseAuth == null) {
+        final errorMsg = 'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
+        _emitAuthState(FirebaseAuthState.error(errorMsg));
+        return FirebaseAuthResult.error(errorMsg);
+      }
+
+      // Sign in with Google / Google ile giriş yap
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) {
+        // User cancelled the sign-in / Kullanıcı girişi iptal etti
+        _emitAuthState(FirebaseAuthState.unauthenticated);
+        return FirebaseAuthResult.error('Google girişi iptal edildi');
+      }
+
+      // Obtain the auth details from the request / İstekten kimlik doğrulama detaylarını al
+      final googleAuth = await googleUser.authentication;
+
+      // Create a new credential / Yeni bir credential oluştur
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // Sign in to Firebase with the Google credential / Google credential ile Firebase'e giriş yap
+      final userCredential = await _firebaseAuth!.signInWithCredential(credential);
+      final firebaseUser = userCredential.user;
+      
+      if (firebaseUser == null) {
+        throw Exception('Google girişi başarısız');
+      }
+
+      // Check if this is a new user / Yeni kullanıcı olup olmadığını kontrol et
+      AppUser? appUser = await _loadUserDataFromFirestore(firebaseUser.uid);
+      
+      if (appUser == null) {
+        // Create new user document for Google sign-in / Google girişi için yeni kullanıcı belgesi oluştur
+        appUser = AppUser(
+          id: firebaseUser.uid,
+          displayName: firebaseUser.displayName ?? 'Google User',
+          email: firebaseUser.email!,
+          userPrincipalName: firebaseUser.email!,
+          firebaseUid: firebaseUser.uid,
+          userRole: UserRole.student,
+          isActive: true,
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+        );
+        
+        await _createStandaloneUserDocument(appUser);
+      } else {
+        // Update last login time / Son giriş zamanını güncelle
+        await _updateUserLastLogin(firebaseUser.uid);
+      }
+
+      _currentAppUser = appUser;
+      _currentAuthMethod = AuthenticationMethod.firebaseGoogle;
+      
+      // Store auth state / Kimlik doğrulama durumunu sakla
+      await _storage.storeAuthState(true);
+      
+      // Store user data with safe JSON conversion / Güvenli JSON dönüştürmeyle kullanıcı verilerini sakla
+      try {
+        await _storage.storeUserData(appUser.toJson());
+      } catch (e) {
+        print('⚠️ Failed to store user data locally: $e');
+        // Continue without storing locally - user data is still in Firestore
+      }
+
+      _emitAuthState(FirebaseAuthState.authenticated(appUser));
+      
+      print('🎉 FirebaseAuthService: Successfully signed in with Google: ${appUser.email}');
+      return FirebaseAuthResult.success(appUser);
+    } catch (e) {
+      final errorMsg = 'Google girişi sırasında bir hata oluştu: $e';
+      print('❌ FirebaseAuthService: Google sign in failed - $errorMsg');
+      _emitAuthState(FirebaseAuthState.error(errorMsg));
+      return FirebaseAuthResult.error(errorMsg);
+    }
+  }
+
+  /// Şifre sıfırlama emaili gönder / Send password reset email
+  Future<FirebaseAuthResult> sendPasswordResetEmail(String email) async {
+    try {
+      print('📧 FirebaseAuthService: Sending password reset email to: $email');
+
+      if (!_isFirebaseConfigured || _firebaseAuth == null) {
+        final errorMsg = 'Firebase henüz konfigure edilmedi.';
+        return FirebaseAuthResult.error(errorMsg);
+      }
+
+      await _firebaseAuth!.sendPasswordResetEmail(email: email);
+      
+      print('✅ FirebaseAuthService: Password reset email sent successfully');
+      return FirebaseAuthResult.successWithoutUser();
+    } on FirebaseAuthException catch (e) {
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'Bu email adresi ile kayıtlı kullanıcı bulunamadı.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'Geçersiz email adresi.';
+          break;
+        default:
+          errorMessage = 'Şifre sıfırlama emaili gönderilemedi: ${e.message}';
+      }
+      print('❌ FirebaseAuthService: Password reset failed - $errorMessage');
+      return FirebaseAuthResult.error(errorMessage);
+    } catch (e) {
+      final errorMsg = 'Şifre sıfırlama sırasında bir hata oluştu: $e';
+      print('❌ FirebaseAuthService: Password reset failed - $errorMsg');
+      return FirebaseAuthResult.error(errorMsg);
+    }
+  }
+
+  /// Email doğrulama gönder / Send email verification
+  Future<FirebaseAuthResult> sendEmailVerification() async {
+    try {
+      if (!_isFirebaseConfigured || _firebaseAuth == null) {
+        return FirebaseAuthResult.error('Firebase konfigure edilmedi');
+      }
+
+      final user = _firebaseAuth!.currentUser;
+      if (user == null) {
+        return FirebaseAuthResult.error('Kullanıcı oturumu bulunamadı');
+      }
+
+      if (user.emailVerified) {
+        return FirebaseAuthResult.error('Email zaten doğrulanmış');
+      }
+
+      await user.sendEmailVerification();
+      print('✅ FirebaseAuthService: Email verification sent');
+      return FirebaseAuthResult.successWithoutUser();
+    } catch (e) {
+      final errorMsg = 'Email doğrulama gönderilemedi: $e';
+      print('❌ FirebaseAuthService: Send verification failed - $errorMsg');
+      return FirebaseAuthResult.error(errorMsg);
+    }
+  }
+
+  /// Email doğrulama durumunu kontrol et / Check email verification status
+  Future<bool> checkEmailVerificationStatus() async {
+    try {
+      if (!_isFirebaseConfigured || _firebaseAuth == null) {
+        return false;
+      }
+
+      final user = _firebaseAuth!.currentUser;
+      if (user == null) return false;
+
+      await user.reload();
+      return _firebaseAuth!.currentUser?.emailVerified ?? false;
+    } catch (e) {
+      print('❌ FirebaseAuthService: Failed to check email verification - $e');
+      return false;
+    }
+  }
+
   /// Token'ları güvenli şekilde sakla / Store tokens securely
   Future<void> _storeAuthTokens(String accessToken, String idToken) async {
     try {
@@ -287,17 +649,22 @@ class FirebaseAuthService {
       print('🚪 FirebaseAuthService: Signing out...');
       _emitAuthState(FirebaseAuthState.loading);
 
-      // TODO: Firebase'den çıkış yap
-      // TODO: Sign out from Firebase
-      // if (_isFirebaseConfigured && _firebaseAuth != null) {
-      //   await _firebaseAuth!.signOut();
-      // }
+      // Sign out from Firebase Auth / Firebase Auth'dan çıkış yap
+      if (_isFirebaseConfigured && _firebaseAuth != null) {
+        await _firebaseAuth!.signOut();
+      }
+      
+      // Sign out from Google if currently signed in / Google'dan çıkış yap (eğer giriş yapılmışsa)
+      if (_currentAuthMethod == AuthenticationMethod.firebaseGoogle) {
+        await _googleSignIn.signOut();
+      }
       
       // Clear stored tokens / Saklanan token'ları temizle
       await _storage.clearAllAuthData();
       
       // Clear current user data / Mevcut kullanıcı verilerini temizle
       _currentAppUser = null;
+      _currentAuthMethod = AuthenticationMethod.none;
       
       _emitAuthState(FirebaseAuthState.unauthenticated);
       print('✅ FirebaseAuthService: Sign out completed');
@@ -306,6 +673,7 @@ class FirebaseAuthService {
       // Even if sign out fails, clear local data / Çıkış başarısız olsa bile yerel verileri temizle
       await _storage.clearAllAuthData();
       _currentAppUser = null;
+      _currentAuthMethod = AuthenticationMethod.none;
       _emitAuthState(FirebaseAuthState.unauthenticated);
     }
   }
@@ -561,6 +929,172 @@ class FirebaseAuthService {
     }
   }
 
+  /// Bağımsız Firebase kullanıcısı için Firestore belgesi oluştur
+  /// Create Firestore document for standalone Firebase user
+  Future<void> _createStandaloneUserDocument(
+    AppUser appUser, {
+    String? studentId,
+    String? department,
+    String? phoneNumber,
+  }) async {
+    try {
+      if (!_isFirebaseConfigured || _firestore == null) {
+        print('⚠️ Firebase not configured, skipping user document creation');
+        return;
+      }
+
+      final userDocRef = _firestore!.collection('users').doc(appUser.id);
+      final now = FieldValue.serverTimestamp();
+      
+      await userDocRef.set({
+        // Firebase Native Data
+        'uid': appUser.firebaseUid ?? appUser.id,
+        'email': appUser.email,
+        'displayName': appUser.displayName,
+        'emailVerified': false, // Will be updated when verified
+        'photoURL': null,
+        'phoneNumber': phoneNumber,
+        
+        // University Information (user-provided)
+        'studentId': studentId,
+        'employeeId': null,
+        'department': department,
+        'faculty': null,
+        'enrollmentYear': DateTime.now().year,
+        'year': 1, // Default first year
+        'semester': null,
+        
+        // App Preferences
+        'preferences': {
+          'theme': 'system',
+          'language': 'tr',
+          'notifications': {
+            'announcements': true,
+            'grades': true,
+            'calendar': true,
+            'cafeteria': true,
+            'general': true,
+          }
+        },
+        
+        // System Data
+        'role': appUser.userRole?.toString().split('.').last ?? 'student',
+        'permissions': ['read_announcements', 'read_calendar', 'read_cafeteria'],
+        'isActive': true,
+        'accountType': 'firebase',
+        
+        // Timestamps
+        'createdAt': now,
+        'updatedAt': now,
+        'lastLoginAt': now,
+        'emailVerifiedAt': null,
+      });
+      
+      print('✅ Created standalone Firebase user document');
+    } catch (e) {
+      print('❌ Failed to create standalone user document: $e');
+      rethrow;
+    }
+  }
+
+  /// Firestore'dan kullanıcı verilerini yükle / Load user data from Firestore
+  Future<AppUser?> _loadUserDataFromFirestore(String uid) async {
+    try {
+      if (!_isFirebaseConfigured || _firestore == null) {
+        return null;
+      }
+
+      final userDoc = await _firestore!.collection('users').doc(uid).get();
+      if (!userDoc.exists) {
+        return null;
+      }
+
+      final data = userDoc.data()!;
+      return AppUser(
+        id: uid,
+        displayName: data['displayName'] ?? 'User',
+        email: data['email'] ?? '',
+        userPrincipalName: data['email'] ?? '',
+        firebaseUid: uid,
+        userRole: _parseUserRole(data['role']),
+        isActive: data['isActive'] ?? true,
+        createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      );
+    } catch (e) {
+      print('❌ Failed to load user data from Firestore: $e');
+      return null;
+    }
+  }
+
+  /// Kullanıcının son giriş zamanını güncelle / Update user's last login time
+  Future<void> _updateUserLastLogin(String uid) async {
+    try {
+      if (!_isFirebaseConfigured || _firestore == null) {
+        return;
+      }
+
+      await _firestore!.collection('users').doc(uid).update({
+        'lastLoginAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('❌ Failed to update last login time: $e');
+    }
+  }
+
+  /// String'den UserRole'e çevir / Parse UserRole from string
+  UserRole _parseUserRole(String? roleString) {
+    switch (roleString?.toLowerCase()) {
+      case 'admin':
+        return UserRole.admin;
+      case 'staff':
+        return UserRole.staff;
+      case 'student':
+      default:
+        return UserRole.student;
+    }
+  }
+
+  /// Kullanıcı tercihi güncelle / Update user preference
+  Future<bool> updateUserPreference(String key, dynamic value) async {
+    try {
+      if (!_isFirebaseConfigured || _firestore == null || _currentAppUser == null) {
+        return false;
+      }
+
+      await _firestore!.collection('users').doc(_currentAppUser!.id).update({
+        'preferences.$key': value,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      
+      print('✅ Updated user preference: $key = $value');
+      return true;
+    } catch (e) {
+      print('❌ Failed to update user preference: $e');
+      return false;
+    }
+  }
+
+  /// Kullanıcı tercihini al / Get user preference
+  Future<T?> getUserPreference<T>(String key) async {
+    try {
+      if (!_isFirebaseConfigured || _firestore == null || _currentAppUser == null) {
+        return null;
+      }
+
+      final userDoc = await _firestore!.collection('users').doc(_currentAppUser!.id).get();
+      if (!userDoc.exists) return null;
+      
+      final data = userDoc.data();
+      final preferences = data?['preferences'] as Map<String, dynamic>?;
+      return preferences?[key] as T?;
+    } catch (e) {
+      print('❌ Failed to get user preference: $e');
+      return null;
+    }
+  }
+
   /// Kimlik doğrulama durumunu yayınla / Emit authentication state
   void _emitAuthState(FirebaseAuthState state) {
     _authStateController.add(state);
@@ -633,8 +1167,21 @@ class FirebaseAuthResult {
     user: user,
   );
 
+  static FirebaseAuthResult successWithoutUser() => FirebaseAuthResult._(
+    isSuccess: true,
+    user: null,
+  );
+
   static FirebaseAuthResult error(String message) => FirebaseAuthResult._(
     isSuccess: false,
     errorMessage: message,
   );
+}
+
+/// Kimlik doğrulama yöntemleri / Authentication methods
+enum AuthenticationMethod {
+  none,
+  firebaseEmail,
+  firebaseGoogle,
+  microsoftOauth,
 } 

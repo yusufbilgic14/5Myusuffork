@@ -82,6 +82,9 @@ dependencies:
   # Firebase Authentication for user management / Kullanıcı yönetimi için Firebase Authentication
   firebase_auth: ^4.17.8
   
+  # Google Sign-In for OAuth authentication / OAuth kimlik doğrulaması için Google Sign-In
+  google_sign_in: ^6.2.1
+  
   # Cloud Firestore for real-time database / Gerçek zamanlı veritabanı için Cloud Firestore
   cloud_firestore: ^4.15.8
   
@@ -161,4 +164,4 @@ flutter:
 flutter_icons:
   android: true
   ios: true
-  image_path: "assets/images/medipol_logo.png"
+  image_path: "assets/images/app_icon.png"

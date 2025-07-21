@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
 import '../providers/authentication_provider.dart';
 import '../providers/language_provider.dart';
+import '../services/firebase_auth_service.dart';
+import '../models/user_model.dart';
 import 'home_screen.dart';
 import '../l10n/app_localizations.dart';
 
@@ -19,11 +21,24 @@ class _LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
   final _studentIdController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _displayNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _studentIdSignupController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
   bool _isLanguageDropdownOpen = false;
+  
+  // Authentication mode toggle
+  AuthMode _authMode = AuthMode.signIn;
+  String? _selectedDepartment;
+  String? _selectedYearOfStudy;
+  String? _selectedGender;
+  DateTime? _selectedBirthDate;
+  bool _agreeToTerms = false;
 
   late AnimationController _fadeController;
   late AnimationController _slideController;
@@ -179,13 +194,142 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
+  /// Firebase email/password ile giriş yap / Sign in with Firebase email/password
+  Future<void> _handleFirebaseSignIn() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Firebase Auth Service ile giriş yap / Sign in with Firebase Auth Service
+      final authService = FirebaseAuthService();
+      
+      // Check if Firebase is configured / Firebase'in konfigüre olup olmadığını kontrol et
+      if (!authService.isFirebaseConfigured) {
+        _showSnackBar('Firebase henüz konfigüre edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.', isError: true);
+        return;
+      }
+      
+      final result = await authService.signInWithEmailAndPassword(
+        email: _studentIdController.text.trim(),
+        password: _passwordController.text,
+      );
+      
+      if (result.isSuccess && mounted) {
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: AppConstants.animationNormal,
+          ),
+        );
+      } else if (mounted) {
+        _showSnackBar(result.errorMessage ?? 'Giriş başarısız', isError: true);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Giriş sırasında hata oluştu: $e', isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  /// Firebase email/password ile kayıt ol / Sign up with Firebase email/password
+  Future<void> _handleFirebaseSignUp() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    if (!_agreeToTerms) {
+      _showSnackBar(l10n.pleaseAcceptTerms, isError: true);
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Firebase Auth Service ile kayıt ol / Sign up with Firebase Auth Service
+      final authService = FirebaseAuthService();
+      
+      // Check if Firebase is configured / Firebase'in konfigüre olup olmadığını kontrol et
+      if (!authService.isFirebaseConfigured) {
+        _showSnackBar('Firebase henüz konfigüre edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.', isError: true);
+        return;
+      }
+      
+      final result = await authService.signUpWithEmailAndPassword(
+        email: _studentIdController.text.trim(),
+        password: _passwordController.text,
+        displayName: _displayNameController.text.trim(),
+        department: _selectedDepartment,
+        phoneNumber: _phoneController.text.trim().isNotEmpty ? _phoneController.text.trim() : null,
+      );
+      
+      if (result.isSuccess && mounted) {
+        _showSnackBar(l10n.accountCreatedSuccessfully);
+        // Navigate to email verification screen or main app
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
+            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+              return FadeTransition(opacity: animation, child: child);
+            },
+            transitionDuration: AppConstants.animationNormal,
+          ),
+        );
+      } else if (mounted) {
+        _showSnackBar(result.errorMessage ?? 'Kayıt başarısız', isError: true);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Kayıt sırasında hata oluştu: $e', isError: true);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  /// Authentication mode'u değiştir / Toggle authentication mode
+  void _toggleAuthMode() {
+    setState(() {
+      _authMode = _authMode == AuthMode.signIn ? AuthMode.signUp : AuthMode.signIn;
+      // Clear form when switching modes
+      _studentIdController.clear();
+      _passwordController.clear();
+      _confirmPasswordController.clear();
+      _displayNameController.clear();
+      _phoneController.clear();
+      _studentIdSignupController.clear();
+      _selectedDepartment = null;
+      _selectedYearOfStudy = null;
+      _selectedGender = null;
+      _selectedBirthDate = null;
+      _agreeToTerms = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     final safeAreaTop = MediaQuery.of(context).padding.top;
 
-    final languageProvider = Provider.of<LanguageProvider>(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgGradient = isDark
         ? [
@@ -198,12 +342,6 @@ class _LoginScreenState extends State<LoginScreen>
             const Color(0xFFE9F0FA),
             const Color(0xFFD6E4F0),
           ];
-    final cardColor = isDark ? const Color(0xFF232B3E) : Colors.white;
-    final inputFill = isDark ? const Color(0xFF232B3E) : Colors.white;
-    final inputBorder = isDark ? Colors.white12 : Colors.grey.shade200;
-    final textColor = isDark ? Colors.white : Colors.black;
-    final hintColor = isDark ? Colors.white54 : Colors.grey.shade400;
-    final labelColor = isDark ? Colors.white : AppConstants.primaryColor;
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF181F2A) : Colors.grey.shade50,
@@ -342,8 +480,6 @@ class _LoginScreenState extends State<LoginScreen>
   Widget _buildLoginCard() {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDark ? const Color(0xFF232B3E) : Colors.white;
-    final textColor = isDark ? Colors.white : Colors.black;
 
     return Container(
       width: double.infinity,
@@ -377,7 +513,7 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Column(
                   children: [
                     Text(
-                      l10n.loginTitle,
+                      _authMode == AuthMode.signIn ? l10n.loginTitle : l10n.signUpTitle,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
@@ -389,7 +525,7 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l10n.loginSubtitle,
+                      _authMode == AuthMode.signIn ? l10n.loginSubtitle : l10n.signUpSubtitle,
                       style: TextStyle(
                         fontSize: 15,
                         color: isDark
@@ -405,60 +541,16 @@ class _LoginScreenState extends State<LoginScreen>
               ),
               const SizedBox(height: 32),
 
-              // Öğrenci numarası alanı / Student ID field
-              _buildCleanInputField(
-                controller: _studentIdController,
-                label: l10n.studentId,
-                hint: AppLocalizations.of(context)!.studentIdHint,
-                icon: Icons.person_outline,
-                textInputType: TextInputType.text,
-                validator: (value) {
-                  return null;
-                },
-              ),
+              // Form fields based on auth mode / Auth moduna göre form alanları
+              if (_authMode == AuthMode.signUp) ..._buildSignUpFields(),
+              if (_authMode == AuthMode.signIn) ..._buildSignInFields(),
+
+              // Authentication mode specific button / Kimlik doğrulama moduna özgü buton
+              _buildAuthButton(l10n),
               const SizedBox(height: 20),
 
-              // Şifre alanı / Password field
-              _buildCleanInputField(
-                controller: _passwordController,
-                label: l10n.password,
-                hint: l10n.password,
-                icon: Icons.lock_outline,
-                isPassword: true,
-                validator: (value) {
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Şifremi unuttum linki / Forgot password link
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _launchPasswordResetUrl,
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 8,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                  child: Text(
-                    l10n.forgotPassword,
-                    style: TextStyle(
-                      color: AppConstants.primaryColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 28),
-
-              // Sade giriş butonu / Clean login button
-              _buildCleanLoginButton(l10n),
+              // Mode toggle / Mod değiştirici
+              _buildAuthModeToggle(l10n),
               const SizedBox(height: 20),
 
               // Ayırıcı çizgi / Divider
@@ -509,6 +601,7 @@ class _LoginScreenState extends State<LoginScreen>
     required String hint,
     required IconData icon,
     bool isPassword = false,
+    bool isConfirmPassword = false,
     TextInputType textInputType = TextInputType.text,
     String? Function(String?)? validator,
   }) {
@@ -539,7 +632,8 @@ class _LoginScreenState extends State<LoginScreen>
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          obscureText: isPassword && !_isPasswordVisible,
+          obscureText: isPassword && 
+              (isConfirmPassword ? !_isConfirmPasswordVisible : !_isPasswordVisible),
           keyboardType: textInputType,
           validator: validator,
           style: TextStyle(
@@ -564,9 +658,13 @@ class _LoginScreenState extends State<LoginScreen>
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
-                      _isPasswordVisible
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      isConfirmPassword
+                          ? (_isConfirmPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility)
+                          : (_isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility),
                       color: isDark
                           ? Colors.white.withValues(alpha: 0.4)
                           : Colors.grey.shade500,
@@ -574,7 +672,11 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     onPressed: () {
                       setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
+                        if (isConfirmPassword) {
+                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        } else {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        }
                       });
                     },
                   )
@@ -614,43 +716,6 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
-  /// Sade giriş butonu oluşturucu / Clean login button builder
-  Widget _buildCleanLoginButton(AppLocalizations l10n) {
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _handleLogin,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppConstants.primaryColor,
-          foregroundColor: Colors.white,
-          elevation: 0,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          disabledBackgroundColor: AppConstants.primaryColor.withValues(alpha: 0.6),
-        ),
-        child: _isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-            : Text(
-                l10n.loginButton,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.2,
-                ),
-              ),
-      ),
-    );
-  }
 
   /// Sade Microsoft OAuth giriş butonu / Clean Microsoft OAuth login button
   Widget _buildCleanMicrosoftButton(AppLocalizations l10n) {
@@ -920,13 +985,757 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+  /// Sign-up form fields / Kayıt formu alanları
+  List<Widget> _buildSignUpFields() {
+    final l10n = AppLocalizations.of(context)!;
+    
+    return [
+      // Display name field / Ad soyad alanı
+      _buildCleanInputField(
+        controller: _displayNameController,
+        label: l10n.fullName,
+        hint: l10n.fullNameHint,
+        icon: Icons.person_outline,
+        textInputType: TextInputType.name,
+        validator: (value) {
+          if (value?.isEmpty ?? true) {
+            return l10n.fullNameRequired;
+          }
+          if (value!.trim().split(' ').length < 2) {
+            return l10n.fullNameInvalid;
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 20),
+      
+      // Email field / Email alanı
+      _buildCleanInputField(
+        controller: _studentIdController,
+        label: l10n.emailAddress,
+        hint: l10n.emailHint,
+        icon: Icons.email_outlined,
+        textInputType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value?.isEmpty ?? true) {
+            return l10n.emailRequired;
+          }
+          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+            return l10n.emailInvalid;
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 20),
+      
+      // Password field / Şifre alanı
+      _buildCleanInputField(
+        controller: _passwordController,
+        label: l10n.createPassword,
+        hint: l10n.createPasswordHint,
+        icon: Icons.lock_outline,
+        isPassword: true,
+        validator: (value) {
+          if (value?.isEmpty ?? true) {
+            return l10n.passwordRequired;
+          }
+          if (value!.length < 8) {
+            return l10n.passwordTooShort;
+          }
+          if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)').hasMatch(value)) {
+            return l10n.passwordTooWeak;
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 20),
+      
+      // Confirm password field / Şifre tekrar alanı
+      _buildCleanInputField(
+        controller: _confirmPasswordController,
+        label: l10n.confirmPassword,
+        hint: l10n.confirmPasswordHint,
+        icon: Icons.lock_outline,
+        isPassword: true,
+        isConfirmPassword: true,
+        validator: (value) {
+          if (value?.isEmpty ?? true) {
+            return l10n.confirmPasswordRequired;
+          }
+          if (value != _passwordController.text) {
+            return l10n.passwordsDoNotMatch;
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 20),
+      
+      // Department dropdown / Bölüm seçimi
+      _buildDepartmentDropdown(),
+      const SizedBox(height: 20),
+      
+      // Phone field (optional) / Telefon alanı (opsiyonel)
+      _buildCleanInputField(
+        controller: _phoneController,
+        label: l10n.phoneOptional,
+        hint: l10n.phoneHint,
+        icon: Icons.phone_outlined,
+        textInputType: TextInputType.phone,
+        validator: (value) {
+          if (value?.isNotEmpty == true) {
+            if (!RegExp(r'^(\+90|0)?[5-9]\d{9}$').hasMatch(value!.replaceAll(' ', ''))) {
+              return l10n.phoneInvalid;
+            }
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 20),
+      
+      // Student ID field (optional) / Öğrenci no alanı (opsiyonel)
+      _buildCleanInputField(
+        controller: _studentIdSignupController,
+        label: l10n.studentIdOptional,
+        hint: l10n.studentIdHintSignup,
+        icon: Icons.badge_outlined,
+        textInputType: TextInputType.number,
+      ),
+      const SizedBox(height: 20),
+      
+      // Year of study dropdown / Sınıf seçimi
+      _buildYearOfStudyDropdown(),
+      const SizedBox(height: 20),
+      
+      // Gender dropdown / Cinsiyet seçimi
+      _buildGenderDropdown(),
+      const SizedBox(height: 20),
+      
+      // Birth date picker / Doğum tarihi seçimi
+      _buildBirthDatePicker(),
+      const SizedBox(height: 20),
+      
+      // Terms checkbox / Kullanım şartları onay kutusu
+      _buildTermsCheckbox(),
+      const SizedBox(height: 28),
+    ];
+  }
+  
+  /// Sign-in form fields / Giriş formu alanları
+  List<Widget> _buildSignInFields() {
+    final l10n = AppLocalizations.of(context)!;
+    
+    return [
+      // Email field / Email alanı
+      _buildCleanInputField(
+        controller: _studentIdController,
+        label: 'Email Adresi',
+        hint: 'ornek@email.com',
+        icon: Icons.email_outlined,
+        textInputType: TextInputType.emailAddress,
+        validator: (value) {
+          if (value?.isEmpty ?? true) {
+            return 'Email adresi gerekli';
+          }
+          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+            return 'Geçerli bir email adresi girin';
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 20),
+
+      // Password field / Şifre alanı
+      _buildCleanInputField(
+        controller: _passwordController,
+        label: l10n.password,
+        hint: l10n.password,
+        icon: Icons.lock_outline,
+        isPassword: true,
+        validator: (value) {
+          if (value?.isEmpty ?? true) {
+            return 'Şifre gerekli';
+          }
+          return null;
+        },
+      ),
+      const SizedBox(height: 16),
+
+      // Forgot password link / Şifremi unuttum linki
+      Align(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+          onPressed: _launchPasswordResetUrl,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 8,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
+          ),
+          child: Text(
+            l10n.forgotPassword,
+            style: TextStyle(
+              color: AppConstants.primaryColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(height: 28),
+    ];
+  }
+  
+  /// Department dropdown / Bölüm seçim dropdown'ı
+  Widget _buildDepartmentDropdown() {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inputFill = isDark
+        ? const Color(0xFF2A3441)
+        : const Color(0xFFF8FAFC);
+    final inputBorder = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.grey.shade200;
+    final labelColor = isDark ? Colors.white : Colors.black87;
+    
+    const departments = [
+      'Bilgisayar Mühendisliği',
+      'Tıp Fakültesi',
+      'Hukuk Fakültesi',
+      'İşletme',
+      'Psikoloji',
+      'Mimarlık',
+      'Endüstri Mühendisliği',
+      'Elektrik-Elektronik Mühendisliği',
+      'Diğer',
+    ];
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.departmentOptional,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: labelColor,
+                  letterSpacing: 0.2,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: 0,
+                maxWidth: constraints.maxWidth,
+              ),
+              child: DropdownButtonFormField<String>(
+                isExpanded: true, // Satırı tamamen kapla, taşmayı önle
+                value: _selectedDepartment,
+                decoration: InputDecoration(
+                  hintText: l10n.selectDepartment,
+                  hintStyle: TextStyle(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.4)
+                        : Colors.grey.shade500,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                  ),
+                  prefixIcon: Icon(
+                    Icons.school_outlined,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.4)
+                        : Colors.grey.shade500,
+                    size: 20,
+                  ),
+                  filled: true,
+                  fillColor: inputFill,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: inputBorder, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppConstants.primaryColor,
+                      width: 1.5,
+                    ),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
+                ),
+                items: departments.map((department) {
+                  return DropdownMenuItem<String>(
+                    value: department,
+                    child: Text(
+                      department,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.white : Colors.black87,
+                      ),
+                    ),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedDepartment = value;
+                  });
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+  
+  /// Terms and conditions checkbox / Kullanım şartları onay kutusu
+  Widget _buildTermsCheckbox() {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Checkbox(
+          value: _agreeToTerms,
+          onChanged: (value) {
+            setState(() {
+              _agreeToTerms = value ?? false;
+            });
+          },
+          activeColor: AppConstants.primaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _agreeToTerms = !_agreeToTerms;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 12, left: 4),
+              child: RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: isDark ? Colors.white70 : Colors.black87,
+                    height: 1.4,
+                  ),
+                  children: [
+                    const TextSpan(text: 'Medipol Uygulaması '),
+                    TextSpan(
+                      text: 'Kullanım Şartları',
+                      style: TextStyle(
+                        color: AppConstants.primaryColor,
+                        fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                    const TextSpan(text: ' ve '),
+                    TextSpan(
+                      text: 'Gizlilik Politikası',
+                      style: TextStyle(
+                        color: AppConstants.primaryColor,
+                        fontWeight: FontWeight.w600,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                    const TextSpan(text: 'ını okuduğumu ve kabul ettiğimi onaylarım.'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  
+  /// Authentication button / Kimlik doğrulama butonu
+  Widget _buildAuthButton(AppLocalizations l10n) {
+    return SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: _isLoading
+            ? null
+            : (_authMode == AuthMode.signIn ? _handleFirebaseSignIn : _handleFirebaseSignUp),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppConstants.primaryColor,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          disabledBackgroundColor: AppConstants.primaryColor.withValues(alpha: 0.6),
+        ),
+        child: _isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                _authMode == AuthMode.signIn ? l10n.loginButton : l10n.createAccount,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.2,
+                ),
+              ),
+      ),
+    );
+  }
+  
+  /// Authentication mode toggle / Kimlik doğrulama modu değiştirici
+  Widget _buildAuthModeToggle(AppLocalizations l10n) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          _authMode == AuthMode.signIn
+              ? l10n.dontHaveAccount
+              : l10n.alreadyHaveAccount,
+          style: TextStyle(
+            fontSize: 14,
+            color: isDark ? Colors.white70 : Colors.grey.shade600,
+          ),
+        ),
+        TextButton(
+          onPressed: _toggleAuthMode,
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          ),
+          child: Text(
+            _authMode == AuthMode.signIn ? l10n.signUpHere : l10n.signInHere,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppConstants.primaryColor,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  
+  /// Year of study dropdown / Sınıf seçim dropdown'u
+  Widget _buildYearOfStudyDropdown() {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inputFill = isDark
+        ? const Color(0xFF2A3441)
+        : const Color(0xFFF8FAFC);
+    final inputBorder = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.grey.shade200;
+    final labelColor = isDark ? Colors.white : Colors.black87;
+    
+    final years = [
+      l10n.firstYear,
+      l10n.secondYear,
+      l10n.thirdYear,
+      l10n.fourthYear,
+      l10n.graduateStudent,
+      l10n.phdStudent,
+    ];
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.yearOfStudyOptional,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: labelColor,
+            letterSpacing: 0.2,
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _selectedYearOfStudy,
+          decoration: InputDecoration(
+            hintText: l10n.selectYearOfStudy,
+            hintStyle: TextStyle(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.4)
+                  : Colors.grey.shade500,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(
+              Icons.school_outlined,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.4)
+                  : Colors.grey.shade500,
+              size: 20,
+            ),
+            filled: true,
+            fillColor: inputFill,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: inputBorder, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: AppConstants.primaryColor,
+                width: 1.5,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+          ),
+          items: years.map((year) {
+            return DropdownMenuItem<String>(
+              value: year,
+              child: Text(
+                year,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedYearOfStudy = value;
+            });
+          },
+        ),
+      ],
+    );
+  }
+  
+  /// Gender dropdown / Cinsiyet seçim dropdown'u
+  Widget _buildGenderDropdown() {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inputFill = isDark
+        ? const Color(0xFF2A3441)
+        : const Color(0xFFF8FAFC);
+    final inputBorder = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.grey.shade200;
+    final labelColor = isDark ? Colors.white : Colors.black87;
+    
+    final genders = [
+      l10n.male,
+      l10n.female,
+      l10n.preferNotToSay,
+    ];
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.genderOptional,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: labelColor,
+            letterSpacing: 0.2,
+          ),
+        ),
+        const SizedBox(height: 8),
+        DropdownButtonFormField<String>(
+          value: _selectedGender,
+          decoration: InputDecoration(
+            hintText: l10n.selectGender,
+            hintStyle: TextStyle(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.4)
+                  : Colors.grey.shade500,
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(
+              Icons.person_outline,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.4)
+                  : Colors.grey.shade500,
+              size: 20,
+            ),
+            filled: true,
+            fillColor: inputFill,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: inputBorder, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: AppConstants.primaryColor,
+                width: 1.5,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+          ),
+          items: genders.map((gender) {
+            return DropdownMenuItem<String>(
+              value: gender,
+              child: Text(
+                gender,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            setState(() {
+              _selectedGender = value;
+            });
+          },
+        ),
+      ],
+    );
+  }
+  
+  /// Birth date picker / Doğum tarihi seçici
+  Widget _buildBirthDatePicker() {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final inputFill = isDark
+        ? const Color(0xFF2A3441)
+        : const Color(0xFFF8FAFC);
+    final inputBorder = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.grey.shade200;
+    final labelColor = isDark ? Colors.white : Colors.black87;
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.birthDateOptional,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: labelColor,
+            letterSpacing: 0.2,
+          ),
+        ),
+        const SizedBox(height: 8),
+        GestureDetector(
+          onTap: () async {
+            final DateTime? picked = await showDatePicker(
+              context: context,
+              initialDate: _selectedBirthDate ?? DateTime(2000),
+              firstDate: DateTime(1950),
+              lastDate: DateTime.now(),
+            );
+            if (picked != null && picked != _selectedBirthDate) {
+              setState(() {
+                _selectedBirthDate = picked;
+              });
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: inputFill,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: inputBorder, width: 1),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.calendar_today_outlined,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.4)
+                      : Colors.grey.shade500,
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    _selectedBirthDate == null
+                        ? l10n.selectBirthDate
+                        : '${_selectedBirthDate!.day}/${_selectedBirthDate!.month}/${_selectedBirthDate!.year}',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: _selectedBirthDate == null
+                          ? (isDark
+                              ? Colors.white.withValues(alpha: 0.4)
+                              : Colors.grey.shade500)
+                          : (isDark ? Colors.white : Colors.black87),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   void dispose() {
     _studentIdController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _displayNameController.dispose();
+    _phoneController.dispose();
+    _studentIdSignupController.dispose();
     _fadeController.dispose();
     _slideController.dispose();
     _languageDropdownController.dispose();
     super.dispose();
   }
+}
+
+/// Authentication mode enum / Kimlik doğrulama modu enum'ı
+enum AuthMode {
+  signIn,
+  signUp,
 }

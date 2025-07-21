@@ -15,6 +15,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginTitle => 'Login';
 
   @override
+  String get signUpTitle => 'Sign Up';
+
+  @override
   String get loginSubtitle => 'Login with your student information';
 
   @override
@@ -885,4 +888,157 @@ class AppLocalizationsEn extends AppLocalizations {
   String get website => 'Website:';
   @override
   String get address => 'Address:';
+
+  // Sign up related translations
+  
+
+  @override
+  String get signUpSubtitle => 'Create your new account';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get fullNameHint => 'Enter your first and last name';
+
+  @override
+  String get fullNameRequired => 'Full name is required';
+
+  @override
+  String get fullNameInvalid => 'Please enter your first and last name';
+
+  @override
+  String get emailAddress => 'Email Address';
+
+  @override
+  String get emailHint => 'example@email.com';
+
+  @override
+  String get emailRequired => 'Email address is required';
+
+  @override
+  String get emailInvalid => 'Enter a valid email address';
+
+  @override
+  String get createPassword => 'Create Password';
+
+  @override
+  String get createPasswordHint => 'Create a strong password';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordTooWeak => 'Password must contain uppercase, lowercase and numbers';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get confirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get confirmPasswordRequired => 'Password confirmation is required';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get departmentOptional => 'Department (Optional)';
+
+  @override
+  String get selectDepartment => 'Select your department';
+
+  @override
+  String get phoneOptional => 'Phone (Optional)';
+
+  @override
+  String get phoneHint => '+90 5xx xxx xx xx';
+
+  @override
+  String get phoneInvalid => 'Enter a valid phone number';
+
+  @override
+  String get studentIdOptional => 'Student ID (Optional)';
+
+  @override
+  String get studentIdHintSignup => '2024520001';
+
+  @override
+  String get yearOfStudyOptional => 'Year of Study (Optional)';
+
+  @override
+  String get selectYearOfStudy => 'Select your year of study';
+
+  @override
+  String get birthDateOptional => 'Birth Date (Optional)';
+
+  @override
+  String get selectBirthDate => 'Select your birth date';
+
+  @override
+  String get genderOptional => 'Gender (Optional)';
+
+  @override
+  String get selectGender => 'Select your gender';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get preferNotToSay => 'Prefer not to say';
+
+  @override
+  String get termsAndConditions => 'Terms and Conditions';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get agreeToTerms => 'I have read and agree to the Medipol App Terms and Conditions and Privacy Policy.';
+
+  @override
+  String get pleaseAcceptTerms => 'Please accept the terms and conditions';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get signInHere => 'Sign In';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get signUpHere => 'Sign Up';
+
+  @override
+  String get accountCreatedSuccessfully => 'Account created successfully! Please verify your email address.';
+
+  @override
+  String get firstYear => '1st Year';
+
+  @override
+  String get secondYear => '2nd Year';
+
+  @override
+  String get thirdYear => '3rd Year';
+
+  @override
+  String get fourthYear => '4th Year';
+
+  @override
+  String get graduateStudent => 'Graduate Student';
+
+  @override
+  String get phdStudent => 'PhD Student';
 }

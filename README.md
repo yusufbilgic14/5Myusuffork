@@ -1,7 +1,9 @@
-# 🎓 MedipolApp - Üniversite Kampüs Uygulaması
+# 🎓 Medipol Yanında - Üniversite Kampüs Uygulaması by 5MASKETEERS
 
 <div align="center">
   <img src="assets/images/medipol_logo.png" alt="Medipol Üniversitesi Logo" width="200"/>
+  <!-- 5 MASKETEERS logosu eklendi -->
+  <img src="assets/images/5MASKETEERS.png" alt="5 MASKETEERS Logo" width="200"/>
   <br><br>
   <strong>Medipol Üniversitesi için geliştirilmiş kapsamlı Flutter tabanlı kampüs uygulaması</strong>
   <br><br>
@@ -221,7 +223,7 @@ MedipolApp, öğrencilerin kampüs yaşamlarını kolaylaştıran 17 ana ekranda
 ```
 Frontend: Flutter 3.8.0+ with Dart
 State Management: Provider Pattern
-Authentication: Microsoft MSAL + Firebase Auth
+Authentication: Firebase Auth (Email/Şifre, Google) + Microsoft MSAL (Hibrit)
 Backend: Firebase (Firestore, Storage, Analytics, FCM)
 Haritalar: Google Maps Flutter with custom styling
 Localization: Flutter i18n with ARB files
@@ -231,41 +233,80 @@ Localization: Flutter i18n with ARB files
 ```
 lib/
 ├── 📁 constants/          # Uygulama genelinde sabit değerler ve konfigürasyonlar
-├── 📁 models/             # JSON modelleri
+├── 📁 models/             # JSON modelleri (Kullanıcı, ders, vb.)
 ├── 📁 providers/          # State management (Auth, Theme, Language)
 ├── 📁 screens/            # Uygulama ekranları
-├── 📁 services/           # İş mantığı ve API servisleri
+├── 📁 services/           # İş mantığı ve API servisleri (Firebase Auth, Firestore, vb.)
 ├── 📁 widgets/            # Yeniden kullanılabilir UI bileşenleri
 ├── 📁 themes/             # Açık/Karanlık tema tanımları
 └── 📁 l10n/              # Yerelleştirme dosyaları (TR/EN)
 ```
-### Kampüs Harita Entegrasyonu
-- **Google Maps SDK** - İnteraktif kampüs navigasyonu
-- **Özel Karanlık Tema** - Uygulama tasarımı ile tutarlı
-- **Konum Servisleri** - Gerçek zamanlı konumlandırma
-- **POI İşaretleyicileri** - Önemli kampüs konumları
 
-## 🎯 Ana Öne Çıkanlar
+## 🔒 Backend & Kimlik Doğrulama
+<!-- Backend mimarisi ve kimlik doğrulama sistemi güncellendi -->
 
-- **🏆 Kapsamlı Çözüm** - Tek uygulamada eksiksiz üniversite yaşam yönetimi
-- **🔒 Kurumsal Güvenlik** - Microsoft OAuth + Firebase çift kimlik doğrulama
-- **📱 Yerel Performans** - Flutter'ın platformlar arası verimliliği
-- **🌐 Ölçeklenebilir Mimari** - Uygun ayrım ilkeleri ile temiz kod yapısı
-- **♿ Erişilebilirlik** - Flutter'ın erişilebilirlik yönergelerini takip etme
-- **🔄 Sürekli Entegrasyon** - Otomatik test ve dağıtım hazır
+### 🚀 Temel Özellikler
+- **Hibrit Kimlik Doğrulama:**
+  - Tam bağımsız Firebase Authentication (Email/Şifre, Google Sign-In) canlı ve sorunsuz çalışıyor.
+  - Microsoft OAuth (MSAL) alternatifi olarak destekleniyor.
+  - Kullanıcılar iki yöntem arasında sorunsuz geçiş yapabiliyor.
+- **Kullanıcı Verisi Yönetimi:**
+  - Tüm kullanıcı verileri (profil, tercihler, bildirimler) Firebase Cloud Firestore'da saklanıyor.
+  - Tema, dil ve bildirim tercihleri cihazlar arası otomatik senkronize ediliyor.
+  - Güvenli local storage ile offline erişim ve kimlik durumu korunuyor.
+- **Güvenlik & Dayanıklılık:**
+  - Firestore güvenlik kuralları (şu an test modunda, prod için güncellenecek).
+  - E-posta doğrulama, güçlü parola gereksinimi, güvenli token saklama.
+  - Tüm backend işlemlerinde kapsamlı hata yönetimi.
+- **Ölçeklenebilirlik & Genişletilebilirlik:**
+  - Backend, ders yönetimi, not takibi, gelişmiş profil, admin paneli gibi ileri seviye özelliklere hazır.
+  - Modüler mimari ile kolay geliştirme ve bakım.
+- **Test & Kalite:**
+  - Kimlik doğrulama, veri kalıcılığı ve hata yönetimi için kapsamlı testler.
+  - Güvenlik ve validasyon testleri devam ediyor.
+- **Geliştirici Deneyimi:**
+  - Temel backend dosyaları:
+    - `lib/services/firebase_auth_service.dart` (kimlik doğrulama mantığı)
+    - `lib/models/user_model.dart` (kullanıcı şeması)
+    - `lib/providers/authentication_provider.dart` (auth state yönetimi)
+  - Firebase projesi: `medipolapp-e3b4f` (europe-west3)
+  - Tüm konfigürasyon dosyaları versiyonlanmış ve dokümante edilmiş.
 
-## 📈 Teknik Spesifikasyonlar
+### 🛠️ Geliştirici Komutları
+```bash
+# JSON serileştirme kodunu yeniden üret
+flutter pub run build_runner build --delete-conflicting-outputs
+
+# Temizlik ve bağımlılıkları yeniden yükle
+flutter clean && flutter pub get
+
+# Belirli dosyada kod analizi
+flutter analyze lib/services/firebase_auth_service.dart
+
+# Uygulamayı debug modda çalıştır
+flutter run
+```
+
+### 📈 Gelecek Geliştirmeler
+- Firestore güvenlik kurallarının prod ortamına alınması
+- Gelişmiş kullanıcı profilleri (fotoğraf, biyografi, vb.)
+- Ders ve not yönetimi modülleri
+- Admin panel entegrasyonu ve rol tabanlı erişim
+- Hesap silme ve veri taşınabilirliği
+- Daha kapsamlı güvenlik ve validasyon testleri
+
+## 📊 Teknik Spesifikasyonlar
 
 - **Minimum Flutter Sürümü:** 3.8.0
 - **Minimum Dart Sürümü:** 3.0.0
 - **Hedef Platformlar:** iOS, Android, Web
 - **Backend:** Firebase Suite (Auth, Firestore, Storage, Analytics, FCM)
-- **Kimlik Doğrulama:** Microsoft MSAL + Firebase Özel Token'lar
+- **Kimlik Doğrulama:** Firebase Auth (Email/Şifre, Google) + Microsoft OAuth (MSAL)
 - **State Management:** Provider Pattern
 - **Yerelleştirme:** 2 dil (Türkçe, İngilizce)
 
 <div align="center">
-  <strong>Medipol Üniversitesi Topluluğu için ❤️ ile yapıldı</strong>
+  <strong>Medipol Üniversitesi için 5MASKETEERS grubu tarafından yapıldı</strong>
   <br><br>
   <i>Teknoloji ile kampüs yaşamını geliştiriyoruz</i>
 </div>

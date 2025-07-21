@@ -15,6 +15,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get loginTitle => 'Giriş Yap';
 
   @override
+  String get signUpTitle => 'Hesap Oluştur';
+
+  @override
   String get loginSubtitle => 'Öğrenci bilgilerinizle giriş yapın';
 
   @override
@@ -887,4 +890,156 @@ class AppLocalizationsTr extends AppLocalizations {
   String get website => 'İnternet Sitesi:';
   @override
   String get address => 'Adres:';
+
+  // Sign up related translations
+
+  @override
+  String get signUpSubtitle => 'Yeni hesabınızı oluşturun';
+
+  @override
+  String get fullName => 'Ad Soyad';
+
+  @override
+  String get fullNameHint => 'Adınızı ve soyadınızı girin';
+
+  @override
+  String get fullNameRequired => 'Ad soyad gerekli';
+
+  @override
+  String get fullNameInvalid => 'Lütfen ad ve soyadınızı girin';
+
+  @override
+  String get emailAddress => 'Email Adresi';
+
+  @override
+  String get emailHint => 'ornek@email.com';
+
+  @override
+  String get emailRequired => 'Email adresi gerekli';
+
+  @override
+  String get emailInvalid => 'Geçerli bir email adresi girin';
+
+  @override
+  String get createPassword => 'Şifre Oluştur';
+
+  @override
+  String get createPasswordHint => 'Güçlü bir şifre oluşturun';
+
+  @override
+  String get passwordRequired => 'Şifre gerekli';
+
+  @override
+  String get passwordTooShort => 'Şifre en az 8 karakter olmalı';
+
+  @override
+  String get passwordTooWeak => 'Şifre büyük harf, küçük harf ve rakam içermeli';
+
+  @override
+  String get confirmPassword => 'Şifre Tekrar';
+
+  @override
+  String get confirmPasswordHint => 'Şifrenizi tekrar girin';
+
+  @override
+  String get confirmPasswordRequired => 'Şifre tekrarı gerekli';
+
+  @override
+  String get passwordsDoNotMatch => 'Şifreler eşleşmiyor';
+
+  @override
+  String get departmentOptional => 'Bölüm (Opsiyonel)';
+
+  @override
+  String get selectDepartment => 'Bölümünüzü seçin';
+
+  @override
+  String get phoneOptional => 'Telefon (İsteğe Bağlı)';
+
+  @override
+  String get phoneHint => '+90 5xx xxx xx xx';
+
+  @override
+  String get phoneInvalid => 'Geçerli bir telefon numarası girin';
+
+  @override
+  String get studentIdOptional => 'Öğrenci No (İsteğe Bağlı)';
+
+  @override
+  String get studentIdHintSignup => '2024520001';
+
+  @override
+  String get yearOfStudyOptional => 'Sınıf (İsteğe Bağlı)';
+
+  @override
+  String get selectYearOfStudy => 'Sınıfınızı seçin';
+
+  @override
+  String get birthDateOptional => 'Doğum Tarihi (İsteğe Bağlı)';
+
+  @override
+  String get selectBirthDate => 'Doğum tarihinizi seçin';
+
+  @override
+  String get genderOptional => 'Cinsiyet (İsteğe Bağlı)';
+
+  @override
+  String get selectGender => 'Cinsiyetinizi seçin';
+
+  @override
+  String get male => 'Erkek';
+
+  @override
+  String get female => 'Kadın';
+
+  @override
+  String get preferNotToSay => 'Belirtmek istemiyorum';
+
+  @override
+  String get termsAndConditions => 'Kullanım Şartları';
+
+  @override
+  String get privacyPolicy => 'Gizlilik Politikası';
+
+  @override
+  String get agreeToTerms => 'Medipol Uygulaması Kullanım Şartları ve Gizlilik Politikasını okuduğumu ve kabul ettiğimi onaylarım.';
+
+  @override
+  String get pleaseAcceptTerms => 'Lütfen kullanım şartlarını kabul edin';
+
+  @override
+  String get createAccount => 'Hesap Oluştur';
+
+  @override
+  String get alreadyHaveAccount => 'Zaten hesabınız var mı?';
+
+  @override
+  String get signInHere => 'Giriş Yap';
+
+  @override
+  String get dontHaveAccount => 'Hesabınız yok mu?';
+
+  @override
+  String get signUpHere => 'Kayıt Ol';
+
+  @override
+  String get accountCreatedSuccessfully => 'Hesap başarıyla oluşturuldu! Lütfen email adresinizi doğrulayın.';
+
+  @override
+  String get firstYear => '1. Sınıf';
+
+  @override
+  String get secondYear => '2. Sınıf';
+
+  @override
+  String get thirdYear => '3. Sınıf';
+
+  @override
+  String get fourthYear => '4. Sınıf';
+
+  @override
+  String get graduateStudent => 'Yüksek Lisans';
+
+  @override
+  String get phdStudent => 'Doktora';
 }

@@ -48,15 +48,12 @@ Map<String, dynamic> _$AppUserToJson(AppUser instance) => <String, dynamic>{
   'preferredLanguage': instance.preferredLanguage,
   'firebaseUid': instance.firebaseUid,
   'firestoreDocId': instance.firestoreDocId,
-  if (_$UserRoleEnumMap[instance.userRole] case final value?) 'role': value,
+  'role': ?_$UserRoleEnumMap[instance.userRole],
   'permissions': instance.permissions,
-  if (instance.isActive case final value?) 'isActive': value,
-  if (const TimestampConverter().toJson(instance.createdAt) case final value?)
-    'createdAt': value,
-  if (const TimestampConverter().toJson(instance.updatedAt) case final value?)
-    'updatedAt': value,
-  if (const TimestampConverter().toJson(instance.lastLoginAt) case final value?)
-    'lastLoginAt': value,
+  'isActive': ?instance.isActive,
+  'createdAt': ?const TimestampConverter().toJson(instance.createdAt),
+  'updatedAt': ?const TimestampConverter().toJson(instance.updatedAt),
+  'lastLoginAt': ?const TimestampConverter().toJson(instance.lastLoginAt),
 };
 
 const _$UserRoleEnumMap = {

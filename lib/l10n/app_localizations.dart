@@ -1774,6 +1774,59 @@ abstract class AppLocalizations {
 
   /// No description provided for @address.
   String get address;
+
+  /// Sign up related localizations
+  String get signUpTitle;
+  String get signUpSubtitle;
+  String get fullName;
+  String get fullNameHint;
+  String get fullNameRequired;
+  String get fullNameInvalid;
+  String get emailAddress;
+  String get emailHint;
+  String get emailRequired;
+  String get emailInvalid;
+  String get createPassword;
+  String get createPasswordHint;
+  String get passwordRequired;
+  String get passwordTooShort;
+  String get passwordTooWeak;
+  String get confirmPassword;
+  String get confirmPasswordHint;
+  String get confirmPasswordRequired;
+  String get passwordsDoNotMatch;
+  String get departmentOptional;
+  String get selectDepartment;
+  String get phoneOptional;
+  String get phoneHint;
+  String get phoneInvalid;
+  String get studentIdOptional;
+  String get studentIdHintSignup;
+  String get yearOfStudyOptional;
+  String get selectYearOfStudy;
+  String get birthDateOptional;
+  String get selectBirthDate;
+  String get genderOptional;
+  String get selectGender;
+  String get male;
+  String get female;
+  String get preferNotToSay;
+  String get termsAndConditions;
+  String get privacyPolicy;
+  String get agreeToTerms;
+  String get pleaseAcceptTerms;
+  String get createAccount;
+  String get alreadyHaveAccount;
+  String get signInHere;
+  String get dontHaveAccount;
+  String get signUpHere;
+  String get accountCreatedSuccessfully;
+  String get firstYear;
+  String get secondYear;
+  String get thirdYear;
+  String get fourthYear;
+  String get graduateStudent;
+  String get phdStudent;
 }
 
 class _AppLocalizationsDelegate
