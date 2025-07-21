@@ -118,30 +118,24 @@ MedipolApp, öğrencilerin kampüs yaşamlarını kolaylaştıran 17 ana ekranda
 
 ---
 
-### 🍽️ **Hızlı Kafeterya Menü Görüntüleme**
+### 🍽️ **Dinamik Kafeterya Menü Sistemi**
 <div align="left">
-<strong>Ana sayfadan kolayca erişilebilen kompakt menü sistemi</strong>
+<strong>Günlük yemek seçimlerinizi önceden planlayın</strong>
 
-🎯 **Menü Özellikleri:**
-- **📱 Hızlı Erişim Butonu** - Ana sayfa app bar'ında restaurant ikonu ile tek tıkla erişim
-- **📋 Günlük Menü Özeti** - Bugünden itibaren 4 günlük menü listesi
-- **🍲 Detaylı Yemek Bilgileri** - Her yemek için kalori değeri ve tam açıklama
-- **⏰ Güncel Tarih Bilgisi** - Hangi günün menüsü olduğunu gösteren tarih etiketi
-- **🎨 Kompakt Tasarım** - Ana sayfa akışını bozmayan açılır panel tasarımı
+🎯 **Menü Özellikleri:** - Ana sayfadan kolayca ulaşılabilen güncel menüler
 
-🍕 **Menü İçeriği:**
-- **Çorbalar** - Günlük çorba seçenekleri (Naneli Yoğurt, Ezogelin, Mercimek)
-- **Ana Yemekler** - Et, tavuk ve vejetaryen seçenekleri
-- **Garnitürler** - Pirinç pilavı, bulgur pilavı, makarna çeşitleri
-- **Salatalar** - Mevsim salata, çoban salata, salata bar
-- **İçecekler ve Tatlılar** - Ayran, yoğurt, dondurma ve mevsim meyveleri
-- **Kalori Bilgileri** - Her yemek için KCAL değeri görüntüleme
+🍕 **Yemek Kategorileri:**
+- Ana yemek seçenekleri (et, tavuk, balık, vejetaryen)
+- Salata bar ve mezeler
+- Tatlı ve içecek seçenekleri
+- Günlük özel menüler ve kampanyalar
+- Diyet ve sağlıklı beslenme alternatifleri
 
-📱 **Kullanıcı Deneyimi:**
-- Animasyonlu açılır panel ile smooth geçişler
-- 4 günlük menü planını tek ekranda görüntüleme
-- Kaydırılabilir liste ile kolay navigasyon
-- Menü dışına tıklayarak hızlı kapatma
+📈 **Akıllı Özellikler:**
+- Kişiselleştirilmiş öneri algoritması
+- Besin alerjisi uyarı sistemi
+- Yemek rezervasyon sistemi (yakında)
+- Sosyal medya paylaşım entegrasyonu
 </div>
 
 ---
@@ -223,7 +217,7 @@ MedipolApp, öğrencilerin kampüs yaşamlarını kolaylaştıran 17 ana ekranda
 
 ## 🏗️ Mimari
 
-### Teknoloji Yığını
+### Kullanılan Teknolojiler
 ```
 Frontend: Flutter 3.8.0+ with Dart
 State Management: Provider Pattern
@@ -246,68 +240,11 @@ lib/
 └── 📁 l10n/              # Yerelleştirme dosyaları (TR/EN)
 ```
 
-## 🚀 Başlangıç
 
-### Ön Koşullar
-- Flutter SDK 3.8.0 veya üzeri
-- Dart SDK 3.0.0 veya üzeri
-- Mobil geliştirme için Android Studio / Xcode
-- Firebase proje kurulumu
-- Google Maps API anahtarı
-- Microsoft Azure AD uygulaması
 
-### Kurulum
 
-1. **Repository'yi klonlayın**
-   ```bash
-   git clone https://github.com/yusufbilgic14/5Myusuffork.git
-   cd 5Myusuffork
-   ```
 
-2. **Bağımlılıkları yükleyin**
-   ```bash
-   flutter pub get
-   ```
 
-3. **Model sınıfları oluşturun**
-   ```bash
-   flutter pub run build_runner build --delete-conflicting-outputs
-   ```
-
-4. **Firebase'i yapılandırın**
-   - `google-services.json` dosyasını `android/app/` içine yerleştirin
-   - `GoogleService-Info.plist` dosyasını `ios/Runner/` içine yerleştirin
-
-5. **Microsoft MSAL'ı yapılandırın**
-   - `assets/msal_config.json` dosyasını Azure AD ayarlarınızla güncelleyin
-
-6. **Uygulamayı çalıştırın**
-   ```bash
-   flutter run
-   ```
-
-## 🔧 Geliştirme Komutları
-
-```bash
-# Kod analizi ve formatlama
-flutter analyze
-dart format .
-
-# Test etme
-flutter test
-flutter test --coverage
-
-# Build etme
-flutter build apk          # Android APK
-flutter build ios          # iOS build
-flutter build web          # Web build
-
-# İkon oluşturma
-flutter pub run flutter_launcher_icons
-
-# Build artifactlarını temizleme
-flutter clean
-```
 
 ## 📊 Anahtar Özellikler Detayı
 
@@ -352,22 +289,11 @@ graph LR
 - **State Management:** Provider Pattern
 - **Yerelleştirme:** 2 dil (Türkçe, İngilizce)
 
-## 🤝 Katkıda Bulunma
-
-Katkılarınızı memnuniyetle karşılıyoruz! Pull request'lerin nasıl gönderileceği, sorunların nasıl raporlanacağı ve projeye nasıl katkıda bulunulacağı hakkında ayrıntılar için katkıda bulunma rehberimizi görün.
 
 ## 📄 Lisans
 
 Bu proje MIT Lisansı altında lisanslanmıştır - ayrıntılar için [LICENSE](LICENSE) dosyasına bakın.
 
-## 🙏 Teşekkürler
-
-- Bu kapsamlı kampüs çözümünü geliştirme fırsatı için Medipol Üniversitesi'ne
-- Harika platformlar arası framework için Flutter takımına
-- Güçlü backend hizmetleri için Firebase takımına
-- Kurumsal kimlik doğrulama çözümü için Microsoft Azure takımına
-
----
 
 <div align="center">
   <strong>Medipol Üniversitesi Topluluğu için ❤️ ile yapıldı</strong>
