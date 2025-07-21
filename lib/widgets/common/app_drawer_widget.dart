@@ -10,6 +10,7 @@ import '../../screens/academic_calendar_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../../screens/home_screen.dart';
 import '../../constants/app_constants.dart';
+import '../../services/firebase_auth_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Uygulama drawer widget'ı - Tüm sayfalarda kullanılan ana drawer / App drawer widget - Main drawer used across all pages
@@ -17,6 +18,30 @@ class AppDrawerWidget extends StatelessWidget {
   final int currentPageIndex;
 
   const AppDrawerWidget({super.key, required this.currentPageIndex});
+
+  // Firebase'den kullanıcı adını al / Get user name from Firebase
+  String _getUserName(BuildContext context) {
+    final firebaseAuthService = FirebaseAuthService();
+    return firebaseAuthService.currentAppUser?.displayName ?? 
+           AppLocalizations.of(context)!.userName;
+  }
+
+  // Firebase'den kullanıcı bölümünü al / Get user department from Firebase
+  String _getUserDepartment(BuildContext context) {
+    final firebaseAuthService = FirebaseAuthService();
+    return firebaseAuthService.currentAppUser?.department ?? 
+           AppLocalizations.of(context)!.userDepartment;
+  }
+
+  // Firebase'den kullanıcı rolünü al / Get user role from Firebase
+  String _getUserGrade(BuildContext context) {
+    final firebaseAuthService = FirebaseAuthService();
+    final user = firebaseAuthService.currentAppUser;
+    if (user != null) {
+      return user.role; // This will return "Öğrenci", "Personel", etc.
+    }
+    return AppLocalizations.of(context)!.userGrade;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +247,7 @@ class AppDrawerWidget extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            AppLocalizations.of(context)!.userName,
+            _getUserName(context),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -231,7 +256,7 @@ class AppDrawerWidget extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            AppLocalizations.of(context)!.userDepartment,
+            _getUserDepartment(context),
             style: const TextStyle(
               color: Colors.white70,
               fontSize: 14,
@@ -240,7 +265,7 @@ class AppDrawerWidget extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            AppLocalizations.of(context)!.userGrade,
+            _getUserGrade(context),
             style: const TextStyle(
               color: Colors.white70,
               fontSize: 13,

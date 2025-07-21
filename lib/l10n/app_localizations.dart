@@ -62,8 +62,7 @@ import 'app_localizations_tr.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -71,8 +70,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -84,18 +82,17 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('tr'),
+    Locale('tr')
   ];
 
   /// No description provided for @appTitle.
@@ -419,14 +416,8 @@ abstract class AppLocalizations {
   /// No description provided for @feedback.
   ///
   /// In en, this message translates to:
-  /// **'Feedback & Request'**
-  String get feedback;
-
-  /// No description provided for @feedbackOnly.
-  ///
-  /// In en, this message translates to:
   /// **'Feedback'**
-  String get feedbackOnly;
+  String get feedback;
 
   /// No description provided for @quickStats.
   ///
@@ -1322,6 +1313,12 @@ abstract class AppLocalizations {
   /// **'No courses found for today.'**
   String get noCoursesToday;
 
+  /// No description provided for @noCoursesTodayMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'No courses are scheduled for today. You can add courses from the calendar section.'**
+  String get noCoursesTodayMessage;
+
   /// No description provided for @timelineView.
   ///
   /// In en, this message translates to:
@@ -1718,119 +1715,98 @@ abstract class AppLocalizations {
   /// **'Sunday'**
   String get sunday;
 
-  /// No description provided for @language.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get language;
-
-  /// No description provided for @languageDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Change the application language.'**
-  String get languageDesc;
-
   /// No description provided for @halicCampus.
+  ///
+  /// In en, this message translates to:
+  /// **'Haliç Campus'**
   String get halicCampus;
 
   /// No description provided for @halicCampusDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Campus; Medipol University Haliç Campus'**
   String get halicCampusDesc;
 
   /// No description provided for @bagcilarCampus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bağcılar Campus'**
   String get bagcilarCampus;
 
   /// No description provided for @bagcilarCampusDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Campus; University Hospital (Bağcılar Campus)'**
   String get bagcilarCampusDesc;
 
   /// No description provided for @healthResearchCenters.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Research Centers'**
   String get healthResearchCenters;
 
   /// No description provided for @healthResearchCentersDent.
+  ///
+  /// In en, this message translates to:
+  /// **'Health RC Dental Hospital'**
   String get healthResearchCentersDent;
 
   /// No description provided for @healthResearchCentersVatan.
+  ///
+  /// In en, this message translates to:
+  /// **'Health RC Vatan Clinic'**
   String get healthResearchCentersVatan;
 
   /// No description provided for @healthResearchCentersEsenler.
+  ///
+  /// In en, this message translates to:
+  /// **'Health RC Esenler Hospital'**
   String get healthResearchCentersEsenler;
 
   /// No description provided for @fax.
+  ///
+  /// In en, this message translates to:
+  /// **'Fax:'**
   String get fax;
 
   /// No description provided for @faxRectorate.
+  ///
+  /// In en, this message translates to:
+  /// **'Fax (Rectorate):'**
   String get faxRectorate;
 
   /// No description provided for @faxAccounting.
+  ///
+  /// In en, this message translates to:
+  /// **'Fax (Accounting):'**
   String get faxAccounting;
 
   /// No description provided for @faxFaculties.
+  ///
+  /// In en, this message translates to:
+  /// **'Fax (Faculties):'**
   String get faxFaculties;
 
   /// No description provided for @phoneInternal.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone (Internal):'**
   String get phoneInternal;
 
   /// No description provided for @website.
+  ///
+  /// In en, this message translates to:
+  /// **'Website:'**
   String get website;
 
   /// No description provided for @address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address:'**
   String get address;
-
-  /// Sign up related localizations
-  String get signUpTitle;
-  String get signUpSubtitle;
-  String get fullName;
-  String get fullNameHint;
-  String get fullNameRequired;
-  String get fullNameInvalid;
-  String get emailAddress;
-  String get emailHint;
-  String get emailRequired;
-  String get emailInvalid;
-  String get createPassword;
-  String get createPasswordHint;
-  String get passwordRequired;
-  String get passwordTooShort;
-  String get passwordTooWeak;
-  String get confirmPassword;
-  String get confirmPasswordHint;
-  String get confirmPasswordRequired;
-  String get passwordsDoNotMatch;
-  String get departmentOptional;
-  String get selectDepartment;
-  String get phoneOptional;
-  String get phoneHint;
-  String get phoneInvalid;
-  String get studentIdOptional;
-  String get studentIdHintSignup;
-  String get yearOfStudyOptional;
-  String get selectYearOfStudy;
-  String get birthDateOptional;
-  String get selectBirthDate;
-  String get genderOptional;
-  String get selectGender;
-  String get male;
-  String get female;
-  String get preferNotToSay;
-  String get termsAndConditions;
-  String get privacyPolicy;
-  String get agreeToTerms;
-  String get pleaseAcceptTerms;
-  String get createAccount;
-  String get alreadyHaveAccount;
-  String get signInHere;
-  String get dontHaveAccount;
-  String get signUpHere;
-  String get accountCreatedSuccessfully;
-  String get firstYear;
-  String get secondYear;
-  String get thirdYear;
-  String get fourthYear;
-  String get graduateStudent;
-  String get phdStudent;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -1839,26 +1815,25 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'tr'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'tr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'en':
-      return AppLocalizationsEn();
-    case 'tr':
-      return AppLocalizationsTr();
+    case 'en': return AppLocalizationsEn();
+    case 'tr': return AppLocalizationsTr();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

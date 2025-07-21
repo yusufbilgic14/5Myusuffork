@@ -203,6 +203,7 @@
   "instructorMehmetOzkan": "Dr. Mehmet Özkan",
   "instructorSarahJohnson": "Ms. Sarah Johnson",
   "noCoursesToday": "Bugün için ders bulunamadı.",
+  "noCoursesTodayMessage": "Bugün için herhangi bir ders planlanmamış. Takvim bölümünden ders ekleyebilirsiniz.",
   "timelineView": "Zaman Çizelgesi Görünümü",
   "monthView": "Ay Görünümü",
   "monthlyCalendar": "Aylık Takvim",

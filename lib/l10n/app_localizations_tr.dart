@@ -15,9 +15,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get loginTitle => 'Giriş Yap';
 
   @override
-  String get signUpTitle => 'Hesap Oluştur';
-
-  @override
   String get loginSubtitle => 'Öğrenci bilgilerinizle giriş yapın';
 
   @override
@@ -49,12 +46,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get languageEnglish => 'İngilizce';
-
-  @override
-  String get language => 'Dil';
-
-  @override
-  String get languageDesc => 'Uygulama dilini değiştirin.';
 
   @override
   String get homeWelcome => 'Hoş geldin,';
@@ -129,8 +120,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get logout => 'Çıkış Yap';
 
   @override
-  String get logoutConfirm =>
-      'Hesabınızdan çıkış yapmak istediğinizden emin misiniz?';
+  String get logoutConfirm => 'Hesabınızdan çıkış yapmak istediğinizden emin misiniz?';
 
   @override
   String get cancel => 'İptal';
@@ -178,10 +168,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inbox => 'Gelen Kutusu';
 
   @override
-  String get feedback => 'Geri Bildirim ve Talep';
-
-  @override
-  String get feedbackOnly => 'Geri Bildirim';
+  String get feedback => 'Geri Bildirim';
 
   @override
   String get quickStats => 'Hızlı İstatistikler';
@@ -235,8 +222,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get helpSupportDesc => 'SSS ve iletişim bilgileri';
 
   @override
-  String get campusTransportDesc =>
-      'Aşağıdaki hat ve güzergahlar, İstanbul Medipol Üniversitesi Kavacık Güney ve Kuzey Kampüsleri’ne ulaşım içindir.';
+  String get campusTransportDesc => 'Aşağıdaki hat ve güzergahlar, İstanbul Medipol Üniversitesi Kavacık Güney ve Kuzey Kampüsleri’ne ulaşım içindir.';
 
   @override
   String get europeanSide => 'Avrupa Yakası';
@@ -264,8 +250,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noEventsFound => 'Etkinlik Bulunamadı';
 
   @override
-  String get noEventsFilter =>
-      'Seçili filtrelere uygun akademik takvim etkinliği bulunamadı.';
+  String get noEventsFilter => 'Seçili filtrelere uygun akademik takvim etkinliği bulunamadı.';
 
   @override
   String get clearFilters => 'Filtreleri Temizle';
@@ -289,29 +274,25 @@ class AppLocalizationsTr extends AppLocalizations {
   String get contact => 'İletişim';
 
   @override
-  String get contactDesc =>
-      'Her türlü soru, görüş ve destek talepleriniz için aşağıdaki iletişim kanallarını kullanabilirsiniz.';
+  String get contactDesc => 'Her türlü soru, görüş ve destek talepleriniz için aşağıdaki iletişim kanallarını kullanabilirsiniz.';
 
   @override
   String get kavacikNorth => 'Kavacık Kuzey Yerleşkesi';
 
   @override
-  String get kavacikNorthDesc =>
-      'Yerleşke; Medipol Üniversitesi Kavacık (Ana Yerleşke Rektörlük)';
+  String get kavacikNorthDesc => 'Yerleşke; Medipol Üniversitesi Kavacık (Ana Yerleşke Rektörlük)';
 
   @override
   String get feedbackTitle => 'Görüşleriniz Bizim İçin Değerli';
 
   @override
-  String get feedbackDesc =>
-      'Medipol uygulamasını daha iyi hale getirmek için görüşlerinizi ve önerilerinizi bizimle paylaşın.';
+  String get feedbackDesc => 'Medipol uygulamasını daha iyi hale getirmek için görüşlerinizi ve önerilerinizi bizimle paylaşın.';
 
   @override
   String get feedbackDetail => 'Detaylı Açıklama';
 
   @override
-  String get feedbackDetailHint =>
-      'Geri bildiriminizi detaylı olarak açıklayın...';
+  String get feedbackDetailHint => 'Geri bildiriminizi detaylı olarak açıklayın...';
 
   @override
   String get feedbackRequired => 'Açıklama gerekli';
@@ -347,19 +328,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get select_feedback_category => 'Geri Bildirim Kategorisi Seçin';
 
   @override
-  String get rate_and_comment_app =>
-      'Uygulamayı puanlamak ve yorum yapmak için tıklayınız';
+  String get rate_and_comment_app => 'Uygulamayı puanlamak ve yorum yapmak için tıklayınız';
 
   @override
-  String get redirect_to_app_store =>
-      'Uygulama mağazasına yönlendirileceksiniz...';
+  String get redirect_to_app_store => 'Uygulama mağazasına yönlendirileceksiniz...';
 
   @override
   String get anonymous_feedback => 'Anonim Geri Bildirim';
 
   @override
-  String get keep_my_identity_private =>
-      'Kimliğim gizli kalsın, anonim olarak geri bildirim göndermek istiyorum.';
+  String get keep_my_identity_private => 'Kimliğim gizli kalsın, anonim olarak geri bildirim göndermek istiyorum.';
 
   @override
   String get relevant_department => 'İlgili Departman';
@@ -401,8 +379,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get detailed_description => 'Detaylı Açıklama';
 
   @override
-  String get describe_your_feedback =>
-      'Geri bildiriminizi detaylı olarak açıklayın...';
+  String get describe_your_feedback => 'Geri bildiriminizi detaylı olarak açıklayın...';
 
   @override
   String get description_required => 'Açıklama gerekli';
@@ -429,20 +406,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get file_removed => 'Dosya kaldırıldı:';
 
   @override
-  String get please_select_feedback_or_request_type =>
-      'Lütfen talep veya geri bildirim türünü seçin';
+  String get please_select_feedback_or_request_type => 'Lütfen talep veya geri bildirim türünü seçin';
 
   @override
-  String get please_select_request_category =>
-      'Lütfen bir talep kategorisi seçin';
+  String get please_select_request_category => 'Lütfen bir talep kategorisi seçin';
 
   @override
-  String get please_select_feedback_category =>
-      'Lütfen bir geri bildirim kategorisi seçin';
+  String get please_select_feedback_category => 'Lütfen bir geri bildirim kategorisi seçin';
 
   @override
-  String get your_feedback_submitted_successfully =>
-      'Geri bildiriminiz başarıyla gönderildi! Teşekkür ederiz.';
+  String get your_feedback_submitted_successfully => 'Geri bildiriminiz başarıyla gönderildi! Teşekkür ederiz.';
 
   @override
   String get clear_form => 'Formu Temizle';
@@ -451,8 +424,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get your_feedback_is_valuable => 'Görüşleriniz Bizim İçin Değerli';
 
   @override
-  String get share_your_opinions_and_suggestions_for_better_app =>
-      'Medipol uygulamasını daha iyi hale getirmek için görüşlerinizi ve önerilerinizi bizimle paylaşın.';
+  String get share_your_opinions_and_suggestions_for_better_app => 'Medipol uygulamasını daha iyi hale getirmek için görüşlerinizi ve önerilerinizi bizimle paylaşın.';
 
   @override
   String get submitting => 'Gönderiliyor...';
@@ -536,8 +508,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cumulativeGpa => 'Genel GPA';
 
   @override
-  String get pdfReportWillBeGenerated =>
-      'Bu dönem için PDF raporu oluşturulacak...';
+  String get pdfReportWillBeGenerated => 'Bu dönem için PDF raporu oluşturulacak...';
 
   @override
   String get pdfFeatureWillBeAddedSoon => 'PDF özelliği yakında eklenecektir.';
@@ -546,8 +517,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ok => 'Tamam';
 
   @override
-  String get overallTranscriptForAllSemestersWillBePrepared =>
-      'Tüm dönemler için genel transcript hazırlanacak...';
+  String get overallTranscriptForAllSemestersWillBePrepared => 'Tüm dönemler için genel transcript hazırlanacak...';
 
   @override
   String get totalGpa => 'Toplam GPA';
@@ -562,8 +532,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get courses => 'ders';
 
   @override
-  String get transcriptFeatureWillBeAddedSoon =>
-      'Transcript özelliği yakında eklenecektir.';
+  String get transcriptFeatureWillBeAddedSoon => 'Transcript özelliği yakında eklenecektir.';
 
   @override
   String get refreshingGrades => 'Notlar yenileniyor...';
@@ -575,19 +544,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get qrScanner => 'QR Kod Tarayıcısı';
 
   @override
-  String get cameraPermissionPermanentlyDenied =>
-      'Kamera izni kalıcı olarak reddedildi. Ayarlardan izin verin.';
+  String get cameraPermissionPermanentlyDenied => 'Kamera izni kalıcı olarak reddedildi. Ayarlardan izin verin.';
 
   @override
   String get cameraPermissionRequired => 'Kamera İzni Gerekli';
 
   @override
-  String get enableCameraPermissionInSettings =>
-      'Ayarlardan kamera iznini etkinleştirin.';
+  String get enableCameraPermissionInSettings => 'Ayarlardan kamera iznini etkinleştirin.';
 
   @override
-  String get needCameraPermissionToScan =>
-      'QR kod taramak için kamera iznine ihtiyacımız var.';
+  String get needCameraPermissionToScan => 'QR kod taramak için kamera iznine ihtiyacımız var.';
 
   @override
   String get startingCamera => 'Kamera başlatılıyor...';
@@ -623,8 +589,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get googleMapsNotLoaded => 'Google Maps yüklenemedi.';
 
   @override
-  String get checkApiKeyOrInternet =>
-      'API anahtarı yapılandırmasını kontrol edin veya internet bağlantınızı doğrulayın.';
+  String get checkApiKeyOrInternet => 'API anahtarı yapılandırmasını kontrol edin veya internet bağlantınızı doğrulayın.';
 
   @override
   String get tryAgain => 'Tekrar Dene';
@@ -657,6 +622,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noCoursesToday => 'Bugün için ders bulunamadı.';
 
   @override
+  String get noCoursesTodayMessage => 'Bugün için herhangi bir ders planlanmamış. Takvim bölümünden ders ekleyebilirsiniz.';
+
+  @override
   String get timelineView => 'Zaman Çizelgesi Görünümü';
 
   @override
@@ -678,8 +646,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get scanQr => 'QR Kodu Tarat';
 
   @override
-  String get qrInfo =>
-      'Bu QR kodu kampüs giriş tarayıcılarında kullanın. Güvenlik için kod otomatik olarak yenilenir.';
+  String get qrInfo => 'Bu QR kodu kampüs giriş tarayıcılarında kullanın. Güvenlik için kod otomatik olarak yenilenir.';
 
   @override
   String get secureCampusAccess => 'Güvenli kampüs erişimi';
@@ -700,8 +667,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inboxSender1 => 'Öğrenci İşleri';
 
   @override
-  String get inboxContent1 =>
-      'Sayın Elif Yılmaz,\n\n24.06.2025 tarihinde talepte bulunduğunuz öğrenci belgesi hazırlanmıştır. \n\nBelgenizi aşağıdaki şekillerde temin edebilirsiniz:\n• Öğrenci İşleri ofisimizden şahsen teslim alabilirsiniz\n• Kargo ile adresinize göndermek için ek ücret karşılığında başvurabilirsiniz\n\nOfis saatleri: Pazartesi-Cuma 09:00-17:00\n\nSaygılarımızla,\nÖğrenci İşleri Müdürlüğü';
+  String get inboxContent1 => 'Sayın Elif Yılmaz,\n\n24.06.2025 tarihinde talepte bulunduğunuz öğrenci belgesi hazırlanmıştır. \n\nBelgenizi aşağıdaki şekillerde temin edebilirsiniz:\n• Öğrenci İşleri ofisimizden şahsen teslim alabilirsiniz\n• Kargo ile adresinize göndermek için ek ücret karşılığında başvurabilirsiniz\n\nOfis saatleri: Pazartesi-Cuma 09:00-17:00\n\nSaygılarımızla,\nÖğrenci İşleri Müdürlüğü';
 
   @override
   String get inboxSubject2 => 'Burs Başvuru Sonucu';
@@ -710,8 +676,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inboxSender2 => 'Burs ve Yardım İşleri';
 
   @override
-  String get inboxContent2 =>
-      'Sayın Elif Yılmaz,\n\n2024-2025 Akademik Yılı Başarı Bursu başvurunuz değerlendirilmiş olup, başvurunuzun KABUL edildiğini bildiririz.\n\nBurs Detayları:\n• Burs Türü: Başarı Bursu (%25)\n• Geçerli Dönem: 2025-2026 Güz Dönemi\n• Ödeme Tarihi: Kayıt yenileme sonrası\n\nSaygılarımızla,\nBurs ve Yardım İşleri';
+  String get inboxContent2 => 'Sayın Elif Yılmaz,\n\n2024-2025 Akademik Yılı Başarı Bursu başvurunuz değerlendirilmiş olup, başvurunuzun KABUL edildiğini bildiririz.\n\nBurs Detayları:\n• Burs Türü: Başarı Bursu (%25)\n• Geçerli Dönem: 2025-2026 Güz Dönemi\n• Ödeme Tarihi: Kayıt yenileme sonrası\n\nSaygılarımızla,\nBurs ve Yardım İşleri';
 
   @override
   String get requestCategoryAcademicSupport => 'Akademik Destek';
@@ -859,187 +824,46 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get halicCampus => 'Haliç Yerleşkesi';
+
   @override
-  String get halicCampusDesc =>
-      'Yerleşke; Medipol Üniversitesi Haliç Yerleşkesi';
+  String get halicCampusDesc => 'Yerleşke; Medipol Üniversitesi Haliç Yerleşkesi';
+
   @override
   String get bagcilarCampus => 'Bağcılar Yerleşkesi';
+
   @override
-  String get bagcilarCampusDesc =>
-      'Yerleşke; Üniversite Hastanesi (Bağcılar Yerleşkesi)';
+  String get bagcilarCampusDesc => 'Yerleşke; Üniversite Hastanesi (Bağcılar Yerleşkesi)';
+
   @override
   String get healthResearchCenters => 'Sağlık Uygulama Araştırma Merkezleri';
+
   @override
   String get healthResearchCentersDent => 'Sağlık UA Merkezi Diş Hastanesi';
+
   @override
   String get healthResearchCentersVatan => 'Sağlık UA Merkezi Vatan Kliniği';
+
   @override
-  String get healthResearchCentersEsenler =>
-      'Sağlık UA Merkezi Esenler Hastanesi';
+  String get healthResearchCentersEsenler => 'Sağlık UA Merkezi Esenler Hastanesi';
+
   @override
   String get fax => 'Faks:';
+
   @override
   String get faxRectorate => 'Faks (Rektörlük):';
+
   @override
   String get faxAccounting => 'Faks (Muhasebe):';
+
   @override
   String get faxFaculties => 'Faks (Fakülteler):';
+
   @override
   String get phoneInternal => 'Telefon (Dahili):';
+
   @override
   String get website => 'İnternet Sitesi:';
+
   @override
   String get address => 'Adres:';
-
-  // Sign up related translations
-
-  @override
-  String get signUpSubtitle => 'Yeni hesabınızı oluşturun';
-
-  @override
-  String get fullName => 'Ad Soyad';
-
-  @override
-  String get fullNameHint => 'Adınızı ve soyadınızı girin';
-
-  @override
-  String get fullNameRequired => 'Ad soyad gerekli';
-
-  @override
-  String get fullNameInvalid => 'Lütfen ad ve soyadınızı girin';
-
-  @override
-  String get emailAddress => 'Email Adresi';
-
-  @override
-  String get emailHint => 'ornek@email.com';
-
-  @override
-  String get emailRequired => 'Email adresi gerekli';
-
-  @override
-  String get emailInvalid => 'Geçerli bir email adresi girin';
-
-  @override
-  String get createPassword => 'Şifre Oluştur';
-
-  @override
-  String get createPasswordHint => 'Güçlü bir şifre oluşturun';
-
-  @override
-  String get passwordRequired => 'Şifre gerekli';
-
-  @override
-  String get passwordTooShort => 'Şifre en az 8 karakter olmalı';
-
-  @override
-  String get passwordTooWeak => 'Şifre büyük harf, küçük harf ve rakam içermeli';
-
-  @override
-  String get confirmPassword => 'Şifre Tekrar';
-
-  @override
-  String get confirmPasswordHint => 'Şifrenizi tekrar girin';
-
-  @override
-  String get confirmPasswordRequired => 'Şifre tekrarı gerekli';
-
-  @override
-  String get passwordsDoNotMatch => 'Şifreler eşleşmiyor';
-
-  @override
-  String get departmentOptional => 'Bölüm (Opsiyonel)';
-
-  @override
-  String get selectDepartment => 'Bölümünüzü seçin';
-
-  @override
-  String get phoneOptional => 'Telefon (İsteğe Bağlı)';
-
-  @override
-  String get phoneHint => '+90 5xx xxx xx xx';
-
-  @override
-  String get phoneInvalid => 'Geçerli bir telefon numarası girin';
-
-  @override
-  String get studentIdOptional => 'Öğrenci No (İsteğe Bağlı)';
-
-  @override
-  String get studentIdHintSignup => '2024520001';
-
-  @override
-  String get yearOfStudyOptional => 'Sınıf (İsteğe Bağlı)';
-
-  @override
-  String get selectYearOfStudy => 'Sınıfınızı seçin';
-
-  @override
-  String get birthDateOptional => 'Doğum Tarihi (İsteğe Bağlı)';
-
-  @override
-  String get selectBirthDate => 'Doğum tarihinizi seçin';
-
-  @override
-  String get genderOptional => 'Cinsiyet (İsteğe Bağlı)';
-
-  @override
-  String get selectGender => 'Cinsiyetinizi seçin';
-
-  @override
-  String get male => 'Erkek';
-
-  @override
-  String get female => 'Kadın';
-
-  @override
-  String get preferNotToSay => 'Belirtmek istemiyorum';
-
-  @override
-  String get termsAndConditions => 'Kullanım Şartları';
-
-  @override
-  String get privacyPolicy => 'Gizlilik Politikası';
-
-  @override
-  String get agreeToTerms => 'Medipol Uygulaması Kullanım Şartları ve Gizlilik Politikasını okuduğumu ve kabul ettiğimi onaylarım.';
-
-  @override
-  String get pleaseAcceptTerms => 'Lütfen kullanım şartlarını kabul edin';
-
-  @override
-  String get createAccount => 'Hesap Oluştur';
-
-  @override
-  String get alreadyHaveAccount => 'Zaten hesabınız var mı?';
-
-  @override
-  String get signInHere => 'Giriş Yap';
-
-  @override
-  String get dontHaveAccount => 'Hesabınız yok mu?';
-
-  @override
-  String get signUpHere => 'Kayıt Ol';
-
-  @override
-  String get accountCreatedSuccessfully => 'Hesap başarıyla oluşturuldu! Lütfen email adresinizi doğrulayın.';
-
-  @override
-  String get firstYear => '1. Sınıf';
-
-  @override
-  String get secondYear => '2. Sınıf';
-
-  @override
-  String get thirdYear => '3. Sınıf';
-
-  @override
-  String get fourthYear => '4. Sınıf';
-
-  @override
-  String get graduateStudent => 'Yüksek Lisans';
-
-  @override
-  String get phdStudent => 'Doktora';
 }

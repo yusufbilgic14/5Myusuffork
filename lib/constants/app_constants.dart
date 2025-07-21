@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/firebase_auth_service.dart';
 
 /// Uygulama genelinde kullanılan sabitler / App-wide constants
 class AppConstants {
@@ -44,7 +45,10 @@ class AppConstants {
   static const Duration animationSlow = Duration(milliseconds: 500);
 
   // Kullanıcı bilgileri / User info
-  static const String userName = 'Elif Yılmaz';
+  static String get userName {
+    final firebaseAuthService = FirebaseAuthService();
+    return firebaseAuthService.currentAppUser?.displayName ?? 'Elif Yılmaz';
+  }
   static const String userRole = 'Öğrenci';
   static const String userDepartment = 'Yönetim Bilişim Sistemleri';
   static const String userGrade = '3. Sınıf';

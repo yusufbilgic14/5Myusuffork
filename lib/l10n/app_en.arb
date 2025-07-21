@@ -203,6 +203,7 @@
   "instructorMehmetOzkan": "Dr. Mehmet Özkan",
   "instructorSarahJohnson": "Ms. Sarah Johnson",
   "noCoursesToday": "No courses found for today.",
+  "noCoursesTodayMessage": "No courses are scheduled for today. You can add courses from the calendar section.",
   "timelineView": "Timeline View",
   "monthView": "Month View",
   "monthlyCalendar": "Monthly Calendar",

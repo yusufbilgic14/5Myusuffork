@@ -5,11 +5,11 @@ import '../themes/app_themes.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import 'inbox_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/common/app_bar_widget.dart';
+import '../services/user_courses_service.dart';
+import '../models/user_course_model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,6 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _autoAdvanceTimer;
   bool _showNotifications = false;
   bool _showCafeteriaMenu = false;
+  
+  // Firebase service and user courses
+  final UserCoursesService _coursesService = UserCoursesService();
+  List<UserCourse> _todaysUserCourses = [];
+  bool _isLoadingCourses = true;
+  StreamSubscription<List<UserCourse>>? _coursesSubscription;
 
   // Duyuru listesi
   static const List<Map<String, String>> _announcements = [
@@ -153,57 +159,20 @@ class _HomeScreenState extends State<HomeScreen> {
     },
   ];
 
-  // Günün dersleri
-  static final List<Map<String, dynamic>> _todaysCourses = [
-    {
-      'name': 'Visual Programming',
-      'code': '3B06',
-      'time': '08:00 - 10:00',
-      'instructor': 'Dr. Ahmet Yılmaz',
-      'room': 'B201',
-      'type': 'lecture',
-      'color': AppConstants.primaryColor,
-    },
-    {
-      'name': 'OOP Quiz-1',
-      'code': '',
-      'time': '09:00 - 09:30',
-      'instructor': 'Dr. Mehmet Özkan',
-      'room': 'C105',
-      'type': 'quiz',
-      'color': Colors.orange[700]!,
-    },
-    {
-      'name': 'Database Management',
-      'code': '4A12',
-      'time': '10:00 - 12:00',
-      'instructor': 'Prof. Dr. Fatma Kara',
-      'room': 'A301',
-      'type': 'lecture',
-      'color': Colors.green[700]!,
-    },
-    {
-      'name': 'Software Engineering',
-      'code': '5C08',
-      'time': '14:00 - 16:00',
-      'instructor': 'Doç. Dr. Ali Demir',
-      'room': 'B105',
-      'type': 'lecture',
-      'color': Colors.purple[700]!,
-    },
-  ];
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
     _startAutoAdvance();
+    _loadTodaysCourses();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
     _autoAdvanceTimer?.cancel();
+    _coursesSubscription?.cancel();
     super.dispose();
   }
 
@@ -232,6 +201,37 @@ class _HomeScreenState extends State<HomeScreen> {
       index,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
+    );
+  }
+
+  /// Load today's courses from Firebase
+  void _loadTodaysCourses() {
+    if (!_coursesService.isAuthenticated) {
+      setState(() {
+        _isLoadingCourses = false;
+        _todaysUserCourses = [];
+      });
+      return;
+    }
+
+    _coursesSubscription = _coursesService.watchTodaysCourses().listen(
+      (courses) {
+        if (mounted) {
+          setState(() {
+            _todaysUserCourses = courses;
+            _isLoadingCourses = false;
+          });
+        }
+      },
+      onError: (error) {
+        debugPrint('❌ HomeScreen: Error loading today\'s courses - $error');
+        if (mounted) {
+          setState(() {
+            _isLoadingCourses = false;
+            _todaysUserCourses = [];
+          });
+        }
+      },
     );
   }
 
@@ -638,25 +638,86 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 16),
 
         // Ders kartları
-        ...List.generate(_todaysCourses.length, (index) {
-          final course = _todaysCourses[index];
-          return _buildCourseCard(context, course, index);
-        }),
+        if (_isLoadingCourses)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (_todaysUserCourses.isEmpty)
+          _buildEmptyCoursesMessage(context)
+        else
+          ...List.generate(_todaysUserCourses.length, (index) {
+            final course = _todaysUserCourses[index];
+            return _buildUserCourseCard(context, course, index);
+          }),
       ],
     );
   }
 
-  // Ders kartı
-  Widget _buildCourseCard(
+  // Boş dersler mesajı
+  Widget _buildEmptyCoursesMessage(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: AppThemes.getSurfaceColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.calendar_today_outlined,
+              size: 48,
+              color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.noCoursesToday,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppThemes.getTextColor(context),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.noCoursesTodayMessage,
+              style: TextStyle(
+                fontSize: 14,
+                color: AppThemes.getSecondaryTextColor(context),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Firebase'den gelen UserCourse için ders kartı
+  Widget _buildUserCourseCard(
     BuildContext context,
-    Map<String, dynamic> course,
+    UserCourse course,
     int index,
   ) {
-    final isQuiz = course['type'] == 'quiz';
+    final todaysSchedules = course.getTodaysSchedules();
+    final firstSchedule = todaysSchedules.isNotEmpty ? todaysSchedules.first : null;
+
+    if (firstSchedule == null) return const SizedBox.shrink();
 
     return GestureDetector(
       onTap: () {
-        _showCourseDetails(context, course);
+        _showUserCourseDetails(context, course);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -672,140 +733,141 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-            // Zaman göstergesi
-            SizedBox(
-              width: 50,
-              child: Text(
-                course['time'].split(' - ')[0],
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: AppThemes.getSecondaryTextColor(context),
+              // Zaman göstergesi
+              SizedBox(
+                width: 50,
+                child: Text(
+                  firstSchedule.startTime,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppThemes.getSecondaryTextColor(context),
+                  ),
                 ),
               ),
-            ),
 
-            // Renk çubuğu
-            Container(
-              width: 3,
-              height: 50,
-              decoration: BoxDecoration(
-                color: course['color'],
-                borderRadius: BorderRadius.circular(2),
+              // Renk çubuğu
+              Container(
+                width: 3,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: course.colorAsColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
 
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
 
-            // Ders ikonu
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: course['color'].withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+              // Ders ikonu
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: course.colorAsColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.book_outlined,
+                  color: course.colorAsColor,
+                  size: 20,
+                ),
               ),
-              child: Icon(
-                isQuiz ? Icons.quiz_outlined : Icons.book_outlined,
-                color: course['color'],
-                size: 20,
-              ),
-            ),
 
-            const SizedBox(width: 12),
+              const SizedBox(width: 12),
 
-            // Ders bilgileri
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    course['name'],
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppThemes.getTextColor(context),
+              // Ders bilgileri
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      course.displayName,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: AppThemes.getTextColor(context),
+                      ),
                     ),
-                  ),
-                  if (course['code'].isNotEmpty) ...[
                     const SizedBox(height: 2),
                     Text(
-                      course['code'],
+                      course.courseCode,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: course['color'],
+                        color: course.colorAsColor,
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.person_outline,
-                        size: 12,
-                        color: AppThemes.getSecondaryTextColor(context),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          course['instructor'],
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.person_outline,
+                          size: 12,
+                          color: AppThemes.getSecondaryTextColor(context),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            course.instructor.name,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppThemes.getSecondaryTextColor(context),
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 12,
+                          color: AppThemes.getSecondaryTextColor(context),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          firstSchedule.room,
                           style: TextStyle(
                             fontSize: 12,
                             color: AppThemes.getSecondaryTextColor(context),
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 12,
-                        color: AppThemes.getSecondaryTextColor(context),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        course['room'],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppThemes.getSecondaryTextColor(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Süre bilgisi
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: course['color'].withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                course['time'],
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: course['color'],
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+
+              // Süre bilgisi
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: course.colorAsColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  firstSchedule.timeString,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: course.colorAsColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 
-  void _showCourseDetails(BuildContext context, Map<String, dynamic> course) {
+  void _showUserCourseDetails(BuildContext context, UserCourse course) {
     final theme = Theme.of(context);
+    final todaysSchedules = course.getTodaysSchedules();
+    final firstSchedule = todaysSchedules.isNotEmpty ? todaysSchedules.first : null;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -822,22 +884,21 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Row(
               children: [
-                if (course['code'].isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: course['color'],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      course['code'],
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: course.colorAsColor,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    course.courseCode,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
                   ),
+                ),
                 const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.pop(context),
@@ -847,7 +908,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              course['name'],
+              course.displayName,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -856,28 +917,37 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildDetailRow(
               Icons.person_rounded,
               'Instructor',
-              course['instructor'],
+              course.instructor.name,
               theme,
             ),
-            const SizedBox(height: 16),
-            _buildDetailRow(
-              Icons.location_on_rounded,
-              'Room',
-              course['room'],
-              theme,
-            ),
-            const SizedBox(height: 16),
-            _buildDetailRow(
-              Icons.access_time_rounded,
-              'Time',
-              course['time'],
-              theme,
-            ),
+            if (firstSchedule != null) ...[
+              const SizedBox(height: 16),
+              _buildDetailRow(
+                Icons.location_on_rounded,
+                'Room',
+                firstSchedule.room,
+                theme,
+              ),
+              const SizedBox(height: 16),
+              _buildDetailRow(
+                Icons.access_time_rounded,
+                'Time',
+                firstSchedule.timeString,
+                theme,
+              ),
+            ],
             const SizedBox(height: 16),
             _buildDetailRow(
               Icons.school_rounded,
-              'Type',
-              course['type'] == 'quiz' ? 'Quiz' : 'Lecture',
+              'Credits',
+              '${course.credits} Credits',
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.domain_rounded,
+              'Department',
+              course.department,
               theme,
             ),
             const SizedBox(height: 24),
