@@ -1,7 +1,7 @@
 # 🎓 Medipol Yanında - Üniversite Kampüs Uygulaması by 5MASKETEERS
 
 <div align="center">
-  <img src="assets/images/app_icon.png" alt="Medipol Üniversitesi Logo" width="200"/>
+  <img src="assets/images/medipol_logo.png" alt="Medipol Üniversitesi Logo" width="200"/>
   <!-- 5 MASKETEERS logosu eklendi -->
   <img src="assets/images/5MASKETEERS.png" alt="5 MASKETEERS Logo" width="200"/>
   <br><br>
@@ -16,11 +16,11 @@
 
 ## 📱 Uygulama Hakkında
 
-MedipolApp, Medipol Üniversitesi öğrencilerinin tüm kampüs deneyimini parmaklarının ucuna getiren özellik açısından zengin bir üniversite kampüs uygulamasıdır. Akademik takvimden kafeterya menülerine, QR erişim kodlarından interaktif kampüs haritalarına kadar bu uygulama üniversite yaşamı için dijital bir yardımcı olarak hizmet vermektedir.
+Medipol Yanında, Medipol Üniversitesi öğrencilerinin tüm kampüs deneyimini parmaklarının ucuna getiren özellik açısından zengin bir üniversite kampüs uygulamasıdır. Akademik takvimden kafeterya menülerine, QR erişim kodlarından interaktif kampüs haritalarına kadar bu uygulama üniversite yaşamı için dijital bir yardımcı olarak hizmet vermektedir.
 
 ## 🌟 Ana Uygulama Ekranları ve Özellikleri
 
-MedipolApp, öğrencilerin kampüs yaşamlarını kolaylaştıran 17 ana ekrandan oluşur. Her ekran özenle tasarlanmış ve kullanıcı deneyimini ön planda tutarak geliştirilmiştir.
+Medipol Yanında, öğrencilerin kampüs yaşamlarını kolaylaştıran 17 ana ekrandan oluşur. Her ekran özenle tasarlanmış ve kullanıcı deneyimini ön planda tutarak geliştirilmiştir.
 
 ---
 
@@ -271,21 +271,6 @@ lib/
     - `lib/providers/authentication_provider.dart` (auth state yönetimi)
   - Firebase projesi: `medipolapp-e3b4f` (europe-west3)
   - Tüm konfigürasyon dosyaları versiyonlanmış ve dokümante edilmiş.
-
-### 🛠️ Geliştirici Komutları
-```bash
-# JSON serileştirme kodunu yeniden üret
-flutter pub run build_runner build --delete-conflicting-outputs
-
-# Temizlik ve bağımlılıkları yeniden yükle
-flutter clean && flutter pub get
-
-# Belirli dosyada kod analizi
-flutter analyze lib/services/firebase_auth_service.dart
-
-# Uygulamayı debug modda çalıştır
-flutter run
-```
 
 ### 📈 Gelecek Geliştirmeler
 - Firestore güvenlik kurallarının prod ortamına alınması
