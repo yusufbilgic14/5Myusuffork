@@ -92,7 +92,10 @@ class _QRAccessScreenState extends State<QRAccessScreen> {
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
           tooltip: 'Menü',
         ),
-        centerTitle: true,
+        centerTitle: false,
+        actions: [
+          SizedBox(width: 56), // Balance the leading icon
+        ],
       ),
 
       // Ana sayfa drawer'ı / Main drawer

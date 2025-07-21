@@ -463,7 +463,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       width: 140,
       padding: const EdgeInsets.all(
         AppConstants.paddingSmall + 2,
-      ), // Reduced padding
+      ), // Restored original padding
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
         borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
@@ -473,8 +473,8 @@ class _ProfileScreenState extends State<ProfileScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 28, // Reduced from 32 to 28
-            height: 28, // Reduced from 32 to 28
+            width: 28, // Restored to 28
+            height: 28, // Restored to 28
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -482,14 +482,14 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: Icon(
               icon,
               color: color,
-              size: 18, // Reduced from 20 to 18
+              size: 18, // Restored to 18
             ),
           ),
-          const SizedBox(height: 4), // Reduced from 6 to 4
+          const SizedBox(height: 4), // Restored spacing
           Text(
             value,
             style: TextStyle(
-              fontSize: 16, // Reduced from 18 to 16
+              fontSize: 16, // Restored font size
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -499,7 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 10, // Reduced from 11 to 10
+              fontSize: 10, // Restored font size
               color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
@@ -562,8 +562,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.language, color: AppConstants.getIconColor(context)),
-                  Icon(Icons.keyboard_arrow_down, color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                  Icon(Icons.keyboard_arrow_down, color: AppConstants.getIconColor(context),),
                 ],
               ),
             ),
@@ -672,7 +671,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       trailing: Icon(
         Icons.arrow_forward_ios,
         size: 16,
-        color: Colors.grey[400],
+        color: AppConstants.getIconColor(context),
       ),
       onTap: onTap,
     );
