@@ -230,10 +230,10 @@ Localization: Flutter i18n with ARB files
 ### Proje Yapısı
 ```
 lib/
-├── 📁 constants/          # Uygulama genelinde sabitler ve konfigürasyon
-├── 📁 models/             # JSON serileştirme ile veri modelleri
+├── 📁 constants/          # Uygulama genelinde sabit değerler ve konfigürasyonlar
+├── 📁 models/             # JSON modelleri
 ├── 📁 providers/          # State management (Auth, Theme, Language)
-├── 📁 screens/            # 17 özellik ekranı
+├── 📁 screens/            # Uygulama ekranları
 ├── 📁 services/           # İş mantığı ve API servisleri
 ├── 📁 widgets/            # Yeniden kullanılabilir UI bileşenleri
 ├── 📁 themes/             # Açık/Karanlık tema tanımları
