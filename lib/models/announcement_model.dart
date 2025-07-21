@@ -409,9 +409,7 @@ class TargetAudienceModel {
   Map<String, dynamic> toJson() => _$TargetAudienceModelToJson(this);
 
   /// Herkese açık hedef kitle / Public target audience
-  factory TargetAudienceModel.public() {
-    return const TargetAudienceModel(roles: ['all']);
-  }
+  static const TargetAudienceModel public = TargetAudienceModel(roles: ['all']);
 
   /// Öğrencilere özel hedef kitle / Students-only target audience
   factory TargetAudienceModel.studentsOnly({

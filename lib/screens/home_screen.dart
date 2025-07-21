@@ -8,7 +8,6 @@ import 'inbox_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
-import 'cafeteria_menu_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/common/app_bar_widget.dart';
 
@@ -27,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _showCafeteriaMenu = false;
 
   // Duyuru listesi
-  final List<Map<String, String>> _announcements = [
+  static const List<Map<String, String>> _announcements = [
     {
       'title': 'Mezuniyet Töreni 2025',
       'image': 'assets/images/announcement-image.jpeg',
@@ -73,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   // Bildirim listesi
-  final List<Map<String, dynamic>> _notifications = [
+  static const List<Map<String, dynamic>> _notifications = [
     {
       'title': 'Öğrenci Belgesi Talebiniz Hakkında',
       'message': 'Öğrenci İşleri müdürlüğünden yeni bir mesaj aldınız.',
@@ -155,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   // Günün dersleri
-  final List<Map<String, dynamic>> _todaysCourses = [
+  static final List<Map<String, dynamic>> _todaysCourses = [
     {
       'name': 'Visual Programming',
       'code': '3B06',
@@ -353,219 +352,245 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Duyurular bölümü
   Widget _buildAnnouncementsSection(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Bölüm başlığı
-        Row(
-          children: [
-            Icon(
-              Icons.campaign_outlined,
-              color: AppThemes.getPrimaryColor(context),
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              l10n.announcements,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: AppThemes.getTextColor(context),
-              ),
-            ),
-            const Spacer(),
-            TextButton(
-              onPressed: () async {
-                final url = Uri.parse('https://www.medipol.edu.tr/duyurular');
-                if (await canLaunchUrl(url)) {
-                  await launchUrl(url, mode: LaunchMode.externalApplication);
-                }
-              },
-              child: Text(
-                l10n.seeAll,
-                style: TextStyle(
-                  color: AppThemes.getPrimaryColor(context),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-          ],
-        ),
-
+        _buildAnnouncementsSectionHeader(context),
         const SizedBox(height: 16),
+        _buildAnnouncementsPageView(context),
+        const SizedBox(height: 16),
+        _buildAnnouncementsPageIndicators(context),
+      ],
+    );
+  }
 
-        // Duyuru kartları
-        SizedBox(
-          height: 180,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentAnnouncementIndex = index;
-              });
-            },
-            itemCount: _announcements.length,
-            itemBuilder: (context, index) {
-              final announcement = _announcements[index];
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                decoration: BoxDecoration(
-                  color: AppThemes.getSurfaceColor(context),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppThemes.getSecondaryTextColor(
-                      context,
-                    ).withOpacity(0.1),
-                    width: 1,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(
-                    children: [
-                      // Arka plan resmi
-                      Positioned.fill(
-                        child: Image.asset(
-                          announcement['image']!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    AppThemes.getPrimaryColor(context),
-                                    AppThemes.getPrimaryColor(
-                                      context,
-                                    ).withOpacity(0.7),
-                                  ],
-                                ),
-                              ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.campaign_outlined,
-                                  size: 40,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-
-                      // Gradient overlay
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.6),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Tarih etiketi
-                      Positioned(
-                        top: 12,
-                        right: 12,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            announcement['date']!,
-                            style: TextStyle(
-                              color: AppThemes.getPrimaryColor(context),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // İçerik
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                announcement['title']!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                announcement['description'] ?? '',
-                                style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+  // Duyurular bölümü başlığı
+  Widget _buildAnnouncementsSectionHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Row(
+      children: [
+        Icon(
+          Icons.campaign_outlined,
+          color: AppThemes.getPrimaryColor(context),
+          size: 20,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          l10n.announcements,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: AppThemes.getTextColor(context),
           ),
         ),
-
-        const SizedBox(height: 16),
-
-        // Sayfa göstergeleri
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(_announcements.length, (index) {
-            return GestureDetector(
-              onTap: () => _goToAnnouncement(index),
-              child: AnimatedContainer(
-                duration: AppConstants.animationFast,
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                width: index == _currentAnnouncementIndex ? 20 : 6,
-                height: 6,
-                decoration: BoxDecoration(
-                  color: index == _currentAnnouncementIndex
-                      ? AppThemes.getPrimaryColor(context)
-                      : AppThemes.getSecondaryTextColor(
-                          context,
-                        ).withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-              ),
-            );
-          }),
+        const Spacer(),
+        TextButton(
+          onPressed: () => _openAnnouncementsPage(),
+          child: Text(
+            l10n.seeAll,
+            style: TextStyle(
+              color: AppThemes.getPrimaryColor(context),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ],
     );
+  }
+
+  // Duyuru kartları sayfa görünümü
+  Widget _buildAnnouncementsPageView(BuildContext context) {
+    return SizedBox(
+      height: 180,
+      child: PageView.builder(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentAnnouncementIndex = index;
+          });
+        },
+        itemCount: _announcements.length,
+        itemBuilder: (context, index) {
+          final announcement = _announcements[index];
+          return _buildAnnouncementCard(context, announcement);
+        },
+      ),
+    );
+  }
+
+  // Tek bir duyuru kartı
+  Widget _buildAnnouncementCard(BuildContext context, Map<String, String> announcement) {
+    return GestureDetector(
+      onTap: () => _openAnnouncementsPage(),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        decoration: BoxDecoration(
+          color: AppThemes.getSurfaceColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+            width: 1,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            children: [
+              _buildAnnouncementCardBackground(context, announcement),
+              _buildAnnouncementCardGradientOverlay(),
+              _buildAnnouncementCardDateLabel(context, announcement),
+              _buildAnnouncementCardContent(announcement),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Duyuru kartı arka plan resmi
+  Widget _buildAnnouncementCardBackground(BuildContext context, Map<String, String> announcement) {
+    return Positioned.fill(
+      child: Image.asset(
+        announcement['image']!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppThemes.getPrimaryColor(context),
+                  AppThemes.getPrimaryColor(context).withValues(alpha: 0.7),
+                ],
+              ),
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.campaign_outlined,
+                size: 40,
+                color: Colors.white,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // Duyuru kartı gradient katmanı
+  Widget _buildAnnouncementCardGradientOverlay() {
+    return Positioned.fill(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.transparent,
+              Colors.black.withValues(alpha: 0.6),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Duyuru kartı tarih etiketi
+  Widget _buildAnnouncementCardDateLabel(BuildContext context, Map<String, String> announcement) {
+    return Positioned(
+      top: 12,
+      right: 12,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 4,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: Text(
+          announcement['date']!,
+          style: TextStyle(
+            color: AppThemes.getPrimaryColor(context),
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Duyuru kartı içerik bölümü
+  Widget _buildAnnouncementCardContent(Map<String, String> announcement) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              announcement['title']!,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              announcement['description'] ?? '',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.9),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Duyuru sayfa göstergeleri
+  Widget _buildAnnouncementsPageIndicators(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(_announcements.length, (index) {
+        return GestureDetector(
+          onTap: () => _goToAnnouncement(index),
+          child: AnimatedContainer(
+            duration: AppConstants.animationFast,
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            width: index == _currentAnnouncementIndex ? 20 : 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: index == _currentAnnouncementIndex
+                  ? AppThemes.getPrimaryColor(context)
+                  : AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(3),
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  // Duyurular sayfasını açma helper metodu
+  Future<void> _openAnnouncementsPage() async {
+    final url = Uri.parse('https://www.medipol.edu.tr/duyurular');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
   }
 
   // Günün dersleri bölümü
@@ -595,7 +620,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppThemes.getPrimaryColor(context).withOpacity(0.1),
+                color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -629,20 +654,24 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     final isQuiz = course['type'] == 'quiz';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppThemes.getSurfaceColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppThemes.getSecondaryTextColor(context).withOpacity(0.1),
-          width: 1,
+    return GestureDetector(
+      onTap: () {
+        _showCourseDetails(context, course);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: AppThemes.getSurfaceColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+            width: 1,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
             // Zaman göstergesi
             SizedBox(
               width: 50,
@@ -673,7 +702,7 @@ class _HomeScreenState extends State<HomeScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: course['color'].withOpacity(0.1),
+                color: course['color'].withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -756,7 +785,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: course['color'].withOpacity(0.1),
+                color: course['color'].withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -771,90 +800,235 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    ),
+    );
+  }
+
+  void _showCourseDetails(BuildContext context, Map<String, dynamic> course) {
+    final theme = Theme.of(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (course['code'].isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: course['color'],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      course['code'],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              course['name'],
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildDetailRow(
+              Icons.person_rounded,
+              'Instructor',
+              course['instructor'],
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.location_on_rounded,
+              'Room',
+              course['room'],
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.access_time_rounded,
+              'Time',
+              course['time'],
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.school_rounded,
+              'Type',
+              course['type'] == 'quiz' ? 'Quiz' : 'Lecture',
+              theme,
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value, ThemeData theme) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: theme.colorScheme.primary,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
   // Bildirim paneli
   Widget _buildNotificationPanel(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Container(
-      decoration: BoxDecoration(
-        color: AppThemes.getSurfaceColor(context),
-        border: Border(
-          bottom: BorderSide(
-            color: AppThemes.getSecondaryTextColor(context).withOpacity(0.1),
-            width: 1,
-          ),
-        ),
-      ),
+      decoration: _buildNotificationPanelDecoration(context),
       child: Column(
         children: [
-          // Panel başlığı
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.notifications_outlined,
-                  color: AppThemes.getPrimaryColor(context),
-                  size: 18,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.notifications,
-                    style: TextStyle(
-                      color: AppThemes.getPrimaryColor(context),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      for (var notification in _notifications) {
-                        notification['isRead'] = true;
-                      }
-                    });
-                  },
-                  child: Text(
-                    l10n.markAllRead,
-                    style: TextStyle(
-                      color: AppThemes.getPrimaryColor(context),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _showNotifications = false;
-                    });
-                  },
-                  icon: Icon(
-                    Icons.keyboard_arrow_up_outlined,
-                    color: AppThemes.getPrimaryColor(context),
-                    size: 20,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Bildirim listesi
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: _notifications.length,
-              itemBuilder: (context, index) {
-                final notification = _notifications[index];
-                return _buildNotificationItem(context, notification, index);
-              },
-            ),
-          ),
+          _buildNotificationPanelHeader(context),
+          _buildNotificationsList(context),
         ],
+      ),
+    );
+  }
+
+  // Bildirim paneli dekorasyonu
+  BoxDecoration _buildNotificationPanelDecoration(BuildContext context) {
+    return BoxDecoration(
+      color: AppThemes.getSurfaceColor(context),
+      border: Border(
+        bottom: BorderSide(
+          color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+    );
+  }
+
+  // Bildirim paneli başlığı
+  Widget _buildNotificationPanelHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Icon(
+            Icons.notifications_outlined,
+            color: AppThemes.getPrimaryColor(context),
+            size: 18,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              l10n.notifications,
+              style: TextStyle(
+                color: AppThemes.getPrimaryColor(context),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          _buildMarkAllReadButton(context, l10n),
+          _buildCloseNotificationsPanelButton(context),
+        ],
+      ),
+    );
+  }
+
+  // Tümünü okundu işaretle butonu
+  Widget _buildMarkAllReadButton(BuildContext context, AppLocalizations l10n) {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          for (var notification in _notifications) {
+            notification['isRead'] = true;
+          }
+        });
+      },
+      child: Text(
+        l10n.markAllRead,
+        style: TextStyle(
+          color: AppThemes.getPrimaryColor(context),
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  // Bildirim panelini kapatma butonu
+  Widget _buildCloseNotificationsPanelButton(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        setState(() {
+          _showNotifications = false;
+        });
+      },
+      icon: Icon(
+        Icons.keyboard_arrow_up_outlined,
+        color: AppThemes.getPrimaryColor(context),
+        size: 20,
+      ),
+    );
+  }
+
+  // Bildirimler listesi
+  Widget _buildNotificationsList(BuildContext context) {
+    return Expanded(
+      child: ListView.builder(
+        padding: EdgeInsets.zero,
+        itemCount: _notifications.length,
+        itemBuilder: (context, index) {
+          final notification = _notifications[index];
+          return _buildNotificationItem(context, notification, index);
+        },
       ),
     );
   }
@@ -865,159 +1039,201 @@ class _HomeScreenState extends State<HomeScreen> {
     Map<String, dynamic> notification,
     int index,
   ) {
-    IconData getNotificationIcon(String type) {
-      switch (type) {
-        case 'grade':
-          return Icons.grade_outlined;
-        case 'reminder':
-          return Icons.schedule_outlined;
-        case 'assignment':
-          return Icons.assignment_outlined;
-        case 'scholarship':
-          return Icons.account_balance_wallet_outlined;
-        case 'announcement':
-          return Icons.campaign_outlined;
-        case 'email':
-          return Icons.email_outlined;
-        default:
-          return Icons.notifications_outlined;
-      }
-    }
-
-    Color getNotificationColor(String type) {
-      switch (type) {
-        case 'grade':
-          return Colors.green[600]!;
-        case 'reminder':
-          return Colors.orange[600]!;
-        case 'assignment':
-          return Colors.blue[600]!;
-        case 'scholarship':
-          return Colors.purple[600]!;
-        case 'announcement':
-          return Colors.red[600]!;
-        case 'email':
-          return Colors.teal[600]!;
-        default:
-          return Colors.grey[600]!;
-      }
-    }
-
     return InkWell(
-      onTap: () {
-        setState(() {
-          _notifications[index]['isRead'] = true;
-        });
-
-        if (notification['type'] == 'email' &&
-            notification['inboxId'] != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  InboxScreen(selectedMessageId: notification['inboxId']),
-            ),
-          );
-        }
-      },
+      onTap: () => _handleNotificationTap(context, notification, index),
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: notification['isRead']
-              ? AppThemes.getSurfaceColor(context)
-              : AppThemes.getPrimaryColor(context).withOpacity(0.05),
-          border: Border(
-            bottom: BorderSide(
-              color: AppThemes.getSecondaryTextColor(context).withOpacity(0.1),
-              width: 1,
-            ),
-          ),
-        ),
+        decoration: _buildNotificationItemDecoration(context, notification),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bildirim ikonu
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: getNotificationColor(
-                  notification['type'],
-                ).withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                getNotificationIcon(notification['type']),
-                color: getNotificationColor(notification['type']),
-                size: 18,
-              ),
-            ),
-
+            _buildNotificationItemIcon(notification),
             const SizedBox(width: 12),
-
-            // Bildirim içeriği
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          notification['title'],
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: notification['isRead']
-                                ? FontWeight.w500
-                                : FontWeight.w600,
-                            color: AppThemes.getTextColor(context),
-                          ),
-                        ),
-                      ),
-                      if (!notification['isRead'])
-                        Container(
-                          width: 6,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: AppThemes.getPrimaryColor(context),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                    ],
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    notification['message'],
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: AppThemes.getSecondaryTextColor(context),
-                      fontWeight: FontWeight.w400,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    notification['time'],
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppThemes.getSecondaryTextColor(
-                        context,
-                      ).withOpacity(0.7),
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildNotificationItemContent(context, notification),
           ],
         ),
       ),
     );
+  }
+
+  // Bildirim tıklama işlemleri
+  void _handleNotificationTap(
+    BuildContext context,
+    Map<String, dynamic> notification,
+    int index,
+  ) {
+    setState(() {
+      _notifications[index]['isRead'] = true;
+    });
+
+    if (notification['type'] == 'email' && notification['inboxId'] != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              InboxScreen(selectedMessageId: notification['inboxId']),
+        ),
+      );
+    }
+  }
+
+  // Bildirim öğesi dekorasyonu
+  BoxDecoration _buildNotificationItemDecoration(
+    BuildContext context,
+    Map<String, dynamic> notification,
+  ) {
+    return BoxDecoration(
+      color: notification['isRead']
+          ? AppThemes.getSurfaceColor(context)
+          : AppThemes.getPrimaryColor(context).withValues(alpha: 0.05),
+      border: Border(
+        bottom: BorderSide(
+          color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+          width: 1,
+        ),
+      ),
+    );
+  }
+
+  // Bildirim öğesi ikonu
+  Widget _buildNotificationItemIcon(Map<String, dynamic> notification) {
+    final notificationType = notification['type'] as String;
+    return Container(
+      width: 36,
+      height: 36,
+      decoration: BoxDecoration(
+        color: _getNotificationColor(notificationType).withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        _getNotificationIcon(notificationType),
+        color: _getNotificationColor(notificationType),
+        size: 18,
+      ),
+    );
+  }
+
+  // Bildirim öğesi içeriği
+  Widget _buildNotificationItemContent(
+    BuildContext context,
+    Map<String, dynamic> notification,
+  ) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildNotificationItemTitle(context, notification),
+          const SizedBox(height: 4),
+          _buildNotificationItemMessage(context, notification),
+          const SizedBox(height: 4),
+          _buildNotificationItemTime(context, notification),
+        ],
+      ),
+    );
+  }
+
+  // Bildirim öğesi başlığı
+  Widget _buildNotificationItemTitle(
+    BuildContext context,
+    Map<String, dynamic> notification,
+  ) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            notification['title'],
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: notification['isRead']
+                  ? FontWeight.w500
+                  : FontWeight.w600,
+              color: AppThemes.getTextColor(context),
+            ),
+          ),
+        ),
+        if (!notification['isRead'])
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: AppThemes.getPrimaryColor(context),
+              shape: BoxShape.circle,
+            ),
+          ),
+      ],
+    );
+  }
+
+  // Bildirim öğesi mesajı
+  Widget _buildNotificationItemMessage(
+    BuildContext context,
+    Map<String, dynamic> notification,
+  ) {
+    return Text(
+      notification['message'],
+      style: TextStyle(
+        fontSize: 12,
+        color: AppThemes.getSecondaryTextColor(context),
+        fontWeight: FontWeight.w400,
+      ),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+  // Bildirim öğesi zamanı
+  Widget _buildNotificationItemTime(
+    BuildContext context,
+    Map<String, dynamic> notification,
+  ) {
+    return Text(
+      notification['time'],
+      style: TextStyle(
+        fontSize: 11,
+        color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.7),
+        fontWeight: FontWeight.w400,
+      ),
+    );
+  }
+
+  // Bildirim ikonu helper metodu
+  IconData _getNotificationIcon(String type) {
+    switch (type) {
+      case 'grade':
+        return Icons.grade_outlined;
+      case 'reminder':
+        return Icons.schedule_outlined;
+      case 'assignment':
+        return Icons.assignment_outlined;
+      case 'scholarship':
+        return Icons.account_balance_wallet_outlined;
+      case 'announcement':
+        return Icons.campaign_outlined;
+      case 'email':
+        return Icons.email_outlined;
+      default:
+        return Icons.notifications_outlined;
+    }
+  }
+
+  // Bildirim rengi helper metodu
+  Color _getNotificationColor(String type) {
+    switch (type) {
+      case 'grade':
+        return Colors.green[600]!;
+      case 'reminder':
+        return Colors.orange[600]!;
+      case 'assignment':
+        return Colors.blue[600]!;
+      case 'scholarship':
+        return Colors.purple[600]!;
+      case 'announcement':
+        return Colors.red[600]!;
+      case 'email':
+        return Colors.teal[600]!;
+      default:
+        return Colors.grey[600]!;
+    }
   }
 
   // Cafeteria paneli
@@ -1033,18 +1249,6 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Stack(
         children: [
           SizedBox(height: 400, child: _buildCafeteriaMenuSummary(context)),
-          Positioned(
-            right: 8,
-            top: 8,
-            child: IconButton(
-              icon: Icon(Icons.close_outlined, color: theme.iconTheme.color),
-              onPressed: () {
-                setState(() {
-                  _showCafeteriaMenu = false;
-                });
-              },
-            ),
-          ),
         ],
       ),
     );
@@ -1052,9 +1256,106 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Cafeteria menü özeti
   Widget _buildCafeteriaMenuSummary(BuildContext context) {
-    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: _buildCafeteriaMenuDays(context),
+        ),
+      ),
+    );
+  }
+
+  // Cafeteria menü günleri listesi
+  List<Widget> _buildCafeteriaMenuDays(BuildContext context) {
     final now = DateTime.now();
-    final weekdayNames = [
+    final menus = _getCafeteriaMenuData();
+    
+    return List.generate(4, (i) {
+      final date = now.add(Duration(days: i));
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildCafeteriaMenuDayHeader(context, date),
+          const SizedBox(height: 8),
+          _buildCafeteriaMenuItems(context, menus[i % menus.length]),
+          if (i < 3) const Divider(height: 24),
+        ],
+      );
+    });
+  }
+
+  // Cafeteria menü gün başlığı
+  Widget _buildCafeteriaMenuDayHeader(BuildContext context, DateTime date) {
+    final theme = Theme.of(context);
+    final weekdayNames = _getWeekdayNames(context);
+    final weekday = weekdayNames[date.weekday - 1];
+    
+    return Row(
+      children: [
+        Icon(
+          Icons.restaurant_outlined,
+          color: AppThemes.getPrimaryColor(context),
+          size: 18,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          AppLocalizations.of(context)!.cafeteriaMenu,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.textTheme.titleLarge?.color,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          _formatMenuDate(date, weekday),
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            color: theme.textTheme.bodyMedium?.color,
+            fontSize: 12,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Cafeteria menü öğeleri
+  Widget _buildCafeteriaMenuItems(BuildContext context, List<String> menuItems) {
+    final theme = Theme.of(context);
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context)!.lunch,
+          style: TextStyle(
+            color: Colors.green[700],
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...menuItems.map(
+          (item) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Text(
+              item,
+              style: TextStyle(
+                fontSize: 13,
+                color: theme.textTheme.bodyLarge?.color,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Hafta gün isimleri helper metodu
+  List<String> _getWeekdayNames(BuildContext context) {
+    return [
       AppLocalizations.of(context)!.mondayShort,
       AppLocalizations.of(context)!.tuesdayShort,
       AppLocalizations.of(context)!.wednesdayShort,
@@ -1063,8 +1364,16 @@ class _HomeScreenState extends State<HomeScreen> {
       AppLocalizations.of(context)!.saturdayShort,
       AppLocalizations.of(context)!.sundayShort,
     ];
+  }
 
-    final menus = [
+  // Menü tarihini formatlama helper metodu
+  String _formatMenuDate(DateTime date, String weekday) {
+    return '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year} $weekday';
+  }
+
+  // Cafeteria menü verileri helper metodu
+  List<List<String>> _getCafeteriaMenuData() {
+    return [
       [
         'Naneli Yoğurt Çorba 171 KCAL',
         'Köfteli Izgara Patlıcan Beğendi ile 378 KCAL',
@@ -1099,73 +1408,5 @@ class _HomeScreenState extends State<HomeScreen> {
         'Mevsim Meyve',
       ],
     ];
-
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: List.generate(4, (i) {
-            final date = now.add(Duration(days: i));
-            final weekday = weekdayNames[date.weekday - 1];
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.restaurant_outlined,
-                      color: AppThemes.getPrimaryColor(context),
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      AppLocalizations.of(context)!.cafeteriaMenu,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: theme.textTheme.titleLarge?.color,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text(
-                      '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year} $weekday',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        color: theme.textTheme.bodyMedium?.color,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  AppLocalizations.of(context)!.lunch,
-                  style: TextStyle(
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                ...menus[i % menus.length].map(
-                  (item) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Text(
-                      item,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: theme.textTheme.bodyLarge?.color,
-                      ),
-                    ),
-                  ),
-                ),
-                if (i < 3) const Divider(height: 24),
-              ],
-            );
-          }),
-        ),
-      ),
-    );
   }
 }

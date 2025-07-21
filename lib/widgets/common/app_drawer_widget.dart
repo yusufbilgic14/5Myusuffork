@@ -27,14 +27,14 @@ class AppDrawerWidget extends StatelessWidget {
   Widget _buildModernSideDrawer(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgGradient = isDark
-        ? [const Color(0xFF181F2A), AppConstants.primaryColor.withOpacity(0.85)]
+        ? [const Color(0xFF181F2A), AppConstants.primaryColor.withValues(alpha: 0.85)]
         : [
             AppConstants.primaryColor,
-            AppConstants.primaryColor.withOpacity(0.85),
+            AppConstants.primaryColor.withValues(alpha: 0.85),
           ];
     final boxShadowColor = isDark
-        ? Colors.black.withOpacity(0.25)
-        : AppConstants.primaryColor.withOpacity(0.13);
+        ? Colors.black.withValues(alpha: 0.25)
+        : AppConstants.primaryColor.withValues(alpha: 0.13);
 
     return Drawer(
       child: Container(
@@ -68,7 +68,7 @@ class AppDrawerWidget extends StatelessWidget {
               Container(
                 height: 1,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
               ),
 
               const SizedBox(height: 16),
@@ -194,7 +194,7 @@ class AppDrawerWidget extends StatelessWidget {
               border: Border.all(color: Colors.white, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -210,9 +210,9 @@ class AppDrawerWidget extends StatelessWidget {
                       color: Colors.grey.shade300,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.person,
-                      color: Colors.grey,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 40,
                     ),
                   );
@@ -270,7 +270,7 @@ class AppDrawerWidget extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, color: Colors.white, size: 18),
@@ -303,19 +303,19 @@ class AppDrawerWidget extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: const Color(0xFFEF4444).withOpacity(0.2),
+            color: Theme.of(context).colorScheme.error.withValues(alpha: 0.2),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(
+          child: Icon(
             Icons.logout_outlined,
-            color: Color(0xFFEF4444),
+            color: Theme.of(context).colorScheme.error,
             size: 18,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Çıkış Yap',
           style: TextStyle(
-            color: Color(0xFFEF4444),
+            color: Theme.of(context).colorScheme.error,
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),
@@ -345,7 +345,7 @@ class AppDrawerWidget extends StatelessWidget {
             children: [
               Icon(
                 Icons.logout_outlined,
-                color: const Color(0xFFEF4444),
+                color: Theme.of(context).colorScheme.error,
                 size: 20,
               ),
               const SizedBox(width: 12),
@@ -362,7 +362,7 @@ class AppDrawerWidget extends StatelessWidget {
             AppLocalizations.of(context)!.logoutConfirm,
             style: TextStyle(
               color: isDark
-                  ? Colors.white.withOpacity(0.7)
+                  ? Colors.white.withValues(alpha: 0.7)
                   : Colors.grey.shade600,
             ),
           ),
@@ -373,7 +373,7 @@ class AppDrawerWidget extends StatelessWidget {
                 AppLocalizations.of(context)!.cancel,
                 style: TextStyle(
                   color: isDark
-                      ? Colors.white.withOpacity(0.6)
+                      ? Colors.white.withValues(alpha: 0.6)
                       : Colors.grey.shade600,
                 ),
               ),
@@ -411,7 +411,7 @@ class AppDrawerWidget extends StatelessWidget {
           Text(
             'Sosyal Medya',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -473,9 +473,9 @@ class AppDrawerWidget extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white.withOpacity(0.2), width: 1),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

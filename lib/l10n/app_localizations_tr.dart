@@ -175,7 +175,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inbox => 'Gelen Kutusu';
 
   @override
-  String get feedback => 'Geri Bildirim';
+  String get feedback => 'Geri Bildirim ve Talep';
+
+  @override
+  String get feedbackOnly => 'Geri Bildirim';
 
   @override
   String get quickStats => 'Hızlı İstatistikler';

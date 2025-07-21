@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import '../constants/app_constants.dart';
@@ -275,6 +276,8 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
           ),
+          // Language dropdown overlay - positioned at the top level
+          _buildLanguageDropdownOverlay(),
         ],
       ),
     );
@@ -351,14 +354,14 @@ class _LoginScreenState extends State<LoginScreen>
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.3)
-                : Colors.black.withOpacity(0.06),
+                ? Colors.black.withValues(alpha: 0.3)
+                : Colors.black.withValues(alpha: 0.06),
             blurRadius: 30,
             offset: const Offset(0, 10),
           ),
         ],
         border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.08) : Colors.grey.shade100,
+          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.shade100,
           width: 1,
         ),
       ),
@@ -390,7 +393,7 @@ class _LoginScreenState extends State<LoginScreen>
                       style: TextStyle(
                         fontSize: 15,
                         color: isDark
-                            ? Colors.white.withOpacity(0.6)
+                            ? Colors.white.withValues(alpha: 0.6)
                             : Colors.grey.shade600,
                         fontWeight: FontWeight.w400,
                         height: 1.3,
@@ -473,7 +476,7 @@ class _LoginScreenState extends State<LoginScreen>
                       l10n.or,
                       style: TextStyle(
                         color: isDark
-                            ? Colors.white.withOpacity(0.4)
+                            ? Colors.white.withValues(alpha: 0.4)
                             : Colors.grey.shade500,
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
@@ -514,11 +517,11 @@ class _LoginScreenState extends State<LoginScreen>
         ? const Color(0xFF2A3441)
         : const Color(0xFFF8FAFC);
     final inputBorder = isDark
-        ? Colors.white.withOpacity(0.08)
+        ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.shade200;
     final labelColor = isDark ? Colors.white : Colors.black87;
     final hintColor = isDark
-        ? Colors.white.withOpacity(0.4)
+        ? Colors.white.withValues(alpha: 0.4)
         : Colors.grey.shade500;
 
     return Column(
@@ -554,7 +557,7 @@ class _LoginScreenState extends State<LoginScreen>
             prefixIcon: Icon(
               icon,
               color: isDark
-                  ? Colors.white.withOpacity(0.4)
+                  ? Colors.white.withValues(alpha: 0.4)
                   : Colors.grey.shade500,
               size: 20,
             ),
@@ -565,7 +568,7 @@ class _LoginScreenState extends State<LoginScreen>
                           ? Icons.visibility_off
                           : Icons.visibility,
                       color: isDark
-                          ? Colors.white.withOpacity(0.4)
+                          ? Colors.white.withValues(alpha: 0.4)
                           : Colors.grey.shade500,
                       size: 20,
                     ),
@@ -626,7 +629,7 @@ class _LoginScreenState extends State<LoginScreen>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          disabledBackgroundColor: AppConstants.primaryColor.withOpacity(0.6),
+          disabledBackgroundColor: AppConstants.primaryColor.withValues(alpha: 0.6),
         ),
         child: _isLoading
             ? const SizedBox(
@@ -749,106 +752,99 @@ class _LoginScreenState extends State<LoginScreen>
   /// Dil seçici dropdown widget'ı / Language selector dropdown widget
   Widget _buildLanguageDropdown() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return GestureDetector(
+      onTap: _toggleLanguageDropdown,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.white.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isDark ? Colors.white24 : Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              FontAwesomeIcons.earthAmericas,
+              size: 18,
+              color: AppConstants.getIconColor(context),
+            ),
+            const SizedBox(width: 4),
+            AnimatedRotation(
+              turns: _isLanguageDropdownOpen ? 0.5 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: Icon(
+                Icons.keyboard_arrow_down,
+                size: 16,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Dil seçici overlay dropdown'u / Language selector overlay dropdown
+  Widget _buildLanguageDropdownOverlay() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentLocale = Provider.of<LanguageProvider>(context).locale;
     final isTurkish = currentLocale.languageCode == 'tr';
 
-    return Column(
-      children: [
-        // Languages butonu
-        GestureDetector(
-          onTap: _toggleLanguageDropdown,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: isDark ? Colors.white24 : Colors.grey.shade300,
-                width: 1,
+    if (!_isLanguageDropdownOpen) return const SizedBox.shrink();
+
+    return Positioned(
+      top: 195, // Position below the logo/language button area
+      right: 24,
+      child: AnimatedBuilder(
+        animation: _languageDropdownAnimation,
+        builder: (context, child) {
+          return Transform.scale(
+            scale: _languageDropdownAnimation.value,
+            alignment: Alignment.topRight,
+            child: Opacity(
+              opacity: _languageDropdownAnimation.value,
+              child: Material(
+                elevation: 50,
+                borderRadius: BorderRadius.circular(12),
+                color: isDark
+                    ? const Color(0xFF2A3441)
+                    : Colors.white,
+                shadowColor: Colors.black.withValues(alpha: 0.5),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildLanguageOption(
+                      imagePath: 'assets/images/turkey.png',
+                      label: 'Türkçe',
+                      isSelected: isTurkish,
+                      onTap: () => _selectLanguage(const Locale('tr')),
+                    ),
+                    Divider(
+                      height: 1,
+                      color: isDark
+                          ? Colors.white12
+                          : Colors.grey.shade200,
+                    ),
+                    _buildLanguageOption(
+                      imagePath: 'assets/images/uk.png',
+                      label: 'English',
+                      isSelected: !isTurkish,
+                      onTap: () => _selectLanguage(const Locale('en')),
+                    ),
+                  ],
+                ),
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Languages',
-                  style: TextStyle(
-                    fontSize: AppConstants.fontSizeSmall,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : Colors.black87,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                AnimatedRotation(
-                  turns: _isLanguageDropdownOpen ? 0.5 : 0.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: Icon(
-                    Icons.keyboard_arrow_down,
-                    size: 16,
-                    color: isDark ? Colors.white70 : Colors.black54,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        // Dropdown menü
-        AnimatedBuilder(
-          animation: _languageDropdownAnimation,
-          builder: (context, child) {
-            return Transform.scale(
-              scale: _languageDropdownAnimation.value,
-              alignment: Alignment.topCenter,
-              child: Opacity(
-                opacity: _languageDropdownAnimation.value,
-                child: _isLanguageDropdownOpen
-                    ? Container(
-                        margin: const EdgeInsets.only(top: 8),
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? const Color(0xFF2A3441)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _buildLanguageOption(
-                              imagePath: 'assets/images/turkey.png',
-                              label: 'Türkçe',
-                              isSelected: isTurkish,
-                              onTap: () => _selectLanguage(const Locale('tr')),
-                            ),
-                            Divider(
-                              height: 1,
-                              color: isDark
-                                  ? Colors.white12
-                                  : Colors.grey.shade200,
-                            ),
-                            _buildLanguageOption(
-                              imagePath: 'assets/images/uk.png',
-                              label: 'English',
-                              isSelected: !isTurkish,
-                              onTap: () => _selectLanguage(const Locale('en')),
-                            ),
-                          ],
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ),
-            );
-          },
-        ),
-      ],
+          );
+        },
+      ),
     );
   }
 
@@ -868,8 +864,8 @@ class _LoginScreenState extends State<LoginScreen>
         decoration: BoxDecoration(
           color: isSelected
               ? (isDark
-                    ? AppConstants.primaryColor.withOpacity(0.2)
-                    : AppConstants.primaryColor.withOpacity(0.1))
+                    ? AppConstants.primaryColor.withValues(alpha: 0.2)
+                    : AppConstants.primaryColor.withValues(alpha: 0.1))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -889,12 +885,8 @@ class _LoginScreenState extends State<LoginScreen>
               ),
             ),
             if (isSelected) ...[
-              const SizedBox(width: 8),
-              Icon(
-                Icons.check,
-                size: 16,
-                color: isDark ? Colors.white : AppConstants.primaryColor,
-              ),
+              
+              
             ],
           ],
         ),

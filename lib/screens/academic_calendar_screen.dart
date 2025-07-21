@@ -350,7 +350,7 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               decoration: BoxDecoration(
-                color: AppThemes.getPrimaryColor(context).withOpacity(0.08),
+                color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -459,7 +459,7 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
         borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
         boxShadow: AppShadows.card,
         border: isActive
-            ? Border.all(color: event.category.color, width: 2)
+            ? Border.all(color: AppThemes.getEventTypeColor(context, event.category.name), width: 2)
             : null,
       ),
       child: Padding(
@@ -477,12 +477,12 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: event.category.color.withValues(alpha: 0.1),
+                    color: AppThemes.getEventTypeColor(context, event.category.name).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(
                       AppConstants.radiusSmall,
                     ),
                     border: Border.all(
-                      color: event.category.color.withValues(alpha: 0.3),
+                      color: AppThemes.getEventTypeColor(context, event.category.name).withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
@@ -491,7 +491,7 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                       Icon(
                         event.category.icon,
                         size: 14,
-                        color: event.category.color,
+                        color: AppThemes.getEventTypeColor(context, event.category.name),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -499,7 +499,7 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                         style: TextStyle(
                           fontSize: AppConstants.fontSizeSmall,
                           fontWeight: FontWeight.w600,
-                          color: event.category.color,
+                          color: AppThemes.getEventTypeColor(context, event.category.name),
                         ),
                       ),
                     ],
@@ -779,15 +779,14 @@ class AcademicEvent {
 
 // Etkinlik kategorileri / Event categories
 enum EventCategory {
-  registration('Kayıt', Icons.how_to_reg, Color(0xFF3B82F6)),
-  evaluation('Değerlendirme', Icons.assessment, Color(0xFF8B5CF6)),
-  announcement('Duyuru', Icons.campaign, Color(0xFF10B981)),
-  exam('Sınav', Icons.quiz, Color(0xFFEF4444)),
-  semester('Dönem', Icons.school, Color(0xFF6366F1)),
-  courseSelection('Ders Seçimi', Icons.edit_note, Color(0xFFF59E0B));
+  registration('Kayıt', Icons.how_to_reg),
+  evaluation('Değerlendirme', Icons.assessment),
+  announcement('Duyuru', Icons.campaign),
+  exam('Sınav', Icons.quiz),
+  semester('Dönem', Icons.school),
+  courseSelection('Ders Seçimi', Icons.edit_note);
 
-  const EventCategory(this.name, this.icon, this.color);
+  const EventCategory(this.name, this.icon);
   final String name;
   final IconData icon;
-  final Color color;
 }

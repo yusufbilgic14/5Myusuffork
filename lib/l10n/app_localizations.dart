@@ -419,8 +419,14 @@ abstract class AppLocalizations {
   /// No description provided for @feedback.
   ///
   /// In en, this message translates to:
-  /// **'Feedback'**
+  /// **'Feedback & Request'**
   String get feedback;
+
+  /// No description provided for @feedbackOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get feedbackOnly;
 
   /// No description provided for @quickStats.
   ///

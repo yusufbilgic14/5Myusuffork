@@ -86,22 +86,53 @@ class UpcomingEventsScreen extends StatefulWidget {
 class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     with TickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   String _searchQuery = '';
   String _selectedFilter = 'all'; // all, today, week, month
   EventType? _selectedEventType;
   late TabController _tabController;
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  bool _isSearchVisible = true;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
+    
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
     _searchController.dispose();
     _tabController.dispose();
+    _animationController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.offset > 100 && _isSearchVisible) {
+      setState(() {
+        _isSearchVisible = false;
+      });
+      _animationController.reverse();
+    } else if (_scrollController.offset <= 100 && !_isSearchVisible) {
+      setState(() {
+        _isSearchVisible = true;
+      });
+      _animationController.forward();
+    }
   }
 
   // Örnek kulüpler / Sample clubs
@@ -162,7 +193,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       eventDate: DateTime.now().add(const Duration(days: 3)),
       postDate: DateTime.now().subtract(const Duration(hours: 2)),
       location: 'Bilgisayar Mühendisliği Lab - B201',
-      imageUrl: 'flutter_workshop',
+      imageUrl: 'assets/images/upcoming_events_post_photos/flutter.png',
       tags: ['Flutter', 'Mobile', 'Programming', 'Free'],
       likeCount: 45,
       commentCount: 12,
@@ -179,6 +210,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       eventDate: DateTime.now().add(const Duration(days: 5)),
       postDate: DateTime.now().subtract(const Duration(hours: 8)),
       location: 'Konferans Salonu - Ana Kampüs',
+      imageUrl: 'assets/images/upcoming_events_post_photos/ai_convention.png',
       tags: ['AI', 'Ethics', 'Debate', 'Technology'],
       likeCount: 67,
       commentCount: 23,
@@ -195,6 +227,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       eventDate: DateTime.now().add(const Duration(days: 7)),
       postDate: DateTime.now().subtract(const Duration(days: 1)),
       location: 'Tüm Kampüs Alanı',
+      imageUrl: 'assets/images/upcoming_events_post_photos/photo.png',
       tags: ['Photography', 'Competition', 'Art', 'Campus'],
       likeCount: 89,
       commentCount: 31,
@@ -211,6 +244,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       eventDate: DateTime.now().add(const Duration(days: 1)),
       postDate: DateTime.now().subtract(const Duration(hours: 12)),
       location: 'Öğrenci Merkezi Lobi',
+      imageUrl: 'assets/images/upcoming_events_post_photos/photo_competition.png',
       tags: ['Charity', 'Books', 'Social Responsibility'],
       likeCount: 123,
       commentCount: 45,
@@ -227,6 +261,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       eventDate: DateTime.now().add(const Duration(days: 10)),
       postDate: DateTime.now().subtract(const Duration(hours: 18)),
       location: 'Kafeterya - Açık Hava Sahnesi',
+      imageUrl: 'assets/images/upcoming_events_post_photos/book_donation.png',
       tags: ['Music', 'Performance', 'Social', 'Culture'],
       likeCount: 78,
       commentCount: 19,
@@ -271,7 +306,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
           ),
         ],
       ),
-      bottomNavigationBar: const BottomNavigationWidget(currentIndex: 1),
+      bottomNavigationBar: const BottomNavigationWidget(currentIndex: -1),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateEventDialog(context),
         backgroundColor: AppThemes.getPrimaryColor(context),
@@ -313,7 +348,15 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     return Column(
       children: [
         // Arama ve filtreler / Search and filters
-        _buildSearchAndFilters(context),
+        AnimatedBuilder(
+          animation: _animation,
+          builder: (context, child) {
+            return SizeTransition(
+              sizeFactor: _animation,
+              child: _buildSearchAndFilters(context),
+            );
+          },
+        ),
 
         // Etkinlik listesi / Events list
         Expanded(child: _buildEventsList(context)),
@@ -528,6 +571,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     }
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.all(AppConstants.paddingMedium),
       itemCount: filteredEvents.length,
       itemBuilder: (context, index) {
@@ -664,6 +708,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
 
           const SizedBox(height: AppConstants.paddingMedium),
 
+          // Etkinlik görseli / Event image
+          if (event.imageUrl != null) _buildEventImage(context, event),
+
           // Etkinlik detayları / Event details
           _buildEventDetails(context, event),
 
@@ -672,6 +719,38 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
           // Etiketler / Tags
           if (event.tags.isNotEmpty) _buildEventTags(context, event),
         ],
+      ),
+    );
+  }
+
+  /// Etkinlik görseli / Event image
+  Widget _buildEventImage(BuildContext context, EventPost event) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: AppConstants.paddingMedium),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+        child: Image.asset(
+          event.imageUrl!,
+          width: double.infinity,
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: double.infinity,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.image_not_supported,
+                  size: 48,
+                  color: Colors.grey,
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -79,8 +79,8 @@ class _ProfileScreenState extends State<ProfileScreen>
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.white.withOpacity(0.9),
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.white.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isDark ? Colors.white24 : Colors.grey.shade300,
@@ -130,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
@@ -187,8 +187,8 @@ class _ProfileScreenState extends State<ProfileScreen>
         decoration: BoxDecoration(
           color: isSelected
               ? (isDark
-                    ? AppConstants.primaryColor.withOpacity(0.2)
-                    : AppConstants.primaryColor.withOpacity(0.1))
+                    ? AppConstants.primaryColor.withValues(alpha: 0.2)
+                    : AppConstants.primaryColor.withValues(alpha: 0.1))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -287,9 +287,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(width: 8),
               Text(AppLocalizations.of(context)!.languageTurkish),
               if (currentLocale.languageCode == 'tr')
-                const Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Icon(Icons.check, color: Colors.blue, size: 16),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Icon(Icons.check, color: Theme.of(context).colorScheme.primary, size: 16),
                 ),
             ],
           ),
@@ -302,9 +302,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               const SizedBox(width: 8),
               Text(AppLocalizations.of(context)!.languageEnglish),
               if (currentLocale.languageCode == 'en')
-                const Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Icon(Icons.check, color: Colors.blue, size: 16),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Icon(Icons.check, color: Theme.of(context).colorScheme.primary, size: 16),
                 ),
             ],
           ),
@@ -463,7 +463,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       width: 140,
       padding: const EdgeInsets.all(
         AppConstants.paddingSmall + 2,
-      ), // Reduced padding
+      ), // Restored original padding
       decoration: BoxDecoration(
         color: AppThemes.getSurfaceColor(context),
         borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
@@ -473,8 +473,8 @@ class _ProfileScreenState extends State<ProfileScreen>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 28, // Reduced from 32 to 28
-            height: 28, // Reduced from 32 to 28
+            width: 28, // Restored to 28
+            height: 28, // Restored to 28
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
@@ -482,14 +482,14 @@ class _ProfileScreenState extends State<ProfileScreen>
             child: Icon(
               icon,
               color: color,
-              size: 18, // Reduced from 20 to 18
+              size: 18, // Restored to 18
             ),
           ),
-          const SizedBox(height: 4), // Reduced from 6 to 4
+          const SizedBox(height: 4), // Restored spacing
           Text(
             value,
             style: TextStyle(
-              fontSize: 16, // Reduced from 18 to 16
+              fontSize: 16, // Restored font size
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -499,7 +499,7 @@ class _ProfileScreenState extends State<ProfileScreen>
             title,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 10, // Reduced from 11 to 10
+              fontSize: 10, // Restored font size
               color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
@@ -533,12 +533,12 @@ class _ProfileScreenState extends State<ProfileScreen>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppConstants.primaryColor.withOpacity(0.1),
+                color: AppConstants.getIconColor(context).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
               child: Icon(
                 Icons.language,
-                color: AppConstants.primaryColor,
+                color: AppConstants.getIconColor(context),
                 size: 20,
               ),
             ),
@@ -562,8 +562,7 @@ class _ProfileScreenState extends State<ProfileScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.language, color: AppConstants.primaryColor),
-                  Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+                  Icon(Icons.keyboard_arrow_down, color: AppConstants.getIconColor(context),),
                 ],
               ),
             ),
@@ -643,14 +642,14 @@ class _ProfileScreenState extends State<ProfileScreen>
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: (iconColor ?? AppConstants.primaryColor).withValues(
+          color: (iconColor ?? AppConstants.getIconColor(context)).withValues(
             alpha: 0.1,
           ),
           borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
         ),
         child: Icon(
           icon,
-          color: iconColor ?? AppConstants.primaryColor,
+          color: iconColor ?? AppConstants.getIconColor(context),
           size: 20,
         ),
       ),
@@ -672,7 +671,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       trailing: Icon(
         Icons.arrow_forward_ios,
         size: 16,
-        color: Colors.grey[400],
+        color: AppConstants.getIconColor(context),
       ),
       onTap: onTap,
     );
@@ -691,12 +690,12 @@ class _ProfileScreenState extends State<ProfileScreen>
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+              color: AppConstants.getIconColor(context).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
             ),
             child: Icon(
               themeProvider.themeIcon,
-              color: AppThemes.getPrimaryColor(context),
+              color: AppConstants.getIconColor(context),
               size: 20,
             ),
           ),

@@ -7,6 +7,12 @@ class AppConstants {
     0xFF1E3A8A,
   ); // Navy blue - AppThemes ile tutarlılık için / For consistency with AppThemes
 
+  /// Tema-aware ikon rengi / Theme-aware icon color
+  static Color getIconColor(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? Colors.white : primaryColor;
+  }
+
   // Geriye uyumluluk için text color constants / Text color constants for backward compatibility
   static const Color textColorLight = Colors.white;
   static const Color textColorDark = Colors.black87;

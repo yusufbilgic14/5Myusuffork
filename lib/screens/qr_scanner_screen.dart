@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
+import '../constants/app_constants.dart';
 import '../widgets/common/app_bar_widget.dart';
 
 class QRScannerScreen extends StatefulWidget {
@@ -157,7 +158,6 @@ class _QRScannerScreenState extends State<QRScannerScreen>
       appBar: ModernAppBar(
         title: 'QR Kod Tara',
         leading: BackButton(color: Colors.white),
-        centerTitle: true,
       ),
 
       body: _buildCameraView(),
@@ -236,7 +236,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1E3A8A),
+                backgroundColor: AppConstants.primaryColor,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -292,7 +292,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                 _initializeCamera();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1E3A8A),
+                backgroundColor: AppConstants.primaryColor,
                 foregroundColor: Colors.white,
               ),
               child: const Text('Tekrar Dene'),
@@ -305,13 +305,13 @@ class _QRScannerScreenState extends State<QRScannerScreen>
 
   // Yükleme görünümü / Loading view
   Widget _buildLoadingView() {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(color: Color(0xFF1E3A8A)),
-          SizedBox(height: 24),
-          Text(
+          CircularProgressIndicator(color: AppConstants.getIconColor(context)),
+          const SizedBox(height: 24),
+          const Text(
             'Kamera başlatılıyor...',
             style: TextStyle(color: Colors.white, fontSize: 16),
           ),
@@ -349,11 +349,11 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                   child: Container(
                     height: 3,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E3A8A),
+                      color: AppConstants.getIconColor(context),
                       borderRadius: BorderRadius.circular(2),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF1E3A8A).withValues(alpha: 0.5),
+                          color: AppConstants.getIconColor(context).withValues(alpha: 0.5),
                           blurRadius: 8,
                           spreadRadius: 2,
                         ),
@@ -373,7 +373,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
   List<Widget> _buildCornerIndicators() {
     const cornerSize = 20.0;
     const cornerThickness = 3.0;
-    const corners = [
+    final corners = [
       // Sol üst / Top left
       Positioned(
         top: -cornerThickness,
@@ -381,7 +381,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
         child: Icon(
           Icons.crop_free,
           size: cornerSize,
-          color: Color(0xFF1E3A8A),
+          color: AppConstants.getIconColor(context),
         ),
       ),
       // Sağ üst / Top right
@@ -391,7 +391,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
         child: Icon(
           Icons.crop_free,
           size: cornerSize,
-          color: Color(0xFF1E3A8A),
+          color: AppConstants.getIconColor(context),
         ),
       ),
       // Sol alt / Bottom left
@@ -401,7 +401,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
         child: Icon(
           Icons.crop_free,
           size: cornerSize,
-          color: Color(0xFF1E3A8A),
+          color: AppConstants.getIconColor(context),
         ),
       ),
       // Sağ alt / Bottom right
@@ -411,7 +411,7 @@ class _QRScannerScreenState extends State<QRScannerScreen>
         child: Icon(
           Icons.crop_free,
           size: cornerSize,
-          color: Color(0xFF1E3A8A),
+          color: AppConstants.getIconColor(context),
         ),
       ),
     ];

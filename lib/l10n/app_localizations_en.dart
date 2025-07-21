@@ -175,7 +175,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inbox => 'Inbox';
 
   @override
-  String get feedback => 'Feedback';
+  String get feedback => 'Feedback & Request';
+
+  @override
+  String get feedbackOnly => 'Feedback';
 
   @override
   String get quickStats => 'Quick Stats';

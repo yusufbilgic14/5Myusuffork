@@ -240,7 +240,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNavigationWidget(currentIndex: 2),
+      bottomNavigationBar: const BottomNavigationWidget(currentIndex: -1),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _refreshGrades(context),
         backgroundColor: AppThemes.getPrimaryColor(context),
@@ -467,7 +467,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                       style: TextStyle(
                         fontSize: AppConstants.fontSizeMedium,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green[600],
+                        color: AppThemes.getSemanticColor(context, 'success'),
                       ),
                     ),
                     Text(
@@ -486,7 +486,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
                       style: TextStyle(
                         fontSize: AppConstants.fontSizeMedium,
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange[600],
+                        color: AppThemes.getSemanticColor(context, 'warning'),
                       ),
                     ),
                     Text(
@@ -898,26 +898,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
 
   /// Harf notuna göre renk belirle / Determine color based on letter grade
   Color _getGradeColor(String letterGrade) {
-    switch (letterGrade) {
-      case 'AA':
-        return Colors.green[600]!;
-      case 'BA':
-        return Colors.green[500]!;
-      case 'BB':
-        return Colors.blue[600]!;
-      case 'CB':
-        return Colors.orange[600]!;
-      case 'CC':
-        return Colors.orange[700]!;
-      case 'DC':
-        return Colors.red[600]!;
-      case 'DD':
-        return Colors.red[700]!;
-      case 'FF':
-        return Colors.red[800]!;
-      default:
-        return Colors.grey[600]!;
-    }
+    return AppThemes.getGradeColor(context, letterGrade);
   }
 
   /// Point PDF göster / Show point PDF
@@ -953,7 +934,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: Colors.blue),
+                  Icon(Icons.info_outline, size: 16, color: AppThemes.getSemanticColor(context, 'info')),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -1025,7 +1006,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: Colors.blue),
+                  Icon(Icons.info_outline, size: 16, color: AppThemes.getSemanticColor(context, 'info')),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -1103,7 +1084,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
           content: Text(
             AppLocalizations.of(context)!.gradesUpdatedSuccessfully,
           ),
-          backgroundColor: Colors.green[600],
+          backgroundColor: AppThemes.getSemanticColor(context, 'success'),
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 3),
         ),
