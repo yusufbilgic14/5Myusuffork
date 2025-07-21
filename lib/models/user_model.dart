@@ -32,7 +32,8 @@ class TimestampConverter implements JsonConverter<DateTime?, Object?> {
   @override
   Object? toJson(DateTime? dateTime) {
     if (dateTime == null) return null;
-    return Timestamp.fromDate(dateTime);
+    // For JSON serialization, use ISO string format instead of Timestamp
+    return dateTime.toIso8601String();
   }
 }
 

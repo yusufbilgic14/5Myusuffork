@@ -81,9 +81,9 @@ Map<String, dynamic> _$CalendarEventModelToJson(CalendarEventModel instance) =>
       'attendeeCount': instance.attendeeCount,
       'maxAttendees': instance.maxAttendees,
       'registrationRequired': instance.registrationRequired,
-      if (const TimestampConverter().toJson(instance.registrationDeadline)
-          case final value?)
-        'registrationDeadline': value,
+      'registrationDeadline': ?const TimestampConverter().toJson(
+        instance.registrationDeadline,
+      ),
       'createdBy': instance.createdBy,
       'authorName': instance.authorName,
       'authorRole': instance.authorRole,
@@ -173,8 +173,7 @@ Map<String, dynamic> _$RecurrenceModelToJson(RecurrenceModel instance) =>
     <String, dynamic>{
       'type': _$RecurrenceTypeEnumMap[instance.type]!,
       'interval': instance.interval,
-      if (const TimestampConverter().toJson(instance.endDate) case final value?)
-        'endDate': value,
+      'endDate': ?const TimestampConverter().toJson(instance.endDate),
       'daysOfWeek': instance.daysOfWeek,
       'exceptions': const TimestampListConverter().toJson(instance.exceptions),
     };

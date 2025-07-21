@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'providers/theme_provider.dart';
 import 'providers/authentication_provider.dart';
+import 'services/firebase_auth_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/initial_loading_screen.dart';
 import 'constants/app_constants.dart';
@@ -26,6 +27,10 @@ void main() async {
     );
     print('✅ Firebase initialized successfully');
 
+    // Firebase Auth Service'i başlat / Initialize Firebase Auth Service
+    final firebaseAuthService = FirebaseAuthService();
+    await firebaseAuthService.initialize();
+    
     // Uygulamayı çalıştır / Run the app
     runApp(const MyApp());
   } catch (e) {

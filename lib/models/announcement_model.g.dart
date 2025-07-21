@@ -42,36 +42,33 @@ AnnouncementModel _$AnnouncementModelFromJson(Map<String, dynamic> json) =>
       slug: json['slug'] as String?,
     );
 
-Map<String, dynamic> _$AnnouncementModelToJson(
-  AnnouncementModel instance,
-) => <String, dynamic>{
-  'id': instance.id,
-  'title': instance.title,
-  'content': instance.content,
-  'summary': instance.summary,
-  'images': instance.images,
-  'attachments': instance.attachments,
-  'targetAudience': instance.targetAudience,
-  'category': _$AnnouncementCategoryEnumMap[instance.category]!,
-  'priority': _$AnnouncementPriorityEnumMap[instance.priority]!,
-  'tags': instance.tags,
-  'status': _$AnnouncementStatusEnumMap[instance.status]!,
-  if (const TimestampConverter().toJson(instance.publishAt) case final value?)
-    'publishAt': value,
-  if (const TimestampConverter().toJson(instance.expiresAt) case final value?)
-    'expiresAt': value,
-  'viewCount': instance.viewCount,
-  'likeCount': instance.likeCount,
-  'commentCount': instance.commentCount,
-  'shareCount': instance.shareCount,
-  'createdBy': instance.createdBy,
-  'authorName': instance.authorName,
-  'authorRole': instance.authorRole,
-  'createdAt': instance.createdAt.toIso8601String(),
-  'updatedAt': instance.updatedAt.toIso8601String(),
-  'searchKeywords': instance.searchKeywords,
-  'slug': instance.slug,
-};
+Map<String, dynamic> _$AnnouncementModelToJson(AnnouncementModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'content': instance.content,
+      'summary': instance.summary,
+      'images': instance.images,
+      'attachments': instance.attachments,
+      'targetAudience': instance.targetAudience,
+      'category': _$AnnouncementCategoryEnumMap[instance.category]!,
+      'priority': _$AnnouncementPriorityEnumMap[instance.priority]!,
+      'tags': instance.tags,
+      'status': _$AnnouncementStatusEnumMap[instance.status]!,
+      'publishAt': ?const TimestampConverter().toJson(instance.publishAt),
+      'expiresAt': ?const TimestampConverter().toJson(instance.expiresAt),
+      'viewCount': instance.viewCount,
+      'likeCount': instance.likeCount,
+      'commentCount': instance.commentCount,
+      'shareCount': instance.shareCount,
+      'createdBy': instance.createdBy,
+      'authorName': instance.authorName,
+      'authorRole': instance.authorRole,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt.toIso8601String(),
+      'searchKeywords': instance.searchKeywords,
+      'slug': instance.slug,
+    };
 
 const _$AnnouncementCategoryEnumMap = {
   AnnouncementCategory.general: 'general',
