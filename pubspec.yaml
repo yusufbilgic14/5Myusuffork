@@ -126,6 +126,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/images/upcoming_events_post_photos/
     - assets/images/
     - assets/msal_config.json
     - assets/map_styles/dark_map_style.json

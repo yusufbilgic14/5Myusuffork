@@ -240,7 +240,7 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: const BottomNavigationWidget(currentIndex: 2),
+      bottomNavigationBar: const BottomNavigationWidget(currentIndex: -1),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _refreshGrades(context),
         backgroundColor: AppThemes.getPrimaryColor(context),
