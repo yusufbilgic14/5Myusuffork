@@ -239,31 +239,6 @@ lib/
 ├── 📁 themes/             # Açık/Karanlık tema tanımları
 └── 📁 l10n/              # Yerelleştirme dosyaları (TR/EN)
 ```
-
-
-
-
-
-
-
-## 📊 Anahtar Özellikler Detayı
-
-### Kimlik Doğrulama Akışı
-```mermaid
-graph LR
-    A[Giriş Ekranı] --> B[Microsoft OAuth]
-    B --> C[Azure AD Doğrulaması]
-    C --> D[Firebase Özel Token]
-    D --> E[Kullanıcı Verisi Senkronizasyonu]
-    E --> F[Ana Sayfa]
-```
-
-### Gerçek Zamanlı Veri Senkronizasyonu
-- **Firestore Entegrasyonu** - Cihazlar arası canlı veri senkronizasyonu
-- **Çevrimdışı Destek** - Çevrimdışı erişim için önbelleğe alınmış veriler
-- **Push Bildirimleri** - Anlık güncellemeler için FCM
-- **Analytics Takibi** - Kullanıcı etkileşimi ve hata raporlaması
-
 ### Kampüs Harita Entegrasyonu
 - **Google Maps SDK** - İnteraktif kampüs navigasyonu
 - **Özel Karanlık Tema** - Uygulama tasarımı ile tutarlı
@@ -288,12 +263,6 @@ graph LR
 - **Kimlik Doğrulama:** Microsoft MSAL + Firebase Özel Token'lar
 - **State Management:** Provider Pattern
 - **Yerelleştirme:** 2 dil (Türkçe, İngilizce)
-
-
-## 📄 Lisans
-
-Bu proje MIT Lisansı altında lisanslanmıştır - ayrıntılar için [LICENSE](LICENSE) dosyasına bakın.
-
 
 <div align="center">
   <strong>Medipol Üniversitesi Topluluğu için ❤️ ile yapıldı</strong>
