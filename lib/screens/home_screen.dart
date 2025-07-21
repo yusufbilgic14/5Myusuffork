@@ -637,20 +637,24 @@ class _HomeScreenState extends State<HomeScreen> {
   ) {
     final isQuiz = course['type'] == 'quiz';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppThemes.getSurfaceColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppThemes.getSecondaryTextColor(context).withOpacity(0.1),
-          width: 1,
+    return GestureDetector(
+      onTap: () {
+        _showCourseDetails(context, course);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          color: AppThemes.getSurfaceColor(context),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppThemes.getSecondaryTextColor(context).withOpacity(0.1),
+            width: 1,
+          ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
             // Zaman göstergesi
             SizedBox(
               width: 50,
@@ -779,6 +783,129 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    ),
+    );
+  }
+
+  void _showCourseDetails(BuildContext context, Map<String, dynamic> course) {
+    final theme = Theme.of(context);
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (course['code'].isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: course['color'],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      course['code'],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              course['name'],
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 24),
+            _buildDetailRow(
+              Icons.person_rounded,
+              'Instructor',
+              course['instructor'],
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.location_on_rounded,
+              'Room',
+              course['room'],
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.access_time_rounded,
+              'Time',
+              course['time'],
+              theme,
+            ),
+            const SizedBox(height: 16),
+            _buildDetailRow(
+              Icons.school_rounded,
+              'Type',
+              course['type'] == 'quiz' ? 'Quiz' : 'Lecture',
+              theme,
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(IconData icon, String label, String value, ThemeData theme) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: theme.colorScheme.primary,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

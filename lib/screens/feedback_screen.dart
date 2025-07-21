@@ -258,7 +258,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        AppLocalizations.of(context)!.feedback,
+                        AppLocalizations.of(context)!.feedbackOnly,
                         style: TextStyle(
                           color: _selectedType == 'geri_bildirim'
                               ? theme.colorScheme.onPrimary
