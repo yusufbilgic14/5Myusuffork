@@ -5,6 +5,14 @@
   <!-- 5 MASKETEERS logosu eklendi -->
   <img src="assets/images/5MASKETEERS.png" alt="5 MASKETEERS Logo" width="200"/>
   <br><br>
+  <!-- Takım üyeleri bölümü eklendi -->
+  <strong>Takım Üyeleri</strong><br>
+  Yusuf BİLGİÇ<br>
+  Enes EROĞLU<br>
+  Emirhan ŞEN<br>
+  Kerem GÜL<br>
+  Mehmet AYZİT<br>
+  <br>
   <strong>Medipol Üniversitesi için geliştirilmiş kapsamlı Flutter tabanlı kampüs uygulaması</strong>
   <br><br>
   
