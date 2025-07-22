@@ -335,5 +335,6 @@
   "genderOptional": "Cinsiyet (isteğe bağlı)",
   "selectGender": "Cinsiyet seçin",
   "language": "Dil",
-  "languageDesc": "Uygulama dilini değiştirin"
+  "languageDesc": "Uygulama dilini değiştirin",
+  "rememberMe": "Beni Hatırla"
 } 

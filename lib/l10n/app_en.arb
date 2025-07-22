@@ -335,5 +335,6 @@
   "genderOptional": "Gender (optional)",
   "selectGender": "Select gender",
   "language": "Language",
-  "languageDesc": "Change the app language"
+  "languageDesc": "Change the app language",
+  "rememberMe": "Remember Me"
 } 

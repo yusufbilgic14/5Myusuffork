@@ -836,6 +836,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
             duration: const Duration(seconds: 2),
           ),
         );
+
+        // Refresh data to update My Events tab
+        _loadData();
       }
     } catch (e) {
       if (mounted) {

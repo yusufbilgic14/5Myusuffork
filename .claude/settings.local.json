@@ -12,7 +12,10 @@
       "Bash(find:*)",
       "Bash(flutter gen-l10n:*)",
       "Bash(flutter packages:*)",
-      "Bash(flutter build:*)"
+      "Bash(flutter build:*)",
+      "Bash(flutter run:*)",
+      "Bash(flutter test:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }

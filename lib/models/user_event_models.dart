@@ -587,6 +587,7 @@ class UserMyEvent {
       jsonData['eventId'] = documentId;
     }
 
+    // Convert Timestamp fields to DateTime
     _convertTimestampFields(jsonData, [
       'eventStartDate',
       'eventEndDate',
@@ -595,6 +596,12 @@ class UserMyEvent {
       'updatedAt',
     ]);
 
+    // Ensure CustomReminders is properly deserialized
+    if (jsonData['customReminders'] != null && jsonData['customReminders'] is! Map) {
+      // If it's not a Map, create a default CustomReminders
+      jsonData['customReminders'] = const CustomReminders().toJson();
+    }
+
     return UserMyEvent.fromJson(jsonData);
   }
 
@@ -602,11 +609,15 @@ class UserMyEvent {
   Map<String, dynamic> toFirestoreData() {
     final data = toJson();
 
+    // Convert DateTime fields to Timestamps
     data['eventStartDate'] = Timestamp.fromDate(eventStartDate);
     data['eventEndDate'] = Timestamp.fromDate(eventEndDate);
     data['joinedAt'] = Timestamp.fromDate(joinedAt);
     _convertDateTimeToTimestamp(data, 'createdAt', createdAt);
     _convertDateTimeToTimestamp(data, 'updatedAt', updatedAt);
+
+    // Ensure CustomReminders is properly serialized as a Map
+    data['customReminders'] = customReminders.toJson();
 
     return data;
   }

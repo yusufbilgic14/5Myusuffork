@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 import '../providers/authentication_provider.dart';
 import '../providers/language_provider.dart';
 import '../services/firebase_auth_service.dart';
+import '../services/secure_storage_service.dart';
 import '../models/user_model.dart';
 import 'home_screen.dart';
 import '../l10n/app_localizations.dart';
@@ -31,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
   bool _isLanguageDropdownOpen = false;
+  bool _rememberMe = false;
 
   // Authentication mode toggle
   AuthMode _authMode = AuthMode.signIn;
@@ -46,6 +48,9 @@ class _LoginScreenState extends State<LoginScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _languageDropdownAnimation;
+  
+  // Services
+  final _secureStorage = SecureStorageService();
 
   @override
   void initState() {
@@ -86,6 +91,32 @@ class _LoginScreenState extends State<LoginScreen>
     // Animasyonları başlat / Start animations
     _fadeController.forward();
     _slideController.forward();
+    
+    // Hatırlanan giriş bilgilerini yükle / Load remembered credentials
+    _loadRememberedCredentials();
+  }
+  
+  /// Hatırlanan giriş bilgilerini yükle / Load remembered credentials
+  Future<void> _loadRememberedCredentials() async {
+    try {
+      final credentials = await _secureStorage.getRememberedCredentials();
+      final rememberMe = await _secureStorage.getRememberMe();
+      
+      if (rememberMe && mounted) {
+        setState(() {
+          _rememberMe = true;
+          if (credentials['email'] != null) {
+            _studentIdController.text = credentials['email']!;
+          }
+          if (credentials['password'] != null) {
+            _passwordController.text = credentials['password']!;
+          }
+        });
+      }
+    } catch (e) {
+      // Hatırlanan bilgileri yüklerken hata oluştu, devam et / Error loading remembered credentials, continue
+      debugPrint('Remember me credentials loading error: $e');
+    }
   }
 
   /// Dil dropdown menüsünü aç/kapat / Toggle language dropdown
@@ -221,6 +252,26 @@ class _LoginScreenState extends State<LoginScreen>
       );
 
       if (result.isSuccess && mounted) {
+        // Save credentials if remember me is checked / Beni hatırla seçiliyse bilgileri kaydet
+        if (_rememberMe) {
+          try {
+            await _secureStorage.storeRememberedCredentials(
+              email: _studentIdController.text.trim(),
+              password: _passwordController.text,
+              authType: 'firebase',
+            );
+          } catch (e) {
+            debugPrint('Failed to store remembered credentials: $e');
+          }
+        } else {
+          // Clear remembered data if remember me is not checked / Beni hatırla seçili değilse verileri temizle
+          try {
+            await _secureStorage.clearRememberMeData();
+          } catch (e) {
+            debugPrint('Failed to clear remember me data: $e');
+          }
+        }
+        
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
@@ -335,6 +386,7 @@ class _LoginScreenState extends State<LoginScreen>
       _selectedGender = null;
       _selectedBirthDate = null;
       _agreeToTerms = false;
+      _rememberMe = false;
     });
   }
 
@@ -806,6 +858,23 @@ class _LoginScreenState extends State<LoginScreen>
       final success = await authProvider.signInWithMicrosoft();
 
       if (success && mounted) {
+        // Save remember me state for Microsoft login / Microsoft girişi için beni hatırla durumunu kaydet
+        if (_rememberMe) {
+          try {
+            await _secureStorage.storeRememberMe(true);
+            // Note: We don't store password for Microsoft OAuth, just the preference
+            // Not: Microsoft OAuth için şifre saklamıyoruz, sadece tercih durumunu
+          } catch (e) {
+            debugPrint('Failed to store Microsoft remember me state: $e');
+          }
+        } else {
+          try {
+            await _secureStorage.clearRememberMeData();
+          } catch (e) {
+            debugPrint('Failed to clear remember me data: $e');
+          }
+        }
+        
         // Başarılı giriş, ana sayfaya yönlendir / Successful login, navigate to home
         Navigator.pushReplacement(
           context,
@@ -1178,26 +1247,67 @@ class _LoginScreenState extends State<LoginScreen>
       ),
       const SizedBox(height: 16),
 
-      // Forgot password link / Şifremi unuttum linki
-      Align(
-        alignment: Alignment.centerRight,
-        child: TextButton(
-          onPressed: _launchPasswordResetUrl,
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6),
+      // Forgot password and Remember me row / Şifremi unuttum ve Beni hatırla satırı
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Remember me checkbox / Beni hatırla checkbox'ı
+          Expanded(
+            child: Row(
+              children: [
+                Checkbox(
+                  value: _rememberMe,
+                  onChanged: (value) {
+                    setState(() {
+                      _rememberMe = value ?? false;
+                    });
+                  },
+                  activeColor: AppConstants.primaryColor,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                ),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _rememberMe = !_rememberMe;
+                      });
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.rememberMe,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white70
+                            : Colors.grey.shade700,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          child: Text(
-            l10n.forgotPassword,
-            style: TextStyle(
-              color: AppConstants.primaryColor,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
+          // Forgot password link / Şifremi unuttum linki
+          TextButton(
+            onPressed: _launchPasswordResetUrl,
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+            child: Text(
+              l10n.forgotPassword,
+              style: TextStyle(
+                color: AppConstants.primaryColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-        ),
+        ],
       ),
       const SizedBox(height: 28),
     ];

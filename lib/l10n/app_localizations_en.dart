@@ -1019,4 +1019,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageDesc => 'Change the app language';
+
+  @override
+  String get rememberMe => 'Remember Me';
 }

@@ -2110,6 +2110,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change the app language'**
   String get languageDesc;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember Me'**
+  String get rememberMe;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

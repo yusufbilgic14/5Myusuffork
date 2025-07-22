@@ -544,6 +544,10 @@ class Club {
   Map<String, dynamic> toFirestoreData() {
     final data = toJson();
 
+    // Properly serialize nested objects
+    data['colors'] = colors.toJson();
+    data['socialMedia'] = socialMedia.toJson();
+
     // Convert DateTime fields to Timestamps
     _convertDateTimeToTimestamp(data, 'createdAt', createdAt);
     _convertDateTimeToTimestamp(data, 'updatedAt', updatedAt);

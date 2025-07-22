@@ -213,7 +213,7 @@ class _AddClubDialogState extends State<AddClubDialog> {
 
                       Row(
                         children: [
-                          Expanded(
+                          Flexible(
                             child: _buildDropdown<String?>(
                               value: _selectedFaculty,
                               label: 'Fakülte',
@@ -233,7 +233,7 @@ class _AddClubDialogState extends State<AddClubDialog> {
                             ),
                           ),
                           const SizedBox(width: AppConstants.paddingMedium),
-                          Expanded(
+                          Flexible(
                             child: _buildDropdown<String?>(
                               value: _selectedDepartment,
                               label: 'Bölüm',

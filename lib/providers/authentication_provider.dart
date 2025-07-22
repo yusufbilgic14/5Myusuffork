@@ -5,11 +5,13 @@ import 'dart:async';
 import '../models/user_model.dart';
 import '../services/authentication_service.dart';
 import '../services/firebase_auth_service.dart';
+import '../services/secure_storage_service.dart';
 
 /// Kimlik doğrulama durumu yönetimi için provider / Provider for authentication state management
 class AuthenticationProvider extends ChangeNotifier {
   final AuthenticationService _authService = AuthenticationService();
   final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
+  final SecureStorageService _secureStorage = SecureStorageService();
 
   StreamSubscription<AuthenticationState>? _authSubscription;
   StreamSubscription<FirebaseAuthState>? _firebaseAuthSubscription;
@@ -139,6 +141,15 @@ class AuthenticationProvider extends ChangeNotifier {
         // Firebase çıkış hatası (devam ediliyor) / Firebase sign out error (continuing): $firebaseError
         // Firebase çıkış hatası olsa bile Microsoft OAuth çıkışıyla devam et
         // Continue with Microsoft OAuth sign out even if Firebase sign out fails
+      }
+
+      // Remember me verilerini temizle / Clear remember me data
+      try {
+        await _secureStorage.clearRememberMeData();
+        debugPrint('✅ Remember me data cleared during logout');
+      } catch (storageError) {
+        debugPrint('⚠️ Failed to clear remember me data during logout: $storageError');
+        // Continue with logout even if clearing remember me data fails
       }
 
       // Çıkış işlemi tamamlandı / Sign out completed
