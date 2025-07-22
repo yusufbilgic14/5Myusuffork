@@ -111,12 +111,12 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
-  void _selectLanguage(Locale locale) {
+  Future<void> _selectLanguage(Locale locale) async {
     final languageProvider = Provider.of<LanguageProvider>(
       context,
       listen: false,
     );
-    languageProvider.setLocale(locale);
+    await languageProvider.setLocale(locale);
     _toggleLanguageDropdown();
   }
 
@@ -293,8 +293,8 @@ class _ProfileScreenState extends State<ProfileScreen>
               imagePath: 'assets/images/turkey.png',
               label: AppLocalizations.of(context)!.languageTurkish,
               isSelected: currentLocale.languageCode == 'tr',
-              onTap: () {
-                Provider.of<LanguageProvider>(
+              onTap: () async {
+                await Provider.of<LanguageProvider>(
                   context,
                   listen: false,
                 ).setLocale(const Locale('tr'));
@@ -305,8 +305,8 @@ class _ProfileScreenState extends State<ProfileScreen>
               imagePath: 'assets/images/uk.png',
               label: AppLocalizations.of(context)!.languageEnglish,
               isSelected: currentLocale.languageCode == 'en',
-              onTap: () {
-                Provider.of<LanguageProvider>(
+              onTap: () async {
+                await Provider.of<LanguageProvider>(
                   context,
                   listen: false,
                 ).setLocale(const Locale('en'));
@@ -374,7 +374,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       ],
     );
     if (selected != null) {
-      Provider.of<LanguageProvider>(
+      await Provider.of<LanguageProvider>(
         context,
         listen: false,
       ).setLocale(Locale(selected));

@@ -222,6 +222,66 @@ class UserProfileService {
     }
   }
 
+  /// App tercihlerini güncelle / Update app preferences
+  Future<bool> updateAppPreferences(UserAppPreferences appPreferences, [String? userId]) async {
+    try {
+      final uid = userId ?? currentUserId;
+      if (uid == null) {
+        print('❌ UserProfileService: User not authenticated');
+        return false;
+      }
+
+      print('⚙️ UserProfileService: Updating app preferences for $uid');
+
+      // Get current profile
+      final currentProfile = await getUserProfile(uid);
+      if (currentProfile == null) {
+        print('❌ UserProfileService: Profile not found for preferences update');
+        return false;
+      }
+
+      final updatedProfile = currentProfile.copyWith(
+        appPreferences: appPreferences,
+        updatedAt: DateTime.now(),
+      );
+
+      return await updateUserProfile(updatedProfile);
+    } catch (e) {
+      print('❌ UserProfileService: Error updating app preferences: $e');
+      return false;
+    }
+  }
+
+  /// Bildirim tercihlerini güncelle / Update notification preferences
+  Future<bool> updateNotificationPreferences(UserNotificationPreferences notificationPreferences, [String? userId]) async {
+    try {
+      final uid = userId ?? currentUserId;
+      if (uid == null) {
+        print('❌ UserProfileService: User not authenticated');
+        return false;
+      }
+
+      print('🔔 UserProfileService: Updating notification preferences for $uid');
+
+      // Get current profile
+      final currentProfile = await getUserProfile(uid);
+      if (currentProfile == null) {
+        print('❌ UserProfileService: Profile not found for notification preferences update');
+        return false;
+      }
+
+      final updatedProfile = currentProfile.copyWith(
+        notificationPreferences: notificationPreferences,
+        updatedAt: DateTime.now(),
+      );
+
+      return await updateUserProfile(updatedProfile);
+    } catch (e) {
+      print('❌ UserProfileService: Error updating notification preferences: $e');
+      return false;
+    }
+  }
+
   /// Profil fotoğrafı URL'ini güncelle / Update profile photo URL
   Future<bool> updateProfilePhoto(String photoUrl, [String? userId]) async {
     try {

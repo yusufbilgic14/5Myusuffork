@@ -39,19 +39,75 @@ void main() async {
 }
 
 // deneme commit
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late ThemeProvider _themeProvider;
+  late LanguageProvider _languageProvider;
+  late AuthenticationProvider _authProvider;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _themeProvider = ThemeProvider();
+    _languageProvider = LanguageProvider();
+    _authProvider = AuthenticationProvider();
+    _initializeProviders();
+  }
+
+  Future<void> _initializeProviders() async {
+    try {
+      // Initialize providers with Firebase data
+      await Future.wait([
+        _themeProvider.initializeTheme(),
+        _languageProvider.initializeLanguage(),
+      ]);
+      
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
+      print('✅ App: Providers initialized successfully');
+    } catch (e) {
+      print('❌ App: Error initializing providers: $e');
+      if (mounted) {
+        setState(() {
+          _isInitialized = true; // Continue even with errors
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      // Show loading screen while initializing
+      return MaterialApp(
+        title: 'Medipol Üniversitesi',
+        home: const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+        debugShowCheckedModeBanner: false,
+      );
+    }
+
     return MultiProvider(
       providers: [
         // Tema sağlayıcı / Theme provider
-        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProvider.value(value: _themeProvider),
         // Kimlik doğrulama sağlayıcı / Authentication provider
-        ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
+        ChangeNotifierProvider.value(value: _authProvider),
         // Dil sağlayıcı / Language provider
-        ChangeNotifierProvider(create: (context) => LanguageProvider()),
+        ChangeNotifierProvider.value(value: _languageProvider),
       ],
       child: Consumer2<ThemeProvider, LanguageProvider>(
         builder: (context, themeProvider, languageProvider, child) {

@@ -11,13 +11,44 @@ import '../../l10n/app_localizations.dart';
 import '../../screens/home_screen.dart';
 import '../../constants/app_constants.dart';
 import '../../services/firebase_auth_service.dart';
+import '../../services/user_profile_service.dart';
+import '../../models/user_profile_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Uygulama drawer widget'ı - Tüm sayfalarda kullanılan ana drawer / App drawer widget - Main drawer used across all pages
-class AppDrawerWidget extends StatelessWidget {
+class AppDrawerWidget extends StatefulWidget {
   final int currentPageIndex;
 
   const AppDrawerWidget({super.key, required this.currentPageIndex});
+
+  @override
+  State<AppDrawerWidget> createState() => _AppDrawerWidgetState();
+}
+
+class _AppDrawerWidgetState extends State<AppDrawerWidget> {
+  final UserProfileService _profileService = UserProfileService();
+  UserProfile? _userProfile;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  /// Kullanıcı profilini yükle / Load user profile
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await _profileService.getUserProfile();
+      if (mounted) {
+        setState(() {
+          _userProfile = profile;
+        });
+      }
+    } catch (e) {
+      // Hata durumunda fallback kullan / Use fallback on error
+      print('Error loading user profile in drawer: $e');
+    }
+  }
 
   // Firebase'den kullanıcı adını al / Get user name from Firebase
   String _getUserName(BuildContext context) {
@@ -28,19 +59,40 @@ class AppDrawerWidget extends StatelessWidget {
 
   // Firebase'den kullanıcı bölümünü al / Get user department from Firebase
   String _getUserDepartment(BuildContext context) {
+    if (_userProfile?.academicInfo != null) {
+      return _userProfile!.academicInfo!.department ?? AppLocalizations.of(context)!.userDepartment;
+    }
     final firebaseAuthService = FirebaseAuthService();
     return firebaseAuthService.currentAppUser?.department ??
         AppLocalizations.of(context)!.userDepartment;
   }
 
-  // Firebase'den kullanıcı rolünü al / Get user role from Firebase
-  String _getUserGrade(BuildContext context) {
+  // Kullanıcı sınıf/rol bilgisini al / Get user grade/role info
+  String _getUserGradeInfo(BuildContext context) {
+    if (_userProfile?.academicInfo != null) {
+      final academic = _userProfile!.academicInfo!;
+      if (academic.grade != null && academic.grade!.isNotEmpty) {
+        // Localization için grade formatı / Localized grade format
+        final isTurkish = AppLocalizations.of(context)!.localeName == 'tr';
+        return isTurkish 
+            ? '${academic.grade}'
+            : 'Grade ${academic.grade}';
+      }
+    }
     final firebaseAuthService = FirebaseAuthService();
     final user = firebaseAuthService.currentAppUser;
     if (user != null) {
       return user.role; // This will return "Öğrenci", "Personel", etc.
     }
     return AppLocalizations.of(context)!.userGrade;
+  }
+
+  // Öğrenci numarasını al / Get student ID
+  String? _getStudentId() {
+    if (_userProfile?.academicInfo != null) {
+      return _userProfile!.academicInfo!.studentId;
+    }
+    return null;
   }
 
   @override
@@ -270,13 +322,25 @@ class AppDrawerWidget extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            _getUserGrade(context),
+            _getUserGradeInfo(context),
             style: const TextStyle(
               color: Colors.white70,
               fontSize: 13,
               fontWeight: FontWeight.w400,
             ),
           ),
+          // Öğrenci numarasını göster / Show student ID if available
+          if (_getStudentId() != null) ...[
+            const SizedBox(height: 2),
+            Text(
+              _getStudentId()!,
+              style: const TextStyle(
+                color: Colors.white60,
+                fontSize: 12,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+          ],
         ],
       ),
     );

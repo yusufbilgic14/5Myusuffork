@@ -23,6 +23,108 @@ class TimestampConverter implements JsonConverter<DateTime?, Object?> {
   }
 }
 
+/// Kullanıcı bildirimleri tercihleri modeli / User notification preferences model
+@JsonSerializable(fieldRename: FieldRename.snake)
+class UserNotificationPreferences {
+  final bool eventNotifications;
+  final bool gradeNotifications;
+  final bool messageNotifications;
+  final bool clubNotifications;
+  final bool pushNotificationsEnabled;
+  final bool emailNotificationsEnabled;
+
+  const UserNotificationPreferences({
+    this.eventNotifications = true,
+    this.gradeNotifications = false,
+    this.messageNotifications = true,
+    this.clubNotifications = false,
+    this.pushNotificationsEnabled = true,
+    this.emailNotificationsEnabled = false,
+  });
+
+  factory UserNotificationPreferences.fromJson(Map<String, dynamic> json) =>
+      _$UserNotificationPreferencesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserNotificationPreferencesToJson(this);
+
+  /// Firestore verilerinden oluştur / Create from Firestore data
+  factory UserNotificationPreferences.fromFirestoreData(Map<String, dynamic> data) {
+    return UserNotificationPreferences.fromJson(data);
+  }
+
+  /// Firestore'a uygun format / Firestore-compatible format
+  Map<String, dynamic> toFirestoreData() => toJson();
+
+  UserNotificationPreferences copyWith({
+    bool? eventNotifications,
+    bool? gradeNotifications,
+    bool? messageNotifications,
+    bool? clubNotifications,
+    bool? pushNotificationsEnabled,
+    bool? emailNotificationsEnabled,
+  }) {
+    return UserNotificationPreferences(
+      eventNotifications: eventNotifications ?? this.eventNotifications,
+      gradeNotifications: gradeNotifications ?? this.gradeNotifications,
+      messageNotifications: messageNotifications ?? this.messageNotifications,
+      clubNotifications: clubNotifications ?? this.clubNotifications,
+      pushNotificationsEnabled: pushNotificationsEnabled ?? this.pushNotificationsEnabled,
+      emailNotificationsEnabled: emailNotificationsEnabled ?? this.emailNotificationsEnabled,
+    );
+  }
+}
+
+/// Kullanıcı app tercihleri modeli / User app preferences model
+@JsonSerializable(fieldRename: FieldRename.snake)
+class UserAppPreferences {
+  final bool isDarkMode;
+  final String languageCode;
+  final bool syncWithCloud;
+  final bool offlineMode;
+  final String dateFormat;
+  final String timeFormat;
+
+  const UserAppPreferences({
+    this.isDarkMode = false,
+    this.languageCode = 'tr',
+    this.syncWithCloud = true,
+    this.offlineMode = false,
+    this.dateFormat = 'dd/MM/yyyy',
+    this.timeFormat = '24h',
+  });
+
+  factory UserAppPreferences.fromJson(Map<String, dynamic> json) =>
+      _$UserAppPreferencesFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UserAppPreferencesToJson(this);
+
+  /// Firestore verilerinden oluştur / Create from Firestore data
+  factory UserAppPreferences.fromFirestoreData(Map<String, dynamic> data) {
+    return UserAppPreferences.fromJson(data);
+  }
+
+  /// Firestore'a uygun format / Firestore-compatible format
+  Map<String, dynamic> toFirestoreData() => toJson();
+
+  UserAppPreferences copyWith({
+    bool? isDarkMode,
+    String? languageCode,
+    bool? syncWithCloud,
+    bool? offlineMode,
+    String? dateFormat,
+    String? timeFormat,
+  }) {
+    return UserAppPreferences(
+      isDarkMode: isDarkMode ?? this.isDarkMode,
+      languageCode: languageCode ?? this.languageCode,
+      syncWithCloud: syncWithCloud ?? this.syncWithCloud,
+      offlineMode: offlineMode ?? this.offlineMode,
+      dateFormat: dateFormat ?? this.dateFormat,
+      timeFormat: timeFormat ?? this.timeFormat,
+    );
+  }
+}
+
 /// Kullanıcı profil istatistikleri modeli / User profile statistics model
 @JsonSerializable(fieldRename: FieldRename.snake)
 class UserProfileStats {
@@ -185,7 +287,12 @@ class UserProfile {
   final UserProfileStats? stats;
   
   // Tercihler / Preferences
-  final Map<String, dynamic>? preferences;
+  @JsonKey(name: 'app_preferences')
+  final UserAppPreferences? appPreferences;
+  
+  @JsonKey(name: 'notification_preferences')
+  final UserNotificationPreferences? notificationPreferences;
+  
   final List<String>? interests;
   
   // Sistem alanları / System fields
@@ -211,7 +318,8 @@ class UserProfile {
     this.address,
     this.academicInfo,
     this.stats,
-    this.preferences,
+    this.appPreferences,
+    this.notificationPreferences,
     this.interests,
     this.createdAt,
     this.updatedAt,
@@ -256,6 +364,12 @@ class UserProfile {
     if (stats != null) {
       data['stats'] = stats!.toFirestoreData();
     }
+    if (appPreferences != null) {
+      data['app_preferences'] = appPreferences!.toFirestoreData();
+    }
+    if (notificationPreferences != null) {
+      data['notification_preferences'] = notificationPreferences!.toFirestoreData();
+    }
 
     // Convert DateTime strings back to Timestamps for Firestore
     if (createdAt != null) {
@@ -276,6 +390,8 @@ class UserProfile {
       updatedAt: DateTime.now(),
       isProfileComplete: false,
       stats: const UserProfileStats(),
+      appPreferences: const UserAppPreferences(),
+      notificationPreferences: const UserNotificationPreferences(),
       visibilitySettings: const {
         'email': true,
         'phone': false,
@@ -323,7 +439,8 @@ class UserProfile {
     String? address,
     UserAcademicInfo? academicInfo,
     UserProfileStats? stats,
-    Map<String, dynamic>? preferences,
+    UserAppPreferences? appPreferences,
+    UserNotificationPreferences? notificationPreferences,
     List<String>? interests,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -338,7 +455,8 @@ class UserProfile {
       address: address ?? this.address,
       academicInfo: academicInfo ?? this.academicInfo,
       stats: stats ?? this.stats,
-      preferences: preferences ?? this.preferences,
+      appPreferences: appPreferences ?? this.appPreferences,
+      notificationPreferences: notificationPreferences ?? this.notificationPreferences,
       interests: interests ?? this.interests,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

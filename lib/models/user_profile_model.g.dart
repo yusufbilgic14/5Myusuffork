@@ -6,6 +6,49 @@ part of 'user_profile_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+UserNotificationPreferences _$UserNotificationPreferencesFromJson(
+  Map<String, dynamic> json,
+) => UserNotificationPreferences(
+  eventNotifications: json['event_notifications'] as bool? ?? true,
+  gradeNotifications: json['grade_notifications'] as bool? ?? false,
+  messageNotifications: json['message_notifications'] as bool? ?? true,
+  clubNotifications: json['club_notifications'] as bool? ?? false,
+  pushNotificationsEnabled: json['push_notifications_enabled'] as bool? ?? true,
+  emailNotificationsEnabled:
+      json['email_notifications_enabled'] as bool? ?? false,
+);
+
+Map<String, dynamic> _$UserNotificationPreferencesToJson(
+  UserNotificationPreferences instance,
+) => <String, dynamic>{
+  'event_notifications': instance.eventNotifications,
+  'grade_notifications': instance.gradeNotifications,
+  'message_notifications': instance.messageNotifications,
+  'club_notifications': instance.clubNotifications,
+  'push_notifications_enabled': instance.pushNotificationsEnabled,
+  'email_notifications_enabled': instance.emailNotificationsEnabled,
+};
+
+UserAppPreferences _$UserAppPreferencesFromJson(Map<String, dynamic> json) =>
+    UserAppPreferences(
+      isDarkMode: json['is_dark_mode'] as bool? ?? false,
+      languageCode: json['language_code'] as String? ?? 'tr',
+      syncWithCloud: json['sync_with_cloud'] as bool? ?? true,
+      offlineMode: json['offline_mode'] as bool? ?? false,
+      dateFormat: json['date_format'] as String? ?? 'dd/MM/yyyy',
+      timeFormat: json['time_format'] as String? ?? '24h',
+    );
+
+Map<String, dynamic> _$UserAppPreferencesToJson(UserAppPreferences instance) =>
+    <String, dynamic>{
+      'is_dark_mode': instance.isDarkMode,
+      'language_code': instance.languageCode,
+      'sync_with_cloud': instance.syncWithCloud,
+      'offline_mode': instance.offlineMode,
+      'date_format': instance.dateFormat,
+      'time_format': instance.timeFormat,
+    };
+
 UserProfileStats _$UserProfileStatsFromJson(Map<String, dynamic> json) =>
     UserProfileStats(
       eventsCount: (json['events_count'] as num?)?.toInt() ?? 0,
@@ -71,7 +114,16 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
   stats: json['stats'] == null
       ? null
       : UserProfileStats.fromJson(json['stats'] as Map<String, dynamic>),
-  preferences: json['preferences'] as Map<String, dynamic>?,
+  appPreferences: json['app_preferences'] == null
+      ? null
+      : UserAppPreferences.fromJson(
+          json['app_preferences'] as Map<String, dynamic>,
+        ),
+  notificationPreferences: json['notification_preferences'] == null
+      ? null
+      : UserNotificationPreferences.fromJson(
+          json['notification_preferences'] as Map<String, dynamic>,
+        ),
   interests: (json['interests'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
@@ -91,7 +143,8 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'address': instance.address,
       'academic_info': instance.academicInfo,
       'stats': instance.stats,
-      'preferences': instance.preferences,
+      'app_preferences': instance.appPreferences,
+      'notification_preferences': instance.notificationPreferences,
       'interests': instance.interests,
       'created_at': const TimestampConverter().toJson(instance.createdAt),
       'updated_at': const TimestampConverter().toJson(instance.updatedAt),

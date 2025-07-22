@@ -5,6 +5,8 @@ import '../widgets/common/app_bar_widget.dart';
 import '../constants/app_constants.dart';
 import '../themes/app_themes.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
+import '../services/user_profile_service.dart';
+import '../models/user_profile_model.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({Key? key}) : super(key: key);
@@ -20,6 +22,10 @@ class _NotificationSettingsScreenState
   bool gradeNotifications = false;
   bool messageNotifications = true;
   bool clubNotifications = false;
+  bool pushNotificationsEnabled = true;
+  bool emailNotificationsEnabled = false;
+
+  final UserProfileService _profileService = UserProfileService();
 
   @override
   void initState() {
@@ -28,32 +34,103 @@ class _NotificationSettingsScreenState
   }
 
   Future<void> _loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      eventNotifications = prefs.getBool('eventNotifications') ?? true;
-      gradeNotifications = prefs.getBool('gradeNotifications') ?? false;
-      messageNotifications = prefs.getBool('messageNotifications') ?? true;
-      clubNotifications = prefs.getBool('clubNotifications') ?? false;
-    });
+    try {
+      // First try to load from Firebase
+      final profile = await _profileService.getUserProfile();
+      if (profile?.notificationPreferences != null) {
+        final prefs = profile!.notificationPreferences!;
+        setState(() {
+          eventNotifications = prefs.eventNotifications;
+          gradeNotifications = prefs.gradeNotifications;
+          messageNotifications = prefs.messageNotifications;
+          clubNotifications = prefs.clubNotifications;
+          pushNotificationsEnabled = prefs.pushNotificationsEnabled;
+          emailNotificationsEnabled = prefs.emailNotificationsEnabled;
+        });
+        print('🔔 NotificationSettings: Loaded from Firebase');
+      } else {
+        // Fallback to SharedPreferences for existing users
+        final sharedPrefs = await SharedPreferences.getInstance();
+        setState(() {
+          eventNotifications = sharedPrefs.getBool('eventNotifications') ?? true;
+          gradeNotifications = sharedPrefs.getBool('gradeNotifications') ?? false;
+          messageNotifications = sharedPrefs.getBool('messageNotifications') ?? true;
+          clubNotifications = sharedPrefs.getBool('clubNotifications') ?? false;
+          pushNotificationsEnabled = sharedPrefs.getBool('pushNotificationsEnabled') ?? true;
+          emailNotificationsEnabled = sharedPrefs.getBool('emailNotificationsEnabled') ?? false;
+        });
+        print('🔔 NotificationSettings: Loaded from SharedPreferences');
+        
+        // Migrate to Firebase if user is authenticated
+        if (_profileService.isAuthenticated) {
+          await _syncToFirebase();
+        }
+      }
+    } catch (e) {
+      print('❌ NotificationSettings: Error loading settings: $e');
+      // Use defaults on error
+    }
   }
 
   Future<void> _saveSettings() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('eventNotifications', eventNotifications);
-    await prefs.setBool('gradeNotifications', gradeNotifications);
-    await prefs.setBool('messageNotifications', messageNotifications);
-    await prefs.setBool('clubNotifications', clubNotifications);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)!.notificationSettingsSaved,
+    try {
+      // Save to Firebase if user is authenticated
+      if (_profileService.isAuthenticated) {
+        await _syncToFirebase();
+      }
+      
+      // Also save to SharedPreferences as backup
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('eventNotifications', eventNotifications);
+      await prefs.setBool('gradeNotifications', gradeNotifications);
+      await prefs.setBool('messageNotifications', messageNotifications);
+      await prefs.setBool('clubNotifications', clubNotifications);
+      await prefs.setBool('pushNotificationsEnabled', pushNotificationsEnabled);
+      await prefs.setBool('emailNotificationsEnabled', emailNotificationsEnabled);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.notificationSettingsSaved,
+            ),
+            backgroundColor: AppThemes.getPrimaryColor(context),
           ),
-          backgroundColor: AppThemes.getPrimaryColor(context),
-        ),
+        );
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (mounted) Navigator.pop(context);
+      }
+      
+      print('🔔 NotificationSettings: Settings saved successfully');
+    } catch (e) {
+      print('❌ NotificationSettings: Error saving settings: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ayarlar kaydedilirken hata oluştu'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Firebase'e bildirim tercihlerini senkronize et / Sync notification preferences to Firebase
+  Future<void> _syncToFirebase() async {
+    try {
+      final notificationPreferences = UserNotificationPreferences(
+        eventNotifications: eventNotifications,
+        gradeNotifications: gradeNotifications,
+        messageNotifications: messageNotifications,
+        clubNotifications: clubNotifications,
+        pushNotificationsEnabled: pushNotificationsEnabled,
+        emailNotificationsEnabled: emailNotificationsEnabled,
       );
-      await Future.delayed(const Duration(milliseconds: 500));
-      if (mounted) Navigator.pop(context);
+      
+      await _profileService.updateNotificationPreferences(notificationPreferences);
+      print('🔄 NotificationSettings: Synced to Firebase');
+    } catch (e) {
+      print('❌ NotificationSettings: Error syncing to Firebase: $e');
     }
   }
 
