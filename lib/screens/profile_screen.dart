@@ -15,6 +15,11 @@ import '../l10n/app_localizations.dart';
 import '../providers/language_provider.dart'; // Dil ayarları için provider eklendi
 import '../widgets/common/app_bar_widget.dart';
 
+// New imports for profile functionality
+import '../services/user_profile_service.dart';
+import '../models/user_profile_model.dart';
+import '../widgets/dialogs/profile_data_dialog.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -25,11 +30,14 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen>
     with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final UserProfileService _profileService = UserProfileService();
 
   // LoginScreen'deki gibi dropdown için değişkenler
   bool _isLanguageDropdownOpen = false;
   late AnimationController _languageDropdownController;
   late Animation<double> _languageDropdownAnimation;
+
+  UserProfile? _currentProfile;
 
   @override
   void initState() {
@@ -44,6 +52,52 @@ class _ProfileScreenState extends State<ProfileScreen>
         curve: Curves.easeOutCubic,
       ),
     );
+    _loadProfile();
+  }
+
+  /// Profil verilerini yükle / Load profile data
+  Future<void> _loadProfile() async {
+    final profile = await _profileService.getUserProfile();
+    if (mounted) {
+      setState(() {
+        _currentProfile = profile;
+      });
+      
+      // Show profile completion dialog if needed
+      _checkProfileCompletion();
+    }
+  }
+
+  /// Profil tamamlanma durumunu kontrol et / Check profile completion
+  void _checkProfileCompletion() {
+    if (_currentProfile != null && !_currentProfile!.isComplete) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showProfileCompletionDialog();
+      });
+    }
+  }
+
+  /// Profil tamamlama dialog'unu göster / Show profile completion dialog
+  void _showProfileCompletionDialog() {
+    if (_currentProfile == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Profil tamamlama zorunlu
+      builder: (context) => ProfileDataDialog(
+        currentProfile: _currentProfile,
+        missingFields: _currentProfile!.missingFields,
+        onProfileUpdated: () {
+          _loadProfile(); // Profili yeniden yükle
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _languageDropdownController.dispose();
+    super.dispose();
   }
 
   void _toggleLanguageDropdown() {
@@ -423,6 +477,10 @@ class _ProfileScreenState extends State<ProfileScreen>
   // İstatistik kartları / Stats cards
   Widget _buildStatsCards(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    
+    // Get stats from current profile
+    final stats = _currentProfile?.stats ?? const UserProfileStats();
+    
     return SizedBox(
       height: 94,
       child: ListView(
@@ -431,28 +489,28 @@ class _ProfileScreenState extends State<ProfileScreen>
           _buildStatCard(
             icon: Icons.event,
             title: l10n.statsEvents,
-            value: '12',
+            value: stats.eventsCount.toString(),
             color: Colors.blue,
           ),
           const SizedBox(width: 12),
           _buildStatCard(
             icon: Icons.school,
             title: l10n.statsGpa,
-            value: '3.67',
+            value: stats.gpa == 0.0 ? '-' : stats.gpa.toStringAsFixed(2),
             color: Colors.green,
           ),
           const SizedBox(width: 12),
           _buildStatCard(
             icon: Icons.feedback,
             title: l10n.statsComplaints,
-            value: '2',
+            value: stats.complaintsCount.toString(),
             color: Colors.orange,
           ),
           const SizedBox(width: 12),
           _buildStatCard(
             icon: Icons.assignment,
             title: l10n.statsAssignments,
-            value: '28',
+            value: stats.assignmentsCount.toString(),
             color: Colors.purple,
           ),
         ],
@@ -530,6 +588,16 @@ class _ProfileScreenState extends State<ProfileScreen>
       ),
       child: Column(
         children: [
+          _buildDivider(),
+          // Profil düzenleme / Profile settings
+          _buildMenuItem(
+            icon: Icons.edit,
+            title: 'Profili Düzenle',
+            subtitle: 'Kişisel bilgilerinizi düzenleyin',
+            onTap: () {
+              _showProfileCompletionDialog();
+            },
+          ),
           _buildDivider(),
           // Dil seçici
           ListTile(
