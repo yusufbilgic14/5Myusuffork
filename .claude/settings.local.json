@@ -11,7 +11,8 @@
       "Bash(mkdir:*)",
       "Bash(find:*)",
       "Bash(flutter gen-l10n:*)",
-      "Bash(flutter packages:*)"
+      "Bash(flutter packages:*)",
+      "Bash(flutter build:*)"
     ],
     "deny": []
   }

@@ -11,38 +11,41 @@ import 'secure_storage_service.dart';
 /// Microsoft OAuth kimlik doğrulama servisi (MSAL tabanlı) / Microsoft OAuth authentication service (MSAL-based)
 class AuthenticationService {
   // Singleton pattern implementation
-  static final AuthenticationService _instance = AuthenticationService._internal();
+  static final AuthenticationService _instance =
+      AuthenticationService._internal();
   factory AuthenticationService() => _instance;
   AuthenticationService._internal();
 
   // MSAL instance / MSAL örneği
   SingleAccountPca? _msalApp;
-  
+
   // Secure storage service instance / Güvenli depolama servisi
   final SecureStorageService _storage = SecureStorageService();
-  
+
   // Stream controller for authentication state / Kimlik doğrulama durumu için stream controller
-  final StreamController<AuthenticationState> _authStateController = StreamController<AuthenticationState>.broadcast();
-  
+  final StreamController<AuthenticationState> _authStateController =
+      StreamController<AuthenticationState>.broadcast();
+
   // Current user / Mevcut kullanıcı
   AppUser? _currentUser;
-  
+
   // Initialization status / Başlatma durumu
   bool _isInitialized = false;
-  
+
   // Rate limiting / Oran sınırlama
   DateTime? _lastLoginAttempt;
   int _consecutiveFailures = 0;
   static const int _maxConsecutiveFailures = 3;
   static const Duration _rateLimitDelay = Duration(seconds: 30);
-  
+
   // MSAL Configuration / MSAL Konfigürasyonu
   static const String _clientId = '68351acb-be70-4759-bfd4-fbf8fa03f064';
   static const String _tenantId = '928e7780-98fd-42c3-831e-d63f2773c094';
-  
+
   // Authentication state stream / Kimlik doğrulama durumu stream'i
-  Stream<AuthenticationState> get authStateChanges => _authStateController.stream;
-  
+  Stream<AuthenticationState> get authStateChanges =>
+      _authStateController.stream;
+
   // Authentication status / Kimlik doğrulama durumu
   bool get isAuthenticated => _currentUser != null;
 
@@ -50,27 +53,29 @@ class AuthenticationService {
   Future<void> initialize() async {
     try {
       if (_isInitialized) return; // Zaten başlatılmışsa / Already initialized
-      
+
       print('🔧 AuthenticationService: Initializing MSAL service...');
-      
+
       // MSAL uygulamasını oluştur / Create MSAL application
       _msalApp = await SingleAccountPca.create(
         clientId: _clientId,
         androidConfig: AndroidConfig(
           configFilePath: 'assets/msal_config.json',
-          redirectUri: 'msauth://com.example.medipolapp/3ZLW/TAqPvR43Zh79ejFQDOdka8=',
+          redirectUri:
+              'msauth://com.example.medipolapp/3ZLW/TAqPvR43Zh79ejFQDOdka8=',
         ),
         appleConfig: AppleConfig(
           authority: 'https://login.microsoftonline.com/$_tenantId',
           authorityType: AuthorityType.aad,
-          broker: Broker.msAuthenticator, // Microsoft Authenticator kullan / Use Microsoft Authenticator
+          broker: Broker
+              .msAuthenticator, // Microsoft Authenticator kullan / Use Microsoft Authenticator
         ),
       );
-      
+
       // Uygulama başladığında kimlik doğrulama durumunu kontrol et
       // Check authentication state when app starts
       await _checkAuthenticationState();
-      
+
       _isInitialized = true;
       print('✅ AuthenticationService: MSAL service initialized successfully');
     } catch (e) {
@@ -97,16 +102,18 @@ class AuthenticationService {
   /// Rate limiting kontrolü / Rate limiting check
   bool _isRateLimited() {
     if (_lastLoginAttempt == null) return false;
-    
+
     final timeSinceLastAttempt = DateTime.now().difference(_lastLoginAttempt!);
-    final shouldDelay = _consecutiveFailures >= _maxConsecutiveFailures && 
-                       timeSinceLastAttempt < _rateLimitDelay;
-    
+    final shouldDelay =
+        _consecutiveFailures >= _maxConsecutiveFailures &&
+        timeSinceLastAttempt < _rateLimitDelay;
+
     if (shouldDelay) {
-      final remainingSeconds = _rateLimitDelay.inSeconds - timeSinceLastAttempt.inSeconds;
+      final remainingSeconds =
+          _rateLimitDelay.inSeconds - timeSinceLastAttempt.inSeconds;
       print('⏰ Rate limited: Wait $remainingSeconds more seconds');
     }
-    
+
     return shouldDelay;
   }
 
@@ -128,10 +135,11 @@ class AuthenticationService {
     try {
       // Rate limiting kontrolü / Rate limiting check
       if (_isRateLimited()) {
-        final remainingSeconds = _rateLimitDelay.inSeconds - 
-          DateTime.now().difference(_lastLoginAttempt!).inSeconds;
+        final remainingSeconds =
+            _rateLimitDelay.inSeconds -
+            DateTime.now().difference(_lastLoginAttempt!).inSeconds;
         return AuthenticationResult.error(
-          'Çok fazla başarısız deneme. $remainingSeconds saniye bekleyin. / Too many failed attempts. Wait $remainingSeconds seconds.'
+          'Çok fazla başarısız deneme. $remainingSeconds saniye bekleyin. / Too many failed attempts. Wait $remainingSeconds seconds.',
         );
       }
 
@@ -141,7 +149,9 @@ class AuthenticationService {
       }
 
       if (_msalApp == null) {
-        throw AuthenticationException('MSAL app not initialized / MSAL uygulaması başlatılmadı');
+        throw AuthenticationException(
+          'MSAL app not initialized / MSAL uygulaması başlatılmadı',
+        );
       }
 
       print('🚀 Starting Microsoft OAuth login...');
@@ -150,14 +160,16 @@ class AuthenticationService {
 
       // Önce mevcut token'ları ve MSAL hesabını temizle / Clear existing tokens and MSAL account first
       await _clearAllCachedData();
-      
+
       // MSAL hesabını da temizle / Also clear MSAL account
       try {
         print('🔄 Signing out any existing MSAL account...');
         await _msalApp!.signOut();
         print('✅ MSAL account cleared');
       } catch (e) {
-        print('⚠️ Warning: Could not sign out existing account (may not exist): $e');
+        print(
+          '⚠️ Warning: Could not sign out existing account (may not exist): $e',
+        );
         // Continue with authentication even if signout fails
       }
 
@@ -170,19 +182,22 @@ class AuthenticationService {
           'profile',
           'email',
         ],
-        prompt: Prompt.login, // Kullanıcıdan her zaman giriş istenmesini sağlar / Always prompt for login
+        prompt: Prompt
+            .login, // Kullanıcıdan her zaman giriş istenmesini sağlar / Always prompt for login
       );
-      
+
       if (authResult.accessToken.isNotEmpty) {
         print('✅ MSAL authentication successful, processing tokens...');
-        
+
         // Token süresini hesapla / Calculate token expiry
-        final expiryTime = authResult.expiresOn ?? DateTime.now().add(const Duration(hours: 1));
+        final expiryTime =
+            authResult.expiresOn ??
+            DateTime.now().add(const Duration(hours: 1));
 
         // Token'ları güvenli depolama alanına kaydet / Save tokens to secure storage
         await _storage.storeAccessToken(authResult.accessToken);
         await _storage.storeTokenExpiry(expiryTime);
-        
+
         // ID token varsa kaydet / Store ID token if available
         if (authResult.idToken != null && authResult.idToken!.isNotEmpty) {
           await _storage.storeIdToken(authResult.idToken!);
@@ -195,15 +210,19 @@ class AuthenticationService {
           _currentUser = userInfo;
           await _storage.storeUserData(userInfoData);
           await _storage.storeAuthState(true);
-          
+
           // Başarılı giriş / Successful login
           _consecutiveFailures = 0;
           _emitAuthState(AuthenticationState.authenticated(userInfo));
-          
-          print('🎉 Microsoft OAuth login completed successfully for user: ${userInfo.displayName}');
+
+          print(
+            '🎉 Microsoft OAuth login completed successfully for user: ${userInfo.displayName}',
+          );
           return AuthenticationResult.success(userInfo);
         } else {
-          throw AuthenticationException('Kullanıcı bilgileri alınamadı / Failed to get user info');
+          throw AuthenticationException(
+            'Kullanıcı bilgileri alınamadı / Failed to get user info',
+          );
         }
       } else {
         // Giriş başarısız / Login failed
@@ -213,32 +232,39 @@ class AuthenticationService {
       }
     } on MsalException catch (e) {
       print('❌ MSAL Exception: ${e.toString()}');
-      
+
       // MSAL özel hata türlerini kontrol et / Check MSAL specific error types
-      if (e.toString().contains('user_cancelled') || e.toString().contains('cancelled')) {
+      if (e.toString().contains('user_cancelled') ||
+          e.toString().contains('cancelled')) {
         print('⏹️ User cancelled MSAL login');
         _emitAuthState(AuthenticationState.unauthenticated);
         return AuthenticationResult.cancelled();
       } else {
         _consecutiveFailures++;
-        String errorMessage = 'MSAL Hatası: ${e.toString()} / MSAL Error: ${e.toString()}';
+        String errorMessage =
+            'MSAL Hatası: ${e.toString()} / MSAL Error: ${e.toString()}';
         _emitAuthState(AuthenticationState.error(errorMessage));
         return AuthenticationResult.error(errorMessage);
       }
     } catch (e) {
       _consecutiveFailures++;
-      print('❌ Microsoft OAuth login failed (attempt $_consecutiveFailures): $e');
-      
+      print(
+        '❌ Microsoft OAuth login failed (attempt $_consecutiveFailures): $e',
+      );
+
       String errorMessage = 'Giriş hatası / Login error';
-      
+
       // Özel hata mesajları / Custom error messages
-      if (e.toString().contains('network') || e.toString().contains('timeout')) {
-        errorMessage = 'Ağ bağlantısı hatası. İnternet bağlantınızı kontrol edin. / Network error. Check your internet connection.';
-      } else if (e.toString().contains('cancelled') || e.toString().contains('user_cancelled')) {
+      if (e.toString().contains('network') ||
+          e.toString().contains('timeout')) {
+        errorMessage =
+            'Ağ bağlantısı hatası. İnternet bağlantınızı kontrol edin. / Network error. Check your internet connection.';
+      } else if (e.toString().contains('cancelled') ||
+          e.toString().contains('user_cancelled')) {
         errorMessage = 'Giriş işlemi iptal edildi / Login was cancelled';
         _consecutiveFailures--; // Don't count cancellations as failures
       }
-      
+
       _emitAuthState(AuthenticationState.error(errorMessage));
       return AuthenticationResult.error(errorMessage);
     }
@@ -283,7 +309,7 @@ class AuthenticationService {
       }
 
       print('🔄 Attempting to refresh token...');
-      
+
       // Silent token acquisition / Sessiz token alımı
       final authResult = await _msalApp!.acquireTokenSilent(
         scopes: [
@@ -296,12 +322,14 @@ class AuthenticationService {
 
       if (authResult.accessToken.isNotEmpty) {
         // Token süresini hesapla / Calculate token expiry
-        final expiryTime = authResult.expiresOn ?? DateTime.now().add(const Duration(hours: 1));
+        final expiryTime =
+            authResult.expiresOn ??
+            DateTime.now().add(const Duration(hours: 1));
 
         // Yeni token'ları sakla / Store new tokens
         await _storage.storeAccessToken(authResult.accessToken);
         await _storage.storeTokenExpiry(expiryTime);
-        
+
         if (authResult.idToken != null && authResult.idToken!.isNotEmpty) {
           await _storage.storeIdToken(authResult.idToken!);
         }
@@ -312,7 +340,8 @@ class AuthenticationService {
 
       return false;
     } on MsalException catch (e) {
-      if (e.toString().contains('ui_required') || e.toString().contains('interaction_required')) {
+      if (e.toString().contains('ui_required') ||
+          e.toString().contains('interaction_required')) {
         print('🔄 UI required for token refresh: ${e.toString()}');
         return false; // Interactive login required
       }
@@ -339,7 +368,7 @@ class AuthenticationService {
         return json.decode(response.body) as Map<String, dynamic>;
       } else {
         throw AuthenticationException(
-          'Kullanıcı bilgileri alınamadı / Failed to get user info: ${response.statusCode}'
+          'Kullanıcı bilgileri alınamadı / Failed to get user info: ${response.statusCode}',
         );
       }
     } catch (e) {
@@ -354,7 +383,7 @@ class AuthenticationService {
       _emitAuthState(AuthenticationState.loading);
 
       final isAuthenticated = await isSignedIn;
-      
+
       if (isAuthenticated) {
         // Kullanıcı bilgilerini yükle / Load user information
         final userData = await _storage.getUserData();
@@ -390,10 +419,7 @@ class AuthenticationService {
         'isSignedIn': await isSignedIn,
         'currentUser': _currentUser?.toString(),
         'storage': storageData,
-        'config': {
-          'clientId': _clientId,
-          'tenantId': _tenantId,
-        },
+        'config': {'clientId': _clientId, 'tenantId': _tenantId},
         'isInitialized': _isInitialized,
       };
     } catch (e) {
@@ -408,8 +434,9 @@ abstract class AuthenticationState {
 
   static const AuthenticationState loading = _LoadingState();
   static const AuthenticationState unauthenticated = _UnauthenticatedState();
-  
-  static AuthenticationState authenticated(AppUser user) => _AuthenticatedState(user);
+
+  static AuthenticationState authenticated(AppUser user) =>
+      _AuthenticatedState(user);
   static AuthenticationState error(String message) => _ErrorState(message);
 }
 
@@ -445,20 +472,14 @@ class AuthenticationResult {
     this.isCancelled = false,
   });
 
-  static AuthenticationResult success(AppUser user) => AuthenticationResult._(
-    isSuccess: true,
-    user: user,
-  );
+  static AuthenticationResult success(AppUser user) =>
+      AuthenticationResult._(isSuccess: true, user: user);
 
-  static AuthenticationResult error(String message) => AuthenticationResult._(
-    isSuccess: false,
-    errorMessage: message,
-  );
+  static AuthenticationResult error(String message) =>
+      AuthenticationResult._(isSuccess: false, errorMessage: message);
 
-  static AuthenticationResult cancelled() => AuthenticationResult._(
-    isSuccess: false,
-    isCancelled: true,
-  );
+  static AuthenticationResult cancelled() =>
+      AuthenticationResult._(isSuccess: false, isCancelled: true);
 }
 
 /// Kimlik doğrulama hata sınıfı / Authentication exception class
@@ -468,4 +489,4 @@ class AuthenticationException implements Exception {
 
   @override
   String toString() => 'AuthenticationException: $message';
-} 
+}

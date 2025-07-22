@@ -44,7 +44,7 @@ class UserEventsService {
   }) async {
     try {
       debugPrint('🔍 UserEventsService: Fetching events');
-      
+
       Query query = _firestore
           .collection('events')
           .where('status', isEqualTo: 'published')
@@ -67,7 +67,10 @@ class UserEventsService {
 
       final querySnapshot = await query.get();
       final events = querySnapshot.docs.map((doc) {
-        return Event.fromFirestoreData(doc.data() as Map<String, dynamic>, doc.id);
+        return Event.fromFirestoreData(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
       }).toList();
 
       debugPrint('✅ UserEventsService: Retrieved ${events.length} events');
@@ -81,22 +84,28 @@ class UserEventsService {
   /// Get upcoming events / Yaklaşan etkinlikleri getir
   Future<List<Event>> getUpcomingEvents({int limit = 20}) async {
     try {
-      final now = Timestamp.now();
-      
+      debugPrint('🔍 UserEventsService: Fetching upcoming events (simplified query)');
+
+      // Simplified query to avoid composite index requirement
       final querySnapshot = await _firestore
           .collection('events')
           .where('status', isEqualTo: 'published')
-          .where('isVisible', isEqualTo: true)
-          .where('startDateTime', isGreaterThan: now)
           .orderBy('startDateTime', descending: false)
-          .limit(limit)
+          .limit(limit * 2) // Get more to filter client-side
           .get();
 
-      final events = querySnapshot.docs.map((doc) {
-        return Event.fromFirestoreData(doc.data(), doc.id);
-      }).toList();
+      final now = DateTime.now();
+      final events = querySnapshot.docs
+          .map((doc) => Event.fromFirestoreData(doc.data(), doc.id))
+          .where((event) => 
+              event.isVisible && 
+              event.startDateTime.isAfter(now))
+          .take(limit)
+          .toList();
 
-      debugPrint('✅ UserEventsService: Retrieved ${events.length} upcoming events');
+      debugPrint(
+        '✅ UserEventsService: Retrieved ${events.length} upcoming events',
+      );
       return events;
     } catch (e) {
       debugPrint('❌ UserEventsService: Failed to get upcoming events - $e');
@@ -120,7 +129,9 @@ class UserEventsService {
         return Event.fromFirestoreData(doc.data(), doc.id);
       }).toList();
 
-      debugPrint('✅ UserEventsService: Retrieved ${events.length} featured events');
+      debugPrint(
+        '✅ UserEventsService: Retrieved ${events.length} featured events',
+      );
       return events;
     } catch (e) {
       debugPrint('❌ UserEventsService: Failed to get featured events - $e');
@@ -136,16 +147,23 @@ class UserEventsService {
       // For a simple implementation, we'll get all events and filter client-side
       // In production, you might want to use Algolia or similar service for better search
       final events = await getEvents(limit: 100);
-      
-      final searchQuery = query.toLowerCase();
-      final filteredEvents = events.where((event) {
-        return event.title.toLowerCase().contains(searchQuery) ||
-               event.description.toLowerCase().contains(searchQuery) ||
-               event.organizerName.toLowerCase().contains(searchQuery) ||
-               event.tags.any((tag) => tag.toLowerCase().contains(searchQuery));
-      }).take(limit).toList();
 
-      debugPrint('✅ UserEventsService: Found ${filteredEvents.length} events for query: $query');
+      final searchQuery = query.toLowerCase();
+      final filteredEvents = events
+          .where((event) {
+            return event.title.toLowerCase().contains(searchQuery) ||
+                event.description.toLowerCase().contains(searchQuery) ||
+                event.organizerName.toLowerCase().contains(searchQuery) ||
+                event.tags.any(
+                  (tag) => tag.toLowerCase().contains(searchQuery),
+                );
+          })
+          .take(limit)
+          .toList();
+
+      debugPrint(
+        '✅ UserEventsService: Found ${filteredEvents.length} events for query: $query',
+      );
       return filteredEvents;
     } catch (e) {
       debugPrint('❌ UserEventsService: Failed to search events - $e');
@@ -158,7 +176,10 @@ class UserEventsService {
   // ==========================================
 
   /// Get user's event interaction / Kullanıcının etkinlik etkileşimini getir
-  Future<UserEventInteraction?> getUserEventInteraction(String eventId, [String? userId]) async {
+  Future<UserEventInteraction?> getUserEventInteraction(
+    String eventId, [
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) {
@@ -172,8 +193,10 @@ class UserEventsService {
         return _interactionsCache[cacheKey];
       }
 
-      debugPrint('🔍 UserEventsService: Fetching interaction for event $eventId');
-      
+      debugPrint(
+        '🔍 UserEventsService: Fetching interaction for event $eventId',
+      );
+
       final interactionDoc = await _firestore
           .collection('users')
           .doc(uid)
@@ -186,8 +209,8 @@ class UserEventsService {
       }
 
       final interaction = UserEventInteraction.fromFirestoreData(
-        interactionDoc.data()!, 
-        interactionDoc.id
+        interactionDoc.data()!,
+        interactionDoc.id,
       );
 
       // Cache the result
@@ -196,7 +219,9 @@ class UserEventsService {
 
       return interaction;
     } catch (e) {
-      debugPrint('❌ UserEventsService: Failed to get user event interaction - $e');
+      debugPrint(
+        '❌ UserEventsService: Failed to get user event interaction - $e',
+      );
       return null;
     }
   }
@@ -212,11 +237,11 @@ class UserEventsService {
       debugPrint('🔄 UserEventsService: Toggling like for event $eventId');
 
       final batch = _firestore.batch();
-      
+
       // Get current interaction
       final interaction = await getUserEventInteraction(eventId, uid);
       final isCurrentlyLiked = interaction?.hasLiked ?? false;
-      
+
       // Update user interaction
       final interactionRef = _firestore
           .collection('users')
@@ -274,11 +299,11 @@ class UserEventsService {
       debugPrint('🔄 UserEventsService: Toggling join for event $eventId');
 
       final batch = _firestore.batch();
-      
+
       // Get current interaction
       final interaction = await getUserEventInteraction(eventId, uid);
       final isCurrentlyJoined = interaction?.hasJoined ?? false;
-      
+
       // Update user interaction
       final interactionRef = _firestore
           .collection('users')
@@ -293,7 +318,9 @@ class UserEventsService {
         hasJoined: !isCurrentlyJoined,
         hasShared: interaction?.hasShared ?? false,
         isFavorited: interaction?.isFavorited ?? false,
-        joinStatus: !isCurrentlyJoined ? JoinStatus.joined : JoinStatus.notJoined,
+        joinStatus: !isCurrentlyJoined
+            ? JoinStatus.joined
+            : JoinStatus.notJoined,
         notifyBeforeEvent: interaction?.notifyBeforeEvent ?? true,
         notifyDayBefore: interaction?.notifyDayBefore ?? true,
         notifyHourBefore: interaction?.notifyHourBefore ?? true,
@@ -321,7 +348,10 @@ class UserEventsService {
 
       if (!isCurrentlyJoined) {
         // Get event details for my events
-        final eventDoc = await _firestore.collection('events').doc(eventId).get();
+        final eventDoc = await _firestore
+            .collection('events')
+            .doc(eventId)
+            .get();
         if (eventDoc.exists) {
           final eventData = eventDoc.data()!;
           final myEvent = UserMyEvent(
@@ -375,10 +405,10 @@ class UserEventsService {
       debugPrint('🔄 UserEventsService: Sharing event $eventId');
 
       final batch = _firestore.batch();
-      
+
       // Get current interaction
       final interaction = await getUserEventInteraction(eventId, uid);
-      
+
       // Update user interaction
       final interactionRef = _firestore
           .collection('users')
@@ -437,7 +467,7 @@ class UserEventsService {
       }
 
       debugPrint('🔍 UserEventsService: Fetching my events for user $uid');
-      
+
       final querySnapshot = await _firestore
           .collection('users')
           .doc(uid)
@@ -466,7 +496,7 @@ class UserEventsService {
       }
 
       final now = Timestamp.now();
-      
+
       final querySnapshot = await _firestore
           .collection('users')
           .doc(uid)
@@ -498,7 +528,7 @@ class UserEventsService {
     int limit = 50,
   }) {
     debugPrint('👁️ UserEventsService: Starting to watch events');
-    
+
     Query query = _firestore
         .collection('events')
         .where('status', isEqualTo: 'published')
@@ -515,27 +545,37 @@ class UserEventsService {
 
     query = query.limit(limit);
 
-    return query.snapshots().map((snapshot) {
-      final events = snapshot.docs.map((doc) {
-        return Event.fromFirestoreData(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
+    return query
+        .snapshots()
+        .map((snapshot) {
+          final events = snapshot.docs.map((doc) {
+            return Event.fromFirestoreData(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          }).toList();
 
-      return events;
-    }).handleError((error) {
-      debugPrint('❌ UserEventsService: Error watching events - $error');
-    });
+          return events;
+        })
+        .handleError((error) {
+          debugPrint('❌ UserEventsService: Error watching events - $error');
+        });
   }
 
   /// Watch my events in real-time / Etkinliklerimi gerçek zamanlı dinle
   Stream<List<UserMyEvent>> watchMyEvents([String? userId]) {
     final uid = userId ?? currentUserId;
     if (uid == null) {
-      debugPrint('❌ UserEventsService: Cannot watch my events - user not authenticated');
+      debugPrint(
+        '❌ UserEventsService: Cannot watch my events - user not authenticated',
+      );
       return Stream.value([]);
     }
 
-    debugPrint('👁️ UserEventsService: Starting to watch my events for user $uid');
-    
+    debugPrint(
+      '👁️ UserEventsService: Starting to watch my events for user $uid',
+    );
+
     return _firestore
         .collection('users')
         .doc(uid)
@@ -560,8 +600,10 @@ class UserEventsService {
 
   /// Watch event engagement counters in real-time / Etkinlik etkileşim sayaçlarını gerçek zamanlı dinle
   Stream<EventCounters> watchEventCounters(String eventId) {
-    debugPrint('👁️ UserEventsService: Starting to watch counters for event $eventId');
-    
+    debugPrint(
+      '👁️ UserEventsService: Starting to watch counters for event $eventId',
+    );
+
     return _firestore
         .collection('events')
         .doc(eventId)
@@ -585,25 +627,31 @@ class UserEventsService {
           );
         })
         .handleError((error) {
-          debugPrint('❌ UserEventsService: Error watching event counters - $error');
+          debugPrint(
+            '❌ UserEventsService: Error watching event counters - $error',
+          );
         });
   }
 
   /// Watch multiple events counters / Birden fazla etkinlik sayacını dinle
-  Stream<Map<String, EventCounters>> watchMultipleEventCounters(List<String> eventIds) {
+  Stream<Map<String, EventCounters>> watchMultipleEventCounters(
+    List<String> eventIds,
+  ) {
     if (eventIds.isEmpty) {
       return Stream.value({});
     }
 
-    debugPrint('👁️ UserEventsService: Starting to watch counters for ${eventIds.length} events');
-    
+    debugPrint(
+      '👁️ UserEventsService: Starting to watch counters for ${eventIds.length} events',
+    );
+
     return _firestore
         .collection('events')
         .where(FieldPath.documentId, whereIn: eventIds)
         .snapshots()
         .map((snapshot) {
           final countersMap = <String, EventCounters>{};
-          
+
           for (final doc in snapshot.docs) {
             final data = doc.data();
             countersMap[doc.id] = EventCounters(
@@ -613,24 +661,33 @@ class UserEventsService {
               shareCount: data['shareCount'] ?? 0,
             );
           }
-          
+
           return countersMap;
         })
         .handleError((error) {
-          debugPrint('❌ UserEventsService: Error watching multiple event counters - $error');
+          debugPrint(
+            '❌ UserEventsService: Error watching multiple event counters - $error',
+          );
         });
   }
 
   /// Watch user's event interaction status in real-time / Kullanıcının etkinlik etkileşim durumunu gerçek zamanlı dinle
-  Stream<UserEventInteraction?> watchUserEventInteraction(String eventId, [String? userId]) {
+  Stream<UserEventInteraction?> watchUserEventInteraction(
+    String eventId, [
+    String? userId,
+  ]) {
     final uid = userId ?? currentUserId;
     if (uid == null) {
-      debugPrint('❌ UserEventsService: Cannot watch interaction - user not authenticated');
+      debugPrint(
+        '❌ UserEventsService: Cannot watch interaction - user not authenticated',
+      );
       return Stream.value(null);
     }
 
-    debugPrint('👁️ UserEventsService: Starting to watch interaction for event $eventId');
-    
+    debugPrint(
+      '👁️ UserEventsService: Starting to watch interaction for event $eventId',
+    );
+
     return _firestore
         .collection('users')
         .doc(uid)
@@ -642,10 +699,15 @@ class UserEventsService {
             return null;
           }
 
-          return UserEventInteraction.fromFirestoreData(snapshot.data()!, snapshot.id);
+          return UserEventInteraction.fromFirestoreData(
+            snapshot.data()!,
+            snapshot.id,
+          );
         })
         .handleError((error) {
-          debugPrint('❌ UserEventsService: Error watching user interaction - $error');
+          debugPrint(
+            '❌ UserEventsService: Error watching user interaction - $error',
+          );
         });
   }
 
@@ -679,6 +741,156 @@ class UserEventsService {
   }
 
   /// Dispose service / Servisi temizle
+  /// Get event by ID / ID'ye göre etkinlik getir
+  Future<Event?> getEventById(String eventId) async {
+    try {
+      debugPrint('🔍 UserEventsService: Fetching event by ID - $eventId');
+
+      final doc = await _firestore
+          .collection('events')
+          .doc(eventId)
+          .get();
+
+      if (!doc.exists) {
+        debugPrint('⚠️ UserEventsService: Event not found - $eventId');
+        return null;
+      }
+
+      final event = Event.fromFirestoreData(doc.data()!, doc.id);
+      debugPrint('✅ UserEventsService: Event fetched successfully - ${event.title}');
+      return event;
+    } catch (e) {
+      debugPrint('❌ UserEventsService: Failed to fetch event - $e');
+      return null;
+    }
+  }
+
+  // ==========================================
+  // EVENT CREATION / ETKİNLİK OLUŞTURMA
+  // ==========================================
+
+  /// Create a new event / Yeni etkinlik oluştur
+  Future<String> createEvent(Event event) async {
+    if (!isAuthenticated) {
+      throw Exception('User not authenticated');
+    }
+
+    try {
+      debugPrint('📝 UserEventsService: Creating event - ${event.title}');
+
+      // Firebase'e etkinliği kaydet
+      await _firestore
+          .collection('events')
+          .doc(event.eventId)
+          .set(event.toFirestoreData());
+
+      // Cache'i temizle
+      clearCache();
+
+      debugPrint('✅ UserEventsService: Event created successfully - ${event.eventId}');
+      return event.eventId;
+    } catch (e) {
+      debugPrint('❌ UserEventsService: Failed to create event - $e');
+      throw Exception('Failed to create event: $e');
+    }
+  }
+
+  /// Update an existing event / Mevcut etkinliği güncelle
+  Future<void> updateEvent(String eventId, Event updatedEvent) async {
+    if (!isAuthenticated) {
+      throw Exception('User not authenticated');
+    }
+
+    try {
+      debugPrint('📝 UserEventsService: Updating event - $eventId');
+
+      // Kullanıcının etkinliği güncelleme yetkisi var mı kontrol et
+      final currentEvent = await getEventById(eventId);
+      if (currentEvent == null) {
+        throw Exception('Event not found');
+      }
+
+      if (currentEvent.createdBy != currentUserId) {
+        throw Exception('Unauthorized to update this event');
+      }
+
+      // Firebase'de etkinliği güncelle
+      await _firestore
+          .collection('events')
+          .doc(eventId)
+          .update(updatedEvent.copyWith(
+            updatedAt: DateTime.now(),
+            updatedBy: currentUserId,
+          ).toFirestoreData());
+
+      // Cache'i temizle
+      clearCache();
+
+      debugPrint('✅ UserEventsService: Event updated successfully - $eventId');
+    } catch (e) {
+      debugPrint('❌ UserEventsService: Failed to update event - $e');
+      throw Exception('Failed to update event: $e');
+    }
+  }
+
+  /// Delete an event / Etkinliği sil
+  Future<void> deleteEvent(String eventId) async {
+    if (!isAuthenticated) {
+      throw Exception('User not authenticated');
+    }
+
+    try {
+      debugPrint('🗑️ UserEventsService: Deleting event - $eventId');
+
+      // Kullanıcının etkinliği silme yetkisi var mı kontrol et
+      final currentEvent = await getEventById(eventId);
+      if (currentEvent == null) {
+        throw Exception('Event not found');
+      }
+
+      if (currentEvent.createdBy != currentUserId) {
+        throw Exception('Unauthorized to delete this event');
+      }
+
+      // Firebase'den etkinliği sil
+      await _firestore
+          .collection('events')
+          .doc(eventId)
+          .delete();
+
+      // İlgili etkileşimleri de sil
+      final batch = _firestore.batch();
+      
+      final interactionsQuery = await _firestore
+          .collection('user_event_interactions')
+          .where('eventId', isEqualTo: eventId)
+          .get();
+
+      for (final doc in interactionsQuery.docs) {
+        batch.delete(doc.reference);
+      }
+
+      final myEventsQuery = await _firestore
+          .collection('user_my_events')
+          .where('eventId', isEqualTo: eventId)
+          .get();
+
+      for (final doc in myEventsQuery.docs) {
+        batch.delete(doc.reference);
+      }
+
+      await batch.commit();
+
+      // Cache'i temizle
+      clearCache();
+
+      debugPrint('✅ UserEventsService: Event deleted successfully - $eventId');
+    } catch (e) {
+      debugPrint('❌ UserEventsService: Failed to delete event - $e');
+      throw Exception('Failed to delete event: $e');
+    }
+  }
+
   void dispose() {
     cancelAllSubscriptions();
     clearCache();

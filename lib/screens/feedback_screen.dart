@@ -180,7 +180,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     boxShadow: _selectedType == 'talep'
                         ? [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.3,
+                              ),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
@@ -239,7 +241,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     boxShadow: _selectedType == 'geri_bildirim'
                         ? [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.3,
+                              ),
                               offset: const Offset(0, 2),
                               blurRadius: 8,
                             ),
@@ -333,7 +337,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.3,
+                            ),
                             offset: const Offset(0, 2),
                             blurRadius: 8,
                           ),
@@ -427,35 +433,35 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       children: [
         // Anonim geri bildirim seçeneği - sadece geri bildirim türü için
         if (_selectedType != 'talep') _buildAnonymousSection(theme),
-        
+
         // Departman seçimi
         _buildDepartmentSelection(theme),
         const SizedBox(height: 20),
-        
+
         // Öncelik seviyesi
         _buildPrioritySelection(theme),
         const SizedBox(height: 20),
-        
+
         // E-posta adresi (koşullu olarak)
         if (!_isAnonymous || _selectedType == 'talep') ...[
           _buildEmailField(theme),
           const SizedBox(height: 20),
         ],
-        
+
         // Konu
         _buildSubjectField(theme),
         const SizedBox(height: 20),
-        
+
         // Mesaj
         _buildMessageField(theme),
         const SizedBox(height: 20),
-        
+
         // Dosya ekleme bölümü
         _buildFileAttachment(theme),
       ],
     );
   }
-  
+
   // Anonim geri bildirim seçeneği widget'ı
   Widget _buildAnonymousSection(ThemeData theme) {
     return Column(
@@ -478,7 +484,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     AppLocalizations.of(context)!.keep_my_identity_private,
                     style: TextStyle(
                       fontSize: 14,
-                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                      color: theme.textTheme.bodyMedium?.color?.withValues(
+                        alpha: 0.7,
+                      ),
                       height: 1.2,
                     ),
                   ),
@@ -504,7 +512,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ],
     );
   }
-  
+
   // Departman seçimi widget'ı
   Widget _buildDepartmentSelection(ThemeData theme) {
     return Column(
@@ -522,7 +530,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         DropdownButtonFormField<String>(
           value: _selectedDepartment.isEmpty ? null : _selectedDepartment,
           decoration: _buildStandardInputDecoration(
-            theme, 
+            theme,
             AppLocalizations.of(context)!.select_department,
           ),
           items: _departments.map((department) {
@@ -543,7 +551,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ],
     );
   }
-  
+
   // Öncelik seviyesi seçimi widget'ı
   Widget _buildPrioritySelection(ThemeData theme) {
     return Column(
@@ -560,20 +568,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         const SizedBox(height: 8),
         Row(
           children: _priorities.map((priority) {
-            return Expanded(
-              child: _buildPriorityButton(priority, theme),
-            );
+            return Expanded(child: _buildPriorityButton(priority, theme));
           }).toList(),
         ),
       ],
     );
   }
-  
+
   // Tek bir öncelik butonu widget'ı
   Widget _buildPriorityButton(String priority, ThemeData theme) {
     final isSelected = _selectedPriority == priority;
     final color = _getPriorityColor(priority);
-    
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -600,7 +606,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ),
     );
   }
-  
+
   // E-posta alanı widget'ı
   Widget _buildEmailField(ThemeData theme) {
     return Column(
@@ -630,7 +636,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ],
     );
   }
-  
+
   // Konu alanı widget'ı
   Widget _buildSubjectField(ThemeData theme) {
     return Column(
@@ -657,7 +663,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ],
     );
   }
-  
+
   // Mesaj alanı widget'ı
   Widget _buildMessageField(ThemeData theme) {
     return Column(
@@ -700,17 +706,17 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ],
     );
   }
-  
+
   // Standart input dekorasyonu helper metodu
   InputDecoration _buildStandardInputDecoration(
-    ThemeData theme, 
+    ThemeData theme,
     String hintText, {
     IconData? prefixIcon,
   }) {
     return InputDecoration(
       hintText: hintText,
-      prefixIcon: prefixIcon != null 
-          ? Icon(prefixIcon, color: theme.iconTheme.color) 
+      prefixIcon: prefixIcon != null
+          ? Icon(prefixIcon, color: theme.iconTheme.color)
           : null,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -718,18 +724,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(
-          color: theme.colorScheme.primary,
-          width: 2,
-        ),
+        borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
       ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 12,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
-  
+
   // Öncelik rengi helper metodu
   Color _getPriorityColor(String priority) {
     switch (priority) {
@@ -743,7 +743,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         return Colors.red[800]!;
     }
   }
-  
+
   // E-posta validasyon metodu
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -754,7 +754,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     }
     return null;
   }
-  
+
   // Konu validasyon metodu
   String? _validateSubject(String? value) {
     if (value == null || value.isEmpty) {
@@ -765,7 +765,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     }
     return null;
   }
-  
+
   // Mesaj validasyon metodu
   String? _validateMessage(String? value) {
     if (value == null || value.isEmpty) {
@@ -812,14 +812,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 Icon(
                   Icons.cloud_upload_outlined,
                   size: 40,
-                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                  color: theme.textTheme.bodyMedium?.color?.withValues(
+                    alpha: 0.7,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   AppLocalizations.of(context)!.click_to_select_file,
                   style: TextStyle(
                     fontSize: 14,
-                    color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
+                    color: theme.textTheme.bodyMedium?.color?.withValues(
+                      alpha: 0.7,
+                    ),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -827,7 +831,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   AppLocalizations.of(context)!.file_types_max_size,
                   style: TextStyle(
                     fontSize: 12,
-                    color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
+                    color: theme.textTheme.bodyMedium?.color?.withValues(
+                      alpha: 0.6,
+                    ),
                   ),
                 ),
               ],
@@ -1033,23 +1039,28 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   // Kategori lokalizasyon haritası / Category localization map
-  Map<String, String Function(AppLocalizations)> get _categoryLocalizationMap => {
-    'requestCategoryAcademicSupport': (l10n) => l10n.requestCategoryAcademicSupport,
-    'requestCategoryTechnicalHelp': (l10n) => l10n.requestCategoryTechnicalHelp,
-    'requestCategoryLibrary': (l10n) => l10n.requestCategoryLibrary,
-    'requestCategoryCafeteria': (l10n) => l10n.requestCategoryCafeteria,
-    'requestCategoryTransport': (l10n) => l10n.requestCategoryTransport,
-    'requestCategorySecurity': (l10n) => l10n.requestCategorySecurity,
-    'requestCategoryFinance': (l10n) => l10n.requestCategoryFinance,
-    'requestCategoryGeneral': (l10n) => l10n.requestCategoryGeneral,
-    'feedbackCategoryBugReport': (l10n) => l10n.feedbackCategoryBugReport,
-    'feedbackCategorySuggestion': (l10n) => l10n.feedbackCategorySuggestion,
-    'feedbackCategoryComplaint': (l10n) => l10n.feedbackCategoryComplaint,
-    'feedbackCategoryAppreciation': (l10n) => l10n.feedbackCategoryAppreciation,
-    'feedbackCategoryFeatureRequest': (l10n) => l10n.feedbackCategoryFeatureRequest,
-    'feedbackCategoryAppReview': (l10n) => l10n.feedbackCategoryAppReview,
-    'feedbackCategoryGeneral': (l10n) => l10n.feedbackCategoryGeneral,
-  };
+  Map<String, String Function(AppLocalizations)> get _categoryLocalizationMap =>
+      {
+        'requestCategoryAcademicSupport': (l10n) =>
+            l10n.requestCategoryAcademicSupport,
+        'requestCategoryTechnicalHelp': (l10n) =>
+            l10n.requestCategoryTechnicalHelp,
+        'requestCategoryLibrary': (l10n) => l10n.requestCategoryLibrary,
+        'requestCategoryCafeteria': (l10n) => l10n.requestCategoryCafeteria,
+        'requestCategoryTransport': (l10n) => l10n.requestCategoryTransport,
+        'requestCategorySecurity': (l10n) => l10n.requestCategorySecurity,
+        'requestCategoryFinance': (l10n) => l10n.requestCategoryFinance,
+        'requestCategoryGeneral': (l10n) => l10n.requestCategoryGeneral,
+        'feedbackCategoryBugReport': (l10n) => l10n.feedbackCategoryBugReport,
+        'feedbackCategorySuggestion': (l10n) => l10n.feedbackCategorySuggestion,
+        'feedbackCategoryComplaint': (l10n) => l10n.feedbackCategoryComplaint,
+        'feedbackCategoryAppreciation': (l10n) =>
+            l10n.feedbackCategoryAppreciation,
+        'feedbackCategoryFeatureRequest': (l10n) =>
+            l10n.feedbackCategoryFeatureRequest,
+        'feedbackCategoryAppReview': (l10n) => l10n.feedbackCategoryAppReview,
+        'feedbackCategoryGeneral': (l10n) => l10n.feedbackCategoryGeneral,
+      };
 
   String _localizedCategoryName(BuildContext context, String key) {
     final l10n = AppLocalizations.of(context)!;
@@ -1131,8 +1142,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       )!.share_your_opinions_and_suggestions_for_better_app,
                       style: TextStyle(
                         fontSize: 14,
-                        color: theme.textTheme.bodyMedium?.color?.withValues(alpha:
-                          0.7,
+                        color: theme.textTheme.bodyMedium?.color?.withValues(
+                          alpha: 0.7,
                         ),
                         height: 1.4,
                       ),

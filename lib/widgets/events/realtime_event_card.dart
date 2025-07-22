@@ -37,10 +37,10 @@ class RealTimeEventCard extends StatefulWidget {
 
 class _RealTimeEventCardState extends State<RealTimeEventCard> {
   final UserEventsService _eventsService = UserEventsService();
-  
+
   StreamSubscription<EventCounters>? _countersSubscription;
   StreamSubscription<UserEventInteraction?>? _interactionSubscription;
-  
+
   EventCounters? _currentCounters;
   UserEventInteraction? _userInteraction;
   bool _isLoading = false;
@@ -71,7 +71,9 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
             }
           },
           onError: (error) {
-            debugPrint('❌ RealTimeEventCard: Error listening to counters - $error');
+            debugPrint(
+              '❌ RealTimeEventCard: Error listening to counters - $error',
+            );
           },
         );
 
@@ -87,7 +89,9 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
             }
           },
           onError: (error) {
-            debugPrint('❌ RealTimeEventCard: Error listening to interaction - $error');
+            debugPrint(
+              '❌ RealTimeEventCard: Error listening to interaction - $error',
+            );
           },
         );
   }
@@ -97,7 +101,8 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
   bool get hasShared => _userInteraction?.hasShared ?? false;
 
   int get likeCount => _currentCounters?.likeCount ?? widget.event.likeCount;
-  int get commentCount => _currentCounters?.commentCount ?? widget.event.commentCount;
+  int get commentCount =>
+      _currentCounters?.commentCount ?? widget.event.commentCount;
   int get joinCount => _currentCounters?.joinCount ?? widget.event.joinCount;
   int get shareCount => _currentCounters?.shareCount ?? widget.event.shareCount;
 
@@ -137,14 +142,17 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: widget.club?.colors.primaryColor.withValues(alpha: 0.1) ?? 
-                     AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+              color:
+                  widget.club?.colors.primaryColor.withValues(alpha: 0.1) ??
+                  AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
             ),
             child: Center(
-              child: widget.club?.logoUrl != null 
+              child: widget.club?.logoUrl != null
                   ? ClipRRect(
-                      borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                      borderRadius: BorderRadius.circular(
+                        AppConstants.radiusSmall,
+                      ),
                       child: Image.network(
                         widget.club!.logoUrl!,
                         width: 40,
@@ -176,7 +184,8 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
                         color: AppThemes.getTextColor(context),
                       ),
                     ),
-                    if (widget.club?.verificationStatus == VerificationStatus.verified) ...[
+                    if (widget.club?.verificationStatus ==
+                        VerificationStatus.verified) ...[
                       const SizedBox(width: 4),
                       Icon(
                         Icons.verified,
@@ -187,8 +196,8 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
                   ],
                 ),
                 Text(
-                  widget.event.createdAt != null 
-                      ? _formatPostTime(widget.event.createdAt!) 
+                  widget.event.createdAt != null
+                      ? _formatPostTime(widget.event.createdAt!)
                       : 'Yeni',
                   style: TextStyle(
                     fontSize: AppConstants.fontSizeSmall,
@@ -359,7 +368,7 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: Text(
-                  widget.event.maxCapacity != null 
+                  widget.event.maxCapacity != null
                       ? '$joinCount/${widget.event.maxCapacity} katılımcı'
                       : '$joinCount katılımcı',
                   key: ValueKey(joinCount),
@@ -400,15 +409,18 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
             vertical: 4,
           ),
           decoration: BoxDecoration(
-            color: widget.club?.colors.primaryColor.withValues(alpha: 0.1) ??
-                   AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+            color:
+                widget.club?.colors.primaryColor.withValues(alpha: 0.1) ??
+                AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
           ),
           child: Text(
             '#$tag',
             style: TextStyle(
               fontSize: AppConstants.fontSizeSmall,
-              color: widget.club?.colors.primaryColor ?? AppThemes.getPrimaryColor(context),
+              color:
+                  widget.club?.colors.primaryColor ??
+                  AppThemes.getPrimaryColor(context),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -476,16 +488,18 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
               // Like button with loading state
               Expanded(
                 child: TextButton.icon(
-                  onPressed: _isLoading ? null : () {
-                    setState(() => _isLoading = true);
-                    try {
-                      widget.onLike?.call();
-                    } finally {
-                      if (mounted) {
-                        setState(() => _isLoading = false);
-                      }
-                    }
-                  },
+                  onPressed: _isLoading
+                      ? null
+                      : () {
+                          setState(() => _isLoading = true);
+                          try {
+                            widget.onLike?.call();
+                          } finally {
+                            if (mounted) {
+                              setState(() => _isLoading = false);
+                            }
+                          }
+                        },
                   icon: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
                     child: Icon(
@@ -527,8 +541,9 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
               // Join button with loading state
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: _isLoading || 
-                             (widget.event.maxCapacity != null && 
+                  onPressed:
+                      _isLoading ||
+                          (widget.event.maxCapacity != null &&
                               joinCount >= widget.event.maxCapacity!)
                       ? null
                       : () {

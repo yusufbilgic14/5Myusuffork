@@ -1,6 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 part 'user_event_models.g.dart';
 
@@ -10,109 +9,109 @@ part 'user_event_models.g.dart';
 class Event {
   @JsonKey(name: 'eventId')
   final String eventId;
-  
+
   @JsonKey(name: 'title')
   final String title;
-  
+
   @JsonKey(name: 'description')
   final String description;
-  
+
   @JsonKey(name: 'imageUrl')
   final String? imageUrl;
-  
+
   @JsonKey(name: 'eventType')
   final String eventType; // 'conference', 'workshop', 'social', 'sports', 'cultural', 'academic', 'career'
-  
+
   @JsonKey(name: 'category')
   final String category;
-  
+
   @JsonKey(name: 'location')
   final String location;
-  
+
   @JsonKey(name: 'building')
   final String? building;
-  
+
   @JsonKey(name: 'room')
   final String? room;
-  
+
   // Date & Time
   @JsonKey(name: 'startDateTime', includeIfNull: false)
   @TimestampConverter()
   final DateTime startDateTime;
-  
+
   @JsonKey(name: 'endDateTime', includeIfNull: false)
   @TimestampConverter()
   final DateTime endDateTime;
-  
+
   @JsonKey(name: 'timezone')
   final String timezone;
-  
+
   // Capacity & Registration
   @JsonKey(name: 'maxCapacity')
   final int? maxCapacity;
-  
+
   @JsonKey(name: 'requiresRegistration')
   final bool requiresRegistration;
-  
+
   @JsonKey(name: 'registrationDeadline', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? registrationDeadline;
-  
+
   // Organizer Information
   @JsonKey(name: 'organizerId')
   final String organizerId;
-  
+
   @JsonKey(name: 'organizerName')
   final String organizerName;
-  
+
   @JsonKey(name: 'organizerType')
   final String organizerType; // 'university', 'club', 'department', 'student_organization'
-  
+
   @JsonKey(name: 'clubId')
   final String? clubId;
-  
+
   // Status & Visibility
   @JsonKey(name: 'status')
   final String status; // 'draft', 'published', 'cancelled', 'completed'
-  
+
   @JsonKey(name: 'isVisible')
   final bool isVisible;
-  
+
   @JsonKey(name: 'isFeatured')
   final bool isFeatured;
-  
+
   // Engagement Counters
   @JsonKey(name: 'likeCount')
   final int likeCount;
-  
+
   @JsonKey(name: 'commentCount')
   final int commentCount;
-  
+
   @JsonKey(name: 'joinCount')
   final int joinCount;
-  
+
   @JsonKey(name: 'shareCount')
   final int shareCount;
-  
+
   // Metadata
   @JsonKey(name: 'createdAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? createdAt;
-  
+
   @JsonKey(name: 'updatedAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? updatedAt;
-  
+
   @JsonKey(name: 'createdBy')
   final String createdBy;
-  
+
   @JsonKey(name: 'updatedBy')
   final String? updatedBy;
-  
+
   // Tags & Search
   @JsonKey(name: 'tags')
   final List<String> tags;
-  
+
   @JsonKey(name: 'keywords')
   final List<String> keywords;
 
@@ -155,24 +154,33 @@ class Event {
   Map<String, dynamic> toJson() => _$EventToJson(this);
 
   /// Create Event from Firestore data
-  factory Event.fromFirestoreData(Map<String, dynamic> data, String documentId) {
+  factory Event.fromFirestoreData(
+    Map<String, dynamic> data,
+    String documentId,
+  ) {
     final jsonData = Map<String, dynamic>.from(data);
-    
+
     // Set event ID if not present
     if (!jsonData.containsKey('eventId')) {
       jsonData['eventId'] = documentId;
     }
-    
+
     // Convert Timestamps to DateTime strings for JSON parsing
-    _convertTimestampFields(jsonData, ['startDateTime', 'endDateTime', 'registrationDeadline', 'createdAt', 'updatedAt']);
-    
+    _convertTimestampFields(jsonData, [
+      'startDateTime',
+      'endDateTime',
+      'registrationDeadline',
+      'createdAt',
+      'updatedAt',
+    ]);
+
     return Event.fromJson(jsonData);
   }
 
   /// Create Firestore-compatible data
   Map<String, dynamic> toFirestoreData() {
     final data = toJson();
-    
+
     // Convert DateTime fields to Timestamps
     if (data['startDateTime'] != null) {
       data['startDateTime'] = Timestamp.fromDate(startDateTime);
@@ -189,7 +197,7 @@ class Event {
     if (updatedAt != null) {
       data['updatedAt'] = Timestamp.fromDate(updatedAt!);
     }
-    
+
     return data;
   }
 
@@ -281,13 +289,34 @@ class Event {
     );
   }
 
+  /// Get formatted date string
+  /// Formatlanmış tarih string'i getir
+  String getFormattedDate() {
+    final eventDate = startDateTime;
+    final now = DateTime.now();
+    final difference = eventDate.difference(now);
+
+    if (difference.inDays == 0) {
+      return 'Today, ${eventDate.hour.toString().padLeft(2, '0')}:${eventDate.minute.toString().padLeft(2, '0')}';
+    } else if (difference.inDays == 1) {
+      return 'Tomorrow, ${eventDate.hour.toString().padLeft(2, '0')}:${eventDate.minute.toString().padLeft(2, '0')}';
+    } else if (difference.inDays > 0 && difference.inDays < 7) {
+      final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      return '${days[eventDate.weekday - 1]}, ${eventDate.hour.toString().padLeft(2, '0')}:${eventDate.minute.toString().padLeft(2, '0')}';
+    } else {
+      return '${eventDate.day}/${eventDate.month}/${eventDate.year} ${eventDate.hour.toString().padLeft(2, '0')}:${eventDate.minute.toString().padLeft(2, '0')}';
+    }
+  }
+
   @override
   String toString() => 'Event{eventId: $eventId, title: $title}';
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Event && runtimeType == other.runtimeType && eventId == other.eventId;
+      other is Event &&
+          runtimeType == other.runtimeType &&
+          eventId == other.eventId;
 
   @override
   int get hashCode => eventId.hashCode;
@@ -299,59 +328,59 @@ class Event {
 class UserEventInteraction {
   @JsonKey(name: 'eventId')
   final String eventId;
-  
+
   @JsonKey(name: 'userId')
   final String userId;
-  
+
   // Interaction Types
   @JsonKey(name: 'hasLiked')
   final bool hasLiked;
-  
+
   @JsonKey(name: 'hasJoined')
   final bool hasJoined;
-  
+
   @JsonKey(name: 'hasShared')
   final bool hasShared;
-  
+
   @JsonKey(name: 'isFavorited')
   final bool isFavorited;
-  
+
   // Participation Details
   @JsonKey(name: 'joinedAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? joinedAt;
-  
+
   @JsonKey(name: 'leftAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? leftAt;
-  
+
   @JsonKey(name: 'joinStatus')
   final JoinStatus joinStatus;
-  
+
   // Notification Preferences
   @JsonKey(name: 'notifyBeforeEvent')
   final bool notifyBeforeEvent;
-  
+
   @JsonKey(name: 'notifyDayBefore')
   final bool notifyDayBefore;
-  
+
   @JsonKey(name: 'notifyHourBefore')
   final bool notifyHourBefore;
-  
+
   // Interaction History
   @JsonKey(name: 'likedAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? likedAt;
-  
+
   @JsonKey(name: 'unlikedAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? unlikedAt;
-  
+
   // Metadata
   @JsonKey(name: 'createdAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? createdAt;
-  
+
   @JsonKey(name: 'updatedAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? updatedAt;
@@ -375,28 +404,39 @@ class UserEventInteraction {
     this.updatedAt,
   });
 
-  factory UserEventInteraction.fromJson(Map<String, dynamic> json) => _$UserEventInteractionFromJson(json);
+  factory UserEventInteraction.fromJson(Map<String, dynamic> json) =>
+      _$UserEventInteractionFromJson(json);
   Map<String, dynamic> toJson() => _$UserEventInteractionToJson(this);
 
   /// Create from Firestore data
-  factory UserEventInteraction.fromFirestoreData(Map<String, dynamic> data, String documentId) {
+  factory UserEventInteraction.fromFirestoreData(
+    Map<String, dynamic> data,
+    String documentId,
+  ) {
     final jsonData = Map<String, dynamic>.from(data);
-    
+
     // Set event ID if not present
     if (!jsonData.containsKey('eventId')) {
       jsonData['eventId'] = documentId;
     }
-    
+
     // Convert Timestamps to DateTime strings
-    _convertTimestampFields(jsonData, ['joinedAt', 'leftAt', 'likedAt', 'unlikedAt', 'createdAt', 'updatedAt']);
-    
+    _convertTimestampFields(jsonData, [
+      'joinedAt',
+      'leftAt',
+      'likedAt',
+      'unlikedAt',
+      'createdAt',
+      'updatedAt',
+    ]);
+
     return UserEventInteraction.fromJson(jsonData);
   }
 
   /// Create Firestore-compatible data
   Map<String, dynamic> toFirestoreData() {
     final data = toJson();
-    
+
     // Convert DateTime fields to Timestamps
     _convertDateTimeToTimestamp(data, 'joinedAt', joinedAt);
     _convertDateTimeToTimestamp(data, 'leftAt', leftAt);
@@ -404,7 +444,7 @@ class UserEventInteraction {
     _convertDateTimeToTimestamp(data, 'unlikedAt', unlikedAt);
     _convertDateTimeToTimestamp(data, 'createdAt', createdAt);
     _convertDateTimeToTimestamp(data, 'updatedAt', updatedAt);
-    
+
     return data;
   }
 
@@ -447,7 +487,8 @@ class UserEventInteraction {
   }
 
   @override
-  String toString() => 'UserEventInteraction{eventId: $eventId, userId: $userId}';
+  String toString() =>
+      'UserEventInteraction{eventId: $eventId, userId: $userId}';
 }
 
 /// User's personal event calendar entry
@@ -456,58 +497,58 @@ class UserEventInteraction {
 class UserMyEvent {
   @JsonKey(name: 'eventId')
   final String eventId;
-  
+
   @JsonKey(name: 'userId')
   final String userId;
-  
+
   // Event Reference Data (denormalized)
   @JsonKey(name: 'eventTitle')
   final String eventTitle;
-  
+
   @JsonKey(name: 'eventStartDate', includeIfNull: false)
   @TimestampConverter()
   final DateTime eventStartDate;
-  
+
   @JsonKey(name: 'eventEndDate', includeIfNull: false)
   @TimestampConverter()
   final DateTime eventEndDate;
-  
+
   @JsonKey(name: 'eventLocation')
   final String eventLocation;
-  
+
   @JsonKey(name: 'organizerName')
   final String organizerName;
-  
+
   // User Participation
   @JsonKey(name: 'joinedAt', includeIfNull: false)
   @TimestampConverter()
   final DateTime joinedAt;
-  
+
   @JsonKey(name: 'joinMethod')
   final JoinMethod joinMethod;
-  
+
   @JsonKey(name: 'participationStatus')
   final ParticipationStatus participationStatus;
-  
+
   // Personal Notes & Reminders
   @JsonKey(name: 'personalNotes')
   final String? personalNotes;
-  
+
   @JsonKey(name: 'customReminders')
   final CustomReminders customReminders;
-  
+
   // Calendar Integration
   @JsonKey(name: 'addedToCalendar')
   final bool addedToCalendar;
-  
+
   @JsonKey(name: 'calendarEventId')
   final String? calendarEventId;
-  
+
   // Metadata
   @JsonKey(name: 'createdAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? createdAt;
-  
+
   @JsonKey(name: 'updatedAt', includeIfNull: false)
   @NullableTimestampConverter()
   final DateTime? updatedAt;
@@ -531,37 +572,48 @@ class UserMyEvent {
     this.updatedAt,
   });
 
-  factory UserMyEvent.fromJson(Map<String, dynamic> json) => _$UserMyEventFromJson(json);
+  factory UserMyEvent.fromJson(Map<String, dynamic> json) =>
+      _$UserMyEventFromJson(json);
   Map<String, dynamic> toJson() => _$UserMyEventToJson(this);
 
   /// Create from Firestore data
-  factory UserMyEvent.fromFirestoreData(Map<String, dynamic> data, String documentId) {
+  factory UserMyEvent.fromFirestoreData(
+    Map<String, dynamic> data,
+    String documentId,
+  ) {
     final jsonData = Map<String, dynamic>.from(data);
-    
+
     if (!jsonData.containsKey('eventId')) {
       jsonData['eventId'] = documentId;
     }
-    
-    _convertTimestampFields(jsonData, ['eventStartDate', 'eventEndDate', 'joinedAt', 'createdAt', 'updatedAt']);
-    
+
+    _convertTimestampFields(jsonData, [
+      'eventStartDate',
+      'eventEndDate',
+      'joinedAt',
+      'createdAt',
+      'updatedAt',
+    ]);
+
     return UserMyEvent.fromJson(jsonData);
   }
 
   /// Create Firestore-compatible data
   Map<String, dynamic> toFirestoreData() {
     final data = toJson();
-    
+
     data['eventStartDate'] = Timestamp.fromDate(eventStartDate);
     data['eventEndDate'] = Timestamp.fromDate(eventEndDate);
     data['joinedAt'] = Timestamp.fromDate(joinedAt);
     _convertDateTimeToTimestamp(data, 'createdAt', createdAt);
     _convertDateTimeToTimestamp(data, 'updatedAt', updatedAt);
-    
+
     return data;
   }
 
   @override
-  String toString() => 'UserMyEvent{eventId: $eventId, eventTitle: $eventTitle}';
+  String toString() =>
+      'UserMyEvent{eventId: $eventId, eventTitle: $eventTitle}';
 }
 
 /// Custom reminder settings
@@ -570,7 +622,7 @@ class UserMyEvent {
 class CustomReminders {
   @JsonKey(name: 'enabled')
   final bool enabled;
-  
+
   @JsonKey(name: 'beforeMinutes')
   final List<int> beforeMinutes;
 
@@ -579,7 +631,8 @@ class CustomReminders {
     this.beforeMinutes = const [15, 60], // 15 minutes and 1 hour before
   });
 
-  factory CustomReminders.fromJson(Map<String, dynamic> json) => _$CustomRemindersFromJson(json);
+  factory CustomReminders.fromJson(Map<String, dynamic> json) =>
+      _$CustomRemindersFromJson(json);
   Map<String, dynamic> toJson() => _$CustomRemindersToJson(this);
 }
 
@@ -671,7 +724,11 @@ void _convertTimestampFields(Map<String, dynamic> data, List<String> fields) {
 
 /// Helper function to convert DateTime to Timestamp
 /// DateTime'ı Timestamp'a dönüştürme yardımcı fonksiyonu
-void _convertDateTimeToTimestamp(Map<String, dynamic> data, String field, DateTime? dateTime) {
+void _convertDateTimeToTimestamp(
+  Map<String, dynamic> data,
+  String field,
+  DateTime? dateTime,
+) {
   if (dateTime != null) {
     data[field] = Timestamp.fromDate(dateTime);
   }
@@ -693,18 +750,20 @@ class EventCounters {
   });
 
   @override
-  String toString() => 'EventCounters{likeCount: $likeCount, commentCount: $commentCount, joinCount: $joinCount, shareCount: $shareCount}';
+  String toString() =>
+      'EventCounters{likeCount: $likeCount, commentCount: $commentCount, joinCount: $joinCount, shareCount: $shareCount}';
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is EventCounters &&
-      runtimeType == other.runtimeType &&
-      likeCount == other.likeCount &&
-      commentCount == other.commentCount &&
-      joinCount == other.joinCount &&
-      shareCount == other.shareCount;
+          runtimeType == other.runtimeType &&
+          likeCount == other.likeCount &&
+          commentCount == other.commentCount &&
+          joinCount == other.joinCount &&
+          shareCount == other.shareCount;
 
   @override
-  int get hashCode => Object.hash(likeCount, commentCount, joinCount, shareCount);
+  int get hashCode =>
+      Object.hash(likeCount, commentCount, joinCount, shareCount);
 }

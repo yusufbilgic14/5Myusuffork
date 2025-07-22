@@ -934,7 +934,11 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: AppThemes.getSemanticColor(context, 'info')),
+                  Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: AppThemes.getSemanticColor(context, 'info'),
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -1006,7 +1010,11 @@ class _CourseGradesScreenState extends State<CourseGradesScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Icon(Icons.info_outline, size: 16, color: AppThemes.getSemanticColor(context, 'info')),
+                  Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: AppThemes.getSemanticColor(context, 'info'),
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Text(

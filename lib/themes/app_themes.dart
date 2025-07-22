@@ -124,10 +124,9 @@ class AppThemes {
   static const Map<String, Color> _lightSemanticColors = {
     // Not renkleri / Grade colors (Açık tema için optimized)
     'gradeExcellent': Color(0xFF10B981), // AA - Yeşil
-    'gradeGood': Color(0xFF3B82F6), // BB - Mavi 
+    'gradeGood': Color(0xFF3B82F6), // BB - Mavi
     'gradeAverage': Color(0xFFF59E0B), // CC - Turuncu
     'gradePoor': Color(0xFFEF4444), // DD/FF - Kırmızı
-    
     // Etkinlik türü renkleri / Event type colors
     'eventRegistration': Color(0xFF3B82F6), // Kayıt
     'eventEvaluation': Color(0xFF8B5CF6), // Değerlendirme
@@ -135,7 +134,6 @@ class AppThemes {
     'eventExam': Color(0xFFEF4444), // Sınav
     'eventSemester': Color(0xFF6366F1), // Dönem
     'eventCourseSelection': Color(0xFFF59E0B), // Ders Seçimi
-    
     // Genel UI renkleri / General UI colors
     'success': Color(0xFF10B981),
     'warning': Color(0xFFF59E0B),
@@ -148,9 +146,8 @@ class AppThemes {
     // Not renkleri / Grade colors (Koyu tema için optimized)
     'gradeExcellent': Color(0xFF34D399), // AA - Daha parlak yeşil
     'gradeGood': Color(0xFF60A5FA), // BB - Daha parlak mavi
-    'gradeAverage': Color(0xFFFBBF24), // CC - Daha parlak turuncu  
+    'gradeAverage': Color(0xFFFBBF24), // CC - Daha parlak turuncu
     'gradePoor': Color(0xFFF87171), // DD/FF - Daha parlak kırmızı
-    
     // Etkinlik türü renkleri / Event type colors (Koyu tema için optimized)
     'eventRegistration': Color(0xFF60A5FA), // Kayıt
     'eventEvaluation': Color(0xFFA78BFA), // Değerlendirme
@@ -158,7 +155,6 @@ class AppThemes {
     'eventExam': Color(0xFFF87171), // Sınav
     'eventSemester': Color(0xFF818CF8), // Dönem
     'eventCourseSelection': Color(0xFFFBBF24), // Ders Seçimi
-    
     // Genel UI renkleri / General UI colors (Koyu tema için optimized)
     'success': Color(0xFF34D399),
     'warning': Color(0xFFFBBF24),
@@ -174,7 +170,7 @@ class AppThemes {
     return colorMap[colorKey] ?? getPrimaryColor(context);
   }
 
-  /// Not rengi alıcısı / Grade color getter  
+  /// Not rengi alıcısı / Grade color getter
   static Color getGradeColor(BuildContext context, String grade) {
     switch (grade.toUpperCase()) {
       case 'AA':

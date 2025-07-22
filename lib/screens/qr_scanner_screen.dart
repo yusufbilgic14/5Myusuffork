@@ -353,7 +353,9 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                       borderRadius: BorderRadius.circular(2),
                       boxShadow: [
                         BoxShadow(
-                          color: AppConstants.getIconColor(context).withValues(alpha: 0.5),
+                          color: AppConstants.getIconColor(
+                            context,
+                          ).withValues(alpha: 0.5),
                           blurRadius: 8,
                           spreadRadius: 2,
                         ),

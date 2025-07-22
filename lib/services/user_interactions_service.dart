@@ -9,7 +9,8 @@ import 'firebase_auth_service.dart';
 /// Kullanıcı etkileşimleri yönetim servisi - yorumlar, beğeniler ve takipler
 class UserInteractionsService {
   // Singleton pattern implementation
-  static final UserInteractionsService _instance = UserInteractionsService._internal();
+  static final UserInteractionsService _instance =
+      UserInteractionsService._internal();
   factory UserInteractionsService() => _instance;
   UserInteractionsService._internal();
 
@@ -36,7 +37,8 @@ class UserInteractionsService {
   // ==========================================
 
   /// Get comments for an event / Etkinlik yorumlarını getir
-  Future<List<EventComment>> getEventComments(String eventId, {
+  Future<List<EventComment>> getEventComments(
+    String eventId, {
     int limit = 50,
     DocumentSnapshot? startAfter,
   }) async {
@@ -44,12 +46,16 @@ class UserInteractionsService {
       // Check cache first
       final cacheKey = '${eventId}_comments';
       if (_commentsCache.containsKey(cacheKey) && startAfter == null) {
-        debugPrint('📋 UserInteractionsService: Returning cached comments for $eventId');
+        debugPrint(
+          '📋 UserInteractionsService: Returning cached comments for $eventId',
+        );
         return _commentsCache[cacheKey]!;
       }
 
-      debugPrint('🔍 UserInteractionsService: Fetching comments for event $eventId');
-      
+      debugPrint(
+        '🔍 UserInteractionsService: Fetching comments for event $eventId',
+      );
+
       Query query = _firestore
           .collection('events')
           .doc(eventId)
@@ -65,7 +71,10 @@ class UserInteractionsService {
 
       final querySnapshot = await query.get();
       final comments = querySnapshot.docs.map((doc) {
-        return EventComment.fromFirestoreData(doc.data() as Map<String, dynamic>, doc.id);
+        return EventComment.fromFirestoreData(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
       }).toList();
 
       // Cache the results if this is the first page
@@ -74,21 +83,29 @@ class UserInteractionsService {
         _startCacheExpireTimer();
       }
 
-      debugPrint('✅ UserInteractionsService: Retrieved ${comments.length} comments');
+      debugPrint(
+        '✅ UserInteractionsService: Retrieved ${comments.length} comments',
+      );
       return comments;
     } catch (e) {
-      debugPrint('❌ UserInteractionsService: Failed to get event comments - $e');
+      debugPrint(
+        '❌ UserInteractionsService: Failed to get event comments - $e',
+      );
       return [];
     }
   }
 
   /// Get replies for a comment / Yorum için cevapları getir
-  Future<List<EventComment>> getCommentReplies(String eventId, String parentCommentId, {
+  Future<List<EventComment>> getCommentReplies(
+    String eventId,
+    String parentCommentId, {
     int limit = 20,
   }) async {
     try {
-      debugPrint('🔍 UserInteractionsService: Fetching replies for comment $parentCommentId');
-      
+      debugPrint(
+        '🔍 UserInteractionsService: Fetching replies for comment $parentCommentId',
+      );
+
       final querySnapshot = await _firestore
           .collection('events')
           .doc(eventId)
@@ -103,16 +120,22 @@ class UserInteractionsService {
         return EventComment.fromFirestoreData(doc.data(), doc.id);
       }).toList();
 
-      debugPrint('✅ UserInteractionsService: Retrieved ${replies.length} replies');
+      debugPrint(
+        '✅ UserInteractionsService: Retrieved ${replies.length} replies',
+      );
       return replies;
     } catch (e) {
-      debugPrint('❌ UserInteractionsService: Failed to get comment replies - $e');
+      debugPrint(
+        '❌ UserInteractionsService: Failed to get comment replies - $e',
+      );
       return [];
     }
   }
 
   /// Add a comment to an event / Etkinliğe yorum ekle
-  Future<String?> addComment(String eventId, String content, {
+  Future<String?> addComment(
+    String eventId,
+    String content, {
     String? parentCommentId,
     List<String>? mediaUrls,
     String? userId,
@@ -123,13 +146,16 @@ class UserInteractionsService {
         throw Exception('User not authenticated');
       }
 
-      debugPrint('🔄 UserInteractionsService: Adding comment to event $eventId');
+      debugPrint(
+        '🔄 UserInteractionsService: Adding comment to event $eventId',
+      );
 
       final batch = _firestore.batch();
-      
+
       // Get user information (you might want to implement a user service for this)
-      final userDisplayName = _authService.currentAppUser?.displayName ?? 'Anonymous User';
-      
+      final userDisplayName =
+          _authService.currentAppUser?.displayName ?? 'Anonymous User';
+
       // Create comment document
       final commentRef = _firestore
           .collection('events')
@@ -137,13 +163,17 @@ class UserInteractionsService {
           .collection('comments')
           .doc();
 
-      final replyLevel = parentCommentId != null ? 1 : 0; // Simple 2-level comment system
-      
+      final replyLevel = parentCommentId != null
+          ? 1
+          : 0; // Simple 2-level comment system
+
       final comment = EventComment(
         commentId: commentRef.id,
         eventId: eventId,
         content: content,
-        contentType: mediaUrls != null && mediaUrls.isNotEmpty ? 'text_with_media' : 'text',
+        contentType: mediaUrls != null && mediaUrls.isNotEmpty
+            ? 'text_with_media'
+            : 'text',
         mediaUrls: mediaUrls,
         authorId: uid,
         authorName: userDisplayName,
@@ -173,7 +203,7 @@ class UserInteractionsService {
             .doc(eventId)
             .collection('comments')
             .doc(parentCommentId);
-        
+
         batch.update(parentCommentRef, {
           'replyCount': FieldValue.increment(1),
           'updatedAt': FieldValue.serverTimestamp(),
@@ -185,7 +215,9 @@ class UserInteractionsService {
       // Clear cache to force refresh
       _commentsCache.remove('${eventId}_comments');
 
-      debugPrint('✅ UserInteractionsService: Comment added successfully with ID: ${commentRef.id}');
+      debugPrint(
+        '✅ UserInteractionsService: Comment added successfully with ID: ${commentRef.id}',
+      );
       return commentRef.id;
     } catch (e) {
       debugPrint('❌ UserInteractionsService: Failed to add comment - $e');
@@ -194,7 +226,12 @@ class UserInteractionsService {
   }
 
   /// Edit a comment / Yorumu düzenle
-  Future<void> editComment(String eventId, String commentId, String newContent, [String? userId]) async {
+  Future<void> editComment(
+    String eventId,
+    String commentId,
+    String newContent, [
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) {
@@ -238,7 +275,11 @@ class UserInteractionsService {
   }
 
   /// Delete a comment / Yorumu sil
-  Future<void> deleteComment(String eventId, String commentId, [String? userId]) async {
+  Future<void> deleteComment(
+    String eventId,
+    String commentId, [
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) {
@@ -248,7 +289,7 @@ class UserInteractionsService {
       debugPrint('🔄 UserInteractionsService: Deleting comment $commentId');
 
       final batch = _firestore.batch();
-      
+
       final commentRef = _firestore
           .collection('events')
           .doc(eventId)
@@ -287,7 +328,7 @@ class UserInteractionsService {
             .doc(eventId)
             .collection('comments')
             .doc(parentCommentId);
-        
+
         batch.update(parentCommentRef, {
           'replyCount': FieldValue.increment(-1),
           'updatedAt': FieldValue.serverTimestamp(),
@@ -311,19 +352,25 @@ class UserInteractionsService {
   // ==========================================
 
   /// Get likes for a comment / Yorum beğenilerini getir
-  Future<List<CommentLike>> getCommentLikes(String eventId, String commentId, {
+  Future<List<CommentLike>> getCommentLikes(
+    String eventId,
+    String commentId, {
     int limit = 50,
   }) async {
     try {
       // Check cache first
       final cacheKey = '${eventId}_${commentId}_likes';
       if (_likesCache.containsKey(cacheKey)) {
-        debugPrint('📋 UserInteractionsService: Returning cached likes for comment $commentId');
+        debugPrint(
+          '📋 UserInteractionsService: Returning cached likes for comment $commentId',
+        );
         return _likesCache[cacheKey]!;
       }
 
-      debugPrint('🔍 UserInteractionsService: Fetching likes for comment $commentId');
-      
+      debugPrint(
+        '🔍 UserInteractionsService: Fetching likes for comment $commentId',
+      );
+
       final querySnapshot = await _firestore
           .collection('events')
           .doc(eventId)
@@ -351,13 +398,19 @@ class UserInteractionsService {
   }
 
   /// Check if user has liked a comment / Kullanıcının yorumu beğenip beğenmediğini kontrol et
-  Future<bool> hasUserLikedComment(String eventId, String commentId, [String? userId]) async {
+  Future<bool> hasUserLikedComment(
+    String eventId,
+    String commentId, [
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) return false;
 
-      debugPrint('🔍 UserInteractionsService: Checking if user liked comment $commentId');
-      
+      debugPrint(
+        '🔍 UserInteractionsService: Checking if user liked comment $commentId',
+      );
+
       final likeDoc = await _firestore
           .collection('events')
           .doc(eventId)
@@ -369,23 +422,31 @@ class UserInteractionsService {
 
       return likeDoc.exists;
     } catch (e) {
-      debugPrint('❌ UserInteractionsService: Failed to check comment like - $e');
+      debugPrint(
+        '❌ UserInteractionsService: Failed to check comment like - $e',
+      );
       return false;
     }
   }
 
   /// Toggle like on a comment / Yorum beğenisini değiştir
-  Future<bool> toggleCommentLike(String eventId, String commentId, [String? userId]) async {
+  Future<bool> toggleCommentLike(
+    String eventId,
+    String commentId, [
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) {
         throw Exception('User not authenticated');
       }
 
-      debugPrint('🔄 UserInteractionsService: Toggling like for comment $commentId');
+      debugPrint(
+        '🔄 UserInteractionsService: Toggling like for comment $commentId',
+      );
 
       final batch = _firestore.batch();
-      
+
       // Check if already liked
       final likeRef = _firestore
           .collection('events')
@@ -401,22 +462,23 @@ class UserInteractionsService {
       if (isCurrentlyLiked) {
         // Unlike
         batch.delete(likeRef);
-        
+
         // Update comment like count
         final commentRef = _firestore
             .collection('events')
             .doc(eventId)
             .collection('comments')
             .doc(commentId);
-        
+
         batch.update(commentRef, {
           'likeCount': FieldValue.increment(-1),
           'updatedAt': FieldValue.serverTimestamp(),
         });
       } else {
         // Like
-        final userDisplayName = _authService.currentAppUser?.displayName ?? 'Anonymous User';
-        
+        final userDisplayName =
+            _authService.currentAppUser?.displayName ?? 'Anonymous User';
+
         final commentLike = CommentLike(
           commentId: commentId,
           userId: uid,
@@ -425,14 +487,14 @@ class UserInteractionsService {
         );
 
         batch.set(likeRef, commentLike.toFirestoreData());
-        
+
         // Update comment like count
         final commentRef = _firestore
             .collection('events')
             .doc(eventId)
             .collection('comments')
             .doc(commentId);
-        
+
         batch.update(commentRef, {
           'likeCount': FieldValue.increment(1),
           'updatedAt': FieldValue.serverTimestamp(),
@@ -445,10 +507,14 @@ class UserInteractionsService {
       _likesCache.remove('${eventId}_${commentId}_likes');
       _commentsCache.remove('${eventId}_comments');
 
-      debugPrint('✅ UserInteractionsService: Comment like toggled successfully');
+      debugPrint(
+        '✅ UserInteractionsService: Comment like toggled successfully',
+      );
       return !isCurrentlyLiked;
     } catch (e) {
-      debugPrint('❌ UserInteractionsService: Failed to toggle comment like - $e');
+      debugPrint(
+        '❌ UserInteractionsService: Failed to toggle comment like - $e',
+      );
       rethrow;
     }
   }
@@ -458,9 +524,14 @@ class UserInteractionsService {
   // ==========================================
 
   /// Watch comments for an event in real-time / Etkinlik yorumlarını gerçek zamanlı dinle
-  Stream<List<EventComment>> watchEventComments(String eventId, {int limit = 50}) {
-    debugPrint('👁️ UserInteractionsService: Starting to watch comments for event $eventId');
-    
+  Stream<List<EventComment>> watchEventComments(
+    String eventId, {
+    int limit = 50,
+  }) {
+    debugPrint(
+      '👁️ UserInteractionsService: Starting to watch comments for event $eventId',
+    );
+
     return _firestore
         .collection('events')
         .doc(eventId)
@@ -480,14 +551,22 @@ class UserInteractionsService {
           return comments;
         })
         .handleError((error) {
-          debugPrint('❌ UserInteractionsService: Error watching comments - $error');
+          debugPrint(
+            '❌ UserInteractionsService: Error watching comments - $error',
+          );
         });
   }
 
   /// Watch replies for a comment in real-time / Yorum cevaplarını gerçek zamanlı dinle
-  Stream<List<EventComment>> watchCommentReplies(String eventId, String parentCommentId, {int limit = 20}) {
-    debugPrint('👁️ UserInteractionsService: Starting to watch replies for comment $parentCommentId');
-    
+  Stream<List<EventComment>> watchCommentReplies(
+    String eventId,
+    String parentCommentId, {
+    int limit = 20,
+  }) {
+    debugPrint(
+      '👁️ UserInteractionsService: Starting to watch replies for comment $parentCommentId',
+    );
+
     return _firestore
         .collection('events')
         .doc(eventId)
@@ -505,14 +584,22 @@ class UserInteractionsService {
           return replies;
         })
         .handleError((error) {
-          debugPrint('❌ UserInteractionsService: Error watching replies - $error');
+          debugPrint(
+            '❌ UserInteractionsService: Error watching replies - $error',
+          );
         });
   }
 
   /// Watch comment likes in real-time / Yorum beğenilerini gerçek zamanlı dinle
-  Stream<List<CommentLike>> watchCommentLikes(String eventId, String commentId, {int limit = 50}) {
-    debugPrint('👁️ UserInteractionsService: Starting to watch likes for comment $commentId');
-    
+  Stream<List<CommentLike>> watchCommentLikes(
+    String eventId,
+    String commentId, {
+    int limit = 50,
+  }) {
+    debugPrint(
+      '👁️ UserInteractionsService: Starting to watch likes for comment $commentId',
+    );
+
     return _firestore
         .collection('events')
         .doc(eventId)
@@ -533,7 +620,9 @@ class UserInteractionsService {
           return likes;
         })
         .handleError((error) {
-          debugPrint('❌ UserInteractionsService: Error watching likes - $error');
+          debugPrint(
+            '❌ UserInteractionsService: Error watching likes - $error',
+          );
         });
   }
 
@@ -543,8 +632,10 @@ class UserInteractionsService {
 
   /// Watch comment count for an event in real-time / Etkinlik yorum sayısını gerçek zamanlı dinle
   Stream<int> watchEventCommentCount(String eventId) {
-    debugPrint('👁️ UserInteractionsService: Starting to watch comment count for event $eventId');
-    
+    debugPrint(
+      '👁️ UserInteractionsService: Starting to watch comment count for event $eventId',
+    );
+
     return _firestore
         .collection('events')
         .doc(eventId)
@@ -553,14 +644,18 @@ class UserInteractionsService {
         .snapshots()
         .map((snapshot) => snapshot.docs.length)
         .handleError((error) {
-          debugPrint('❌ UserInteractionsService: Error watching comment count - $error');
+          debugPrint(
+            '❌ UserInteractionsService: Error watching comment count - $error',
+          );
         });
   }
 
   /// Watch comment like count for a comment in real-time / Yorum beğeni sayısını gerçek zamanlı dinle
   Stream<int> watchCommentLikeCount(String eventId, String commentId) {
-    debugPrint('👁️ UserInteractionsService: Starting to watch like count for comment $commentId');
-    
+    debugPrint(
+      '👁️ UserInteractionsService: Starting to watch like count for comment $commentId',
+    );
+
     return _firestore
         .collection('events')
         .doc(eventId)
@@ -570,21 +665,29 @@ class UserInteractionsService {
         .snapshots()
         .map((snapshot) => snapshot.docs.length)
         .handleError((error) {
-          debugPrint('❌ UserInteractionsService: Error watching comment like count - $error');
+          debugPrint(
+            '❌ UserInteractionsService: Error watching comment like count - $error',
+          );
         });
   }
 
   /// Watch multiple events comment counts / Birden fazla etkinlik yorum sayısını dinle
-  Stream<Map<String, int>> watchMultipleEventCommentCounts(List<String> eventIds) {
+  Stream<Map<String, int>> watchMultipleEventCommentCounts(
+    List<String> eventIds,
+  ) {
     if (eventIds.isEmpty) {
       return Stream.value({});
     }
 
-    debugPrint('👁️ UserInteractionsService: Starting to watch comment counts for ${eventIds.length} events');
-    
+    debugPrint(
+      '👁️ UserInteractionsService: Starting to watch comment counts for ${eventIds.length} events',
+    );
+
     // Create a stream for each event and combine them
     final streams = eventIds.map((eventId) {
-      return watchEventCommentCount(eventId).map((count) => MapEntry(eventId, count));
+      return watchEventCommentCount(
+        eventId,
+      ).map((count) => MapEntry(eventId, count));
     }).toList();
 
     return Stream.fromIterable(streams)
@@ -597,15 +700,23 @@ class UserInteractionsService {
   }
 
   /// Watch user's comment like status in real-time / Kullanıcının yorum beğeni durumunu gerçek zamanlı dinle
-  Stream<bool> watchUserCommentLikeStatus(String eventId, String commentId, [String? userId]) {
+  Stream<bool> watchUserCommentLikeStatus(
+    String eventId,
+    String commentId, [
+    String? userId,
+  ]) {
     final uid = userId ?? currentUserId;
     if (uid == null) {
-      debugPrint('❌ UserInteractionsService: Cannot watch like status - user not authenticated');
+      debugPrint(
+        '❌ UserInteractionsService: Cannot watch like status - user not authenticated',
+      );
       return Stream.value(false);
     }
 
-    debugPrint('👁️ UserInteractionsService: Starting to watch like status for comment $commentId');
-    
+    debugPrint(
+      '👁️ UserInteractionsService: Starting to watch like status for comment $commentId',
+    );
+
     return _firestore
         .collection('events')
         .doc(eventId)
@@ -616,7 +727,9 @@ class UserInteractionsService {
         .snapshots()
         .map((snapshot) => snapshot.exists)
         .handleError((error) {
-          debugPrint('❌ UserInteractionsService: Error watching like status - $error');
+          debugPrint(
+            '❌ UserInteractionsService: Error watching like status - $error',
+          );
         });
   }
 
@@ -627,8 +740,10 @@ class UserInteractionsService {
   /// Get comment statistics / Yorum istatistiklerini getir
   Future<CommentStatistics> getCommentStatistics(String eventId) async {
     try {
-      debugPrint('🔍 UserInteractionsService: Fetching comment statistics for event $eventId');
-      
+      debugPrint(
+        '🔍 UserInteractionsService: Fetching comment statistics for event $eventId',
+      );
+
       final commentsSnapshot = await _firestore
           .collection('events')
           .doc(eventId)
@@ -645,13 +760,13 @@ class UserInteractionsService {
         final data = doc.data();
         final replyLevel = data['replyLevel'] ?? 0;
         final likeCount = data['likeCount'] ?? 0;
-        
+
         if (replyLevel == 0) {
           topLevelComments++;
         } else {
           replies++;
         }
-        
+
         totalLikes += likeCount as int;
       }
 
@@ -665,7 +780,9 @@ class UserInteractionsService {
       debugPrint('✅ UserInteractionsService: Retrieved comment statistics');
       return statistics;
     } catch (e) {
-      debugPrint('❌ UserInteractionsService: Failed to get comment statistics - $e');
+      debugPrint(
+        '❌ UserInteractionsService: Failed to get comment statistics - $e',
+      );
       return const CommentStatistics(
         totalComments: 0,
         topLevelComments: 0,
@@ -676,23 +793,32 @@ class UserInteractionsService {
   }
 
   /// Search comments / Yorumları ara
-  Future<List<EventComment>> searchComments(String eventId, String query, {int limit = 30}) async {
+  Future<List<EventComment>> searchComments(
+    String eventId,
+    String query, {
+    int limit = 30,
+  }) async {
     try {
       if (query.isEmpty) return [];
 
       debugPrint('🔍 UserInteractionsService: Searching comments for: $query');
-      
+
       // For simple implementation, get all comments and filter client-side
       // In production, you might want to use Algolia or similar service
       final comments = await getEventComments(eventId, limit: 100);
-      
-      final searchQuery = query.toLowerCase();
-      final filteredComments = comments.where((comment) {
-        return comment.content.toLowerCase().contains(searchQuery) ||
-               comment.authorName.toLowerCase().contains(searchQuery);
-      }).take(limit).toList();
 
-      debugPrint('✅ UserInteractionsService: Found ${filteredComments.length} comments for query: $query');
+      final searchQuery = query.toLowerCase();
+      final filteredComments = comments
+          .where((comment) {
+            return comment.content.toLowerCase().contains(searchQuery) ||
+                comment.authorName.toLowerCase().contains(searchQuery);
+          })
+          .take(limit)
+          .toList();
+
+      debugPrint(
+        '✅ UserInteractionsService: Found ${filteredComments.length} comments for query: $query',
+      );
       return filteredComments;
     } catch (e) {
       debugPrint('❌ UserInteractionsService: Failed to search comments - $e');
@@ -749,5 +875,6 @@ class CommentStatistics {
   });
 
   @override
-  String toString() => 'CommentStatistics{totalComments: $totalComments, topLevelComments: $topLevelComments, replies: $replies, totalLikes: $totalLikes}';
+  String toString() =>
+      'CommentStatistics{totalComments: $totalComments, topLevelComments: $topLevelComments, replies: $replies, totalLikes: $totalLikes}';
 }

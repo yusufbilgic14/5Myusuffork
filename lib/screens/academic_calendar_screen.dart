@@ -339,7 +339,6 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
   // Etkinlikler listesi widget'ı / Events list widget
   Widget _buildEventsList() {
     final l10n = AppLocalizations.of(context)!;
-    final locale = Localizations.localeOf(context).toString();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ListView.builder(
@@ -350,7 +349,9 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
               decoration: BoxDecoration(
-                color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.08),
+                color: AppThemes.getPrimaryColor(
+                  context,
+                ).withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -459,7 +460,13 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
         borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
         boxShadow: AppShadows.card,
         border: isActive
-            ? Border.all(color: AppThemes.getEventTypeColor(context, event.category.name), width: 2)
+            ? Border.all(
+                color: AppThemes.getEventTypeColor(
+                  context,
+                  event.category.name,
+                ),
+                width: 2,
+              )
             : null,
       ),
       child: Padding(
@@ -477,12 +484,18 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: AppThemes.getEventTypeColor(context, event.category.name).withValues(alpha: 0.1),
+                    color: AppThemes.getEventTypeColor(
+                      context,
+                      event.category.name,
+                    ).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(
                       AppConstants.radiusSmall,
                     ),
                     border: Border.all(
-                      color: AppThemes.getEventTypeColor(context, event.category.name).withValues(alpha: 0.3),
+                      color: AppThemes.getEventTypeColor(
+                        context,
+                        event.category.name,
+                      ).withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
@@ -491,7 +504,10 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                       Icon(
                         event.category.icon,
                         size: 14,
-                        color: AppThemes.getEventTypeColor(context, event.category.name),
+                        color: AppThemes.getEventTypeColor(
+                          context,
+                          event.category.name,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -499,7 +515,10 @@ class _AcademicCalendarScreenState extends State<AcademicCalendarScreen>
                         style: TextStyle(
                           fontSize: AppConstants.fontSizeSmall,
                           fontWeight: FontWeight.w600,
-                          color: AppThemes.getEventTypeColor(context, event.category.name),
+                          color: AppThemes.getEventTypeColor(
+                            context,
+                            event.category.name,
+                          ),
                         ),
                       ),
                     ],

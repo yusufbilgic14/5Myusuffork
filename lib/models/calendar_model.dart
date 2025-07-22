@@ -139,7 +139,8 @@ class CalendarEventModel {
   });
 
   /// JSON'dan CalendarEventModel oluştur / Create CalendarEventModel from JSON
-  factory CalendarEventModel.fromJson(Map<String, dynamic> json) => _$CalendarEventModelFromJson(json);
+  factory CalendarEventModel.fromJson(Map<String, dynamic> json) =>
+      _$CalendarEventModelFromJson(json);
 
   /// CalendarEventModel'i JSON'a çevir / Convert CalendarEventModel to JSON
   Map<String, dynamic> toJson() => _$CalendarEventModelToJson(this);
@@ -161,10 +162,10 @@ class CalendarEventModel {
   /// Etkinliğin aktif olup olmadığını kontrol et / Check if event is active
   bool get isActive {
     final now = DateTime.now();
-    
+
     // Status kontrolü / Status check
     if (status == EventStatus.cancelled) return false;
-    
+
     // Tarih kontrolü / Date check
     return endDate.isAfter(now);
   }
@@ -172,12 +173,15 @@ class CalendarEventModel {
   /// Etkinliğin devam edip etmediğini kontrol et / Check if event is ongoing
   bool get isOngoing {
     final now = DateTime.now();
-    return startDate.isBefore(now) && endDate.isAfter(now) && status == EventStatus.ongoing;
+    return startDate.isBefore(now) &&
+        endDate.isAfter(now) &&
+        status == EventStatus.ongoing;
   }
 
   /// Etkinliğin tamamlanıp tamamlanmadığını kontrol et / Check if event is completed
   bool get isCompleted {
-    return status == EventStatus.completed || (endDate.isBefore(DateTime.now()) && status != EventStatus.cancelled);
+    return status == EventStatus.completed ||
+        (endDate.isBefore(DateTime.now()) && status != EventStatus.cancelled);
   }
 
   /// Etkinliğe kaç gün kaldığını hesapla / Calculate days until event
@@ -196,10 +200,10 @@ class CalendarEventModel {
   /// Etkinlik süresini formatlanmış şekilde getir / Get formatted duration
   String get formattedDuration {
     if (isAllDay) return 'Tüm gün';
-    
+
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
-    
+
     if (hours > 0 && minutes > 0) {
       return '${hours}s ${minutes}dk';
     } else if (hours > 0) {
@@ -214,18 +218,20 @@ class CalendarEventModel {
     if (isAllDay) {
       return '${startDate.day}/${startDate.month}/${startDate.year}';
     }
-    
-    if (startDate.day == endDate.day && startDate.month == endDate.month && startDate.year == endDate.year) {
+
+    if (startDate.day == endDate.day &&
+        startDate.month == endDate.month &&
+        startDate.year == endDate.year) {
       return '${startDate.day}/${startDate.month}/${startDate.year} ${startDate.hour.toString().padLeft(2, '0')}:${startDate.minute.toString().padLeft(2, '0')} - ${endDate.hour.toString().padLeft(2, '0')}:${endDate.minute.toString().padLeft(2, '0')}';
     }
-    
+
     return '${startDate.day}/${startDate.month}/${startDate.year} - ${endDate.day}/${endDate.month}/${endDate.year}';
   }
 
   /// Etkinlik rengi / Event color
   String get eventColor {
     if (color != null) return color!;
-    
+
     // Varsayılan renkler kategoriye göre / Default colors by category
     switch (category) {
       case EventCategory.exam:
@@ -266,8 +272,13 @@ class CalendarEventModel {
   /// Kayıt için uygun mu kontrol et / Check if eligible for registration
   bool get canRegister {
     if (!registrationRequired) return false;
-    if (attendeeCount != null && maxAttendees != null && attendeeCount! >= maxAttendees!) return false;
-    if (registrationDeadline != null && registrationDeadline!.isBefore(DateTime.now())) return false;
+    if (attendeeCount != null &&
+        maxAttendees != null &&
+        attendeeCount! >= maxAttendees!)
+      return false;
+    if (registrationDeadline != null &&
+        registrationDeadline!.isBefore(DateTime.now()))
+      return false;
     return status == EventStatus.scheduled;
   }
 
@@ -362,7 +373,8 @@ class LocationDetailsModel {
     this.coordinates,
   });
 
-  factory LocationDetailsModel.fromJson(Map<String, dynamic> json) => _$LocationDetailsModelFromJson(json);
+  factory LocationDetailsModel.fromJson(Map<String, dynamic> json) =>
+      _$LocationDetailsModelFromJson(json);
   Map<String, dynamic> toJson() => _$LocationDetailsModelToJson(this);
 
   /// Tam konum adresi / Full location address
@@ -384,12 +396,10 @@ class CoordinatesModel {
   @JsonKey(name: 'longitude')
   final double longitude;
 
-  const CoordinatesModel({
-    required this.latitude,
-    required this.longitude,
-  });
+  const CoordinatesModel({required this.latitude, required this.longitude});
 
-  factory CoordinatesModel.fromJson(Map<String, dynamic> json) => _$CoordinatesModelFromJson(json);
+  factory CoordinatesModel.fromJson(Map<String, dynamic> json) =>
+      _$CoordinatesModelFromJson(json);
   Map<String, dynamic> toJson() => _$CoordinatesModelToJson(this);
 }
 
@@ -421,7 +431,8 @@ class RecurrenceModel {
     this.exceptions,
   });
 
-  factory RecurrenceModel.fromJson(Map<String, dynamic> json) => _$RecurrenceModelFromJson(json);
+  factory RecurrenceModel.fromJson(Map<String, dynamic> json) =>
+      _$RecurrenceModelFromJson(json);
   Map<String, dynamic> toJson() => _$RecurrenceModelToJson(this);
 
   /// Haftalık tekrarlama / Weekly recurrence
@@ -439,10 +450,7 @@ class RecurrenceModel {
   }
 
   /// Günlük tekrarlama / Daily recurrence
-  factory RecurrenceModel.daily({
-    int interval = 1,
-    DateTime? endDate,
-  }) {
+  factory RecurrenceModel.daily({int interval = 1, DateTime? endDate}) {
     return RecurrenceModel(
       type: RecurrenceType.daily,
       interval: interval,
@@ -481,14 +489,15 @@ class ExamDetailsModel {
     this.materials,
   });
 
-  factory ExamDetailsModel.fromJson(Map<String, dynamic> json) => _$ExamDetailsModelFromJson(json);
+  factory ExamDetailsModel.fromJson(Map<String, dynamic> json) =>
+      _$ExamDetailsModelFromJson(json);
   Map<String, dynamic> toJson() => _$ExamDetailsModelToJson(this);
 
   /// Sınav süresini formatlanmış şekilde getir / Get formatted exam duration
   String get formattedDuration {
     final hours = duration ~/ 60;
     final minutes = duration % 60;
-    
+
     if (hours > 0 && minutes > 0) {
       return '${hours}s ${minutes}dk';
     } else if (hours > 0) {
@@ -522,18 +531,16 @@ class ReminderModel {
   @JsonKey(name: 'method')
   final ReminderMethod method;
 
-  const ReminderModel({
-    required this.time,
-    required this.method,
-  });
+  const ReminderModel({required this.time, required this.method});
 
-  factory ReminderModel.fromJson(Map<String, dynamic> json) => _$ReminderModelFromJson(json);
+  factory ReminderModel.fromJson(Map<String, dynamic> json) =>
+      _$ReminderModelFromJson(json);
   Map<String, dynamic> toJson() => _$ReminderModelToJson(this);
 
   /// Hatırlatıcı zamanını formatlanmış şekilde getir / Get formatted reminder time
   String get formattedTime {
     if (time < 60) {
-      return '${time} dakika önce';
+      return '$time dakika önce';
     } else if (time < 1440) {
       return '${time ~/ 60} saat önce';
     } else {
@@ -572,7 +579,8 @@ class TargetAudienceModel {
     this.userIds,
   });
 
-  factory TargetAudienceModel.fromJson(Map<String, dynamic> json) => _$TargetAudienceModelFromJson(json);
+  factory TargetAudienceModel.fromJson(Map<String, dynamic> json) =>
+      _$TargetAudienceModelFromJson(json);
   Map<String, dynamic> toJson() => _$TargetAudienceModelToJson(this);
 }
 
@@ -692,7 +700,8 @@ class TimestampConverter implements JsonConverter<DateTime?, Object?> {
 }
 
 /// Timestamp listesi converter / Timestamp list converter
-class TimestampListConverter implements JsonConverter<List<DateTime>?, List<Object?>?> {
+class TimestampListConverter
+    implements JsonConverter<List<DateTime>?, List<Object?>?> {
   const TimestampListConverter();
 
   @override
@@ -709,6 +718,8 @@ class TimestampListConverter implements JsonConverter<List<DateTime>?, List<Obje
   @override
   List<Object?>? toJson(List<DateTime>? dateTimeList) {
     if (dateTimeList == null) return null;
-    return dateTimeList.map((dateTime) => Timestamp.fromDate(dateTime)).toList();
+    return dateTimeList
+        .map((dateTime) => Timestamp.fromDate(dateTime))
+        .toList();
   }
-} 
+}

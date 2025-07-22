@@ -866,4 +866,157 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get address => 'Address:';
+
+  @override
+  String get feedbackOnly => 'Feedback Only';
+
+  @override
+  String get pleaseAcceptTerms => 'Please accept the terms';
+
+  @override
+  String get accountCreatedSuccessfully => 'Account created successfully';
+
+  @override
+  String get signUpTitle => 'Sign Up';
+
+  @override
+  String get signUpSubtitle => 'Create your account';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get fullNameHint => 'Enter your full name';
+
+  @override
+  String get fullNameRequired => 'Full name is required';
+
+  @override
+  String get fullNameInvalid => 'Invalid full name';
+
+  @override
+  String get emailAddress => 'Email Address';
+
+  @override
+  String get emailHint => 'Enter your email';
+
+  @override
+  String get emailRequired => 'Email is required';
+
+  @override
+  String get emailInvalid => 'Invalid email address';
+
+  @override
+  String get createPassword => 'Create Password';
+
+  @override
+  String get createPasswordHint => 'Enter a password';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get passwordTooShort => 'Password is too short';
+
+  @override
+  String get passwordTooWeak => 'Password is too weak';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get confirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get confirmPasswordRequired => 'Please confirm your password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get phoneOptional => 'Phone (optional)';
+
+  @override
+  String get phoneHint => 'Enter your phone number';
+
+  @override
+  String get phoneInvalid => 'Invalid phone number';
+
+  @override
+  String get studentIdOptional => 'Student ID (optional)';
+
+  @override
+  String get studentIdHintSignup => 'Enter your student ID';
+
+  @override
+  String get departmentOptional => 'Department (optional)';
+
+  @override
+  String get selectDepartment => 'Select department';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get signUpHere => 'Sign up here';
+
+  @override
+  String get signInHere => 'Sign in here';
+
+  @override
+  String get firstYear => 'First Year';
+
+  @override
+  String get secondYear => 'Second Year';
+
+  @override
+  String get thirdYear => 'Third Year';
+
+  @override
+  String get fourthYear => 'Fourth Year';
+
+  @override
+  String get graduateStudent => 'Graduate Student';
+
+  @override
+  String get phdStudent => 'PhD Student';
+
+  @override
+  String get yearOfStudyOptional => 'Year of Study (optional)';
+
+  @override
+  String get selectYearOfStudy => 'Select year of study';
+
+  @override
+  String get birthDateOptional => 'Birth Date (optional)';
+
+  @override
+  String get selectBirthDate => 'Select birth date';
+
+  @override
+  String get male => 'Male';
+
+  @override
+  String get female => 'Female';
+
+  @override
+  String get preferNotToSay => 'Prefer not to say';
+
+  @override
+  String get genderOptional => 'Gender (optional)';
+
+  @override
+  String get selectGender => 'Select gender';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get languageDesc => 'Change the app language';
 }

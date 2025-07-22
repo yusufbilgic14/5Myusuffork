@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
   bool _isLanguageDropdownOpen = false;
-  
+
   // Authentication mode toggle
   AuthMode _authMode = AuthMode.signIn;
   String? _selectedDepartment;
@@ -205,26 +205,31 @@ class _LoginScreenState extends State<LoginScreen>
     try {
       // Firebase Auth Service ile giriş yap / Sign in with Firebase Auth Service
       final authService = FirebaseAuthService();
-      
+
       // Check if Firebase is configured / Firebase'in konfigüre olup olmadığını kontrol et
       if (!authService.isFirebaseConfigured) {
-        _showSnackBar('Firebase henüz konfigüre edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.', isError: true);
+        _showSnackBar(
+          'Firebase henüz konfigüre edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.',
+          isError: true,
+        );
         return;
       }
-      
+
       final result = await authService.signInWithEmailAndPassword(
         email: _studentIdController.text.trim(),
         password: _passwordController.text,
       );
-      
+
       if (result.isSuccess && mounted) {
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const HomeScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
             transitionDuration: AppConstants.animationNormal,
           ),
         );
@@ -261,31 +266,38 @@ class _LoginScreenState extends State<LoginScreen>
     try {
       // Firebase Auth Service ile kayıt ol / Sign up with Firebase Auth Service
       final authService = FirebaseAuthService();
-      
+
       // Check if Firebase is configured / Firebase'in konfigüre olup olmadığını kontrol et
       if (!authService.isFirebaseConfigured) {
-        _showSnackBar('Firebase henüz konfigüre edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.', isError: true);
+        _showSnackBar(
+          'Firebase henüz konfigüre edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.',
+          isError: true,
+        );
         return;
       }
-      
+
       final result = await authService.signUpWithEmailAndPassword(
         email: _studentIdController.text.trim(),
         password: _passwordController.text,
         displayName: _displayNameController.text.trim(),
         department: _selectedDepartment,
-        phoneNumber: _phoneController.text.trim().isNotEmpty ? _phoneController.text.trim() : null,
+        phoneNumber: _phoneController.text.trim().isNotEmpty
+            ? _phoneController.text.trim()
+            : null,
       );
-      
+
       if (result.isSuccess && mounted) {
         _showSnackBar(l10n.accountCreatedSuccessfully);
         // Navigate to email verification screen or main app
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const HomeScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const HomeScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
             transitionDuration: AppConstants.animationNormal,
           ),
         );
@@ -308,7 +320,9 @@ class _LoginScreenState extends State<LoginScreen>
   /// Authentication mode'u değiştir / Toggle authentication mode
   void _toggleAuthMode() {
     setState(() {
-      _authMode = _authMode == AuthMode.signIn ? AuthMode.signUp : AuthMode.signIn;
+      _authMode = _authMode == AuthMode.signIn
+          ? AuthMode.signUp
+          : AuthMode.signIn;
       // Clear form when switching modes
       _studentIdController.clear();
       _passwordController.clear();
@@ -497,7 +511,9 @@ class _LoginScreenState extends State<LoginScreen>
           ),
         ],
         border: Border.all(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.grey.shade100,
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.grey.shade100,
           width: 1,
         ),
       ),
@@ -513,7 +529,9 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Column(
                   children: [
                     Text(
-                      _authMode == AuthMode.signIn ? l10n.loginTitle : l10n.signUpTitle,
+                      _authMode == AuthMode.signIn
+                          ? l10n.loginTitle
+                          : l10n.signUpTitle,
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
@@ -525,7 +543,9 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _authMode == AuthMode.signIn ? l10n.loginSubtitle : l10n.signUpSubtitle,
+                      _authMode == AuthMode.signIn
+                          ? l10n.loginSubtitle
+                          : l10n.signUpSubtitle,
                       style: TextStyle(
                         fontSize: 15,
                         color: isDark
@@ -632,8 +652,11 @@ class _LoginScreenState extends State<LoginScreen>
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          obscureText: isPassword && 
-              (isConfirmPassword ? !_isConfirmPasswordVisible : !_isPasswordVisible),
+          obscureText:
+              isPassword &&
+              (isConfirmPassword
+                  ? !_isConfirmPasswordVisible
+                  : !_isPasswordVisible),
           keyboardType: textInputType,
           validator: validator,
           style: TextStyle(
@@ -660,11 +683,11 @@ class _LoginScreenState extends State<LoginScreen>
                     icon: Icon(
                       isConfirmPassword
                           ? (_isConfirmPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility)
+                                ? Icons.visibility_off
+                                : Icons.visibility)
                           : (_isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility),
+                                ? Icons.visibility_off
+                                : Icons.visibility),
                       color: isDark
                           ? Colors.white.withValues(alpha: 0.4)
                           : Colors.grey.shade500,
@@ -673,7 +696,8 @@ class _LoginScreenState extends State<LoginScreen>
                     onPressed: () {
                       setState(() {
                         if (isConfirmPassword) {
-                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                          _isConfirmPasswordVisible =
+                              !_isConfirmPasswordVisible;
                         } else {
                           _isPasswordVisible = !_isPasswordVisible;
                         }
@@ -715,7 +739,6 @@ class _LoginScreenState extends State<LoginScreen>
       ],
     );
   }
-
 
   /// Sade Microsoft OAuth giriş butonu / Clean Microsoft OAuth login button
   Widget _buildCleanMicrosoftButton(AppLocalizations l10n) {
@@ -878,9 +901,7 @@ class _LoginScreenState extends State<LoginScreen>
               child: Material(
                 elevation: 50,
                 borderRadius: BorderRadius.circular(12),
-                color: isDark
-                    ? const Color(0xFF2A3441)
-                    : Colors.white,
+                color: isDark ? const Color(0xFF2A3441) : Colors.white,
                 shadowColor: Colors.black.withValues(alpha: 0.5),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -893,9 +914,7 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                     Divider(
                       height: 1,
-                      color: isDark
-                          ? Colors.white12
-                          : Colors.grey.shade200,
+                      color: isDark ? Colors.white12 : Colors.grey.shade200,
                     ),
                     _buildLanguageOption(
                       imagePath: 'assets/images/uk.png',
@@ -949,10 +968,7 @@ class _LoginScreenState extends State<LoginScreen>
                     : (isDark ? Colors.white70 : Colors.black87),
               ),
             ),
-            if (isSelected) ...[
-              
-              
-            ],
+            if (isSelected) ...[],
           ],
         ),
       ),
@@ -988,7 +1004,7 @@ class _LoginScreenState extends State<LoginScreen>
   /// Sign-up form fields / Kayıt formu alanları
   List<Widget> _buildSignUpFields() {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return [
       // Display name field / Ad soyad alanı
       _buildCleanInputField(
@@ -1008,7 +1024,7 @@ class _LoginScreenState extends State<LoginScreen>
         },
       ),
       const SizedBox(height: 20),
-      
+
       // Email field / Email alanı
       _buildCleanInputField(
         controller: _studentIdController,
@@ -1027,7 +1043,7 @@ class _LoginScreenState extends State<LoginScreen>
         },
       ),
       const SizedBox(height: 20),
-      
+
       // Password field / Şifre alanı
       _buildCleanInputField(
         controller: _passwordController,
@@ -1049,7 +1065,7 @@ class _LoginScreenState extends State<LoginScreen>
         },
       ),
       const SizedBox(height: 20),
-      
+
       // Confirm password field / Şifre tekrar alanı
       _buildCleanInputField(
         controller: _confirmPasswordController,
@@ -1069,11 +1085,11 @@ class _LoginScreenState extends State<LoginScreen>
         },
       ),
       const SizedBox(height: 20),
-      
+
       // Department dropdown / Bölüm seçimi
       _buildDepartmentDropdown(),
       const SizedBox(height: 20),
-      
+
       // Phone field (optional) / Telefon alanı (opsiyonel)
       _buildCleanInputField(
         controller: _phoneController,
@@ -1083,7 +1099,9 @@ class _LoginScreenState extends State<LoginScreen>
         textInputType: TextInputType.phone,
         validator: (value) {
           if (value?.isNotEmpty == true) {
-            if (!RegExp(r'^(\+90|0)?[5-9]\d{9}$').hasMatch(value!.replaceAll(' ', ''))) {
+            if (!RegExp(
+              r'^(\+90|0)?[5-9]\d{9}$',
+            ).hasMatch(value!.replaceAll(' ', ''))) {
               return l10n.phoneInvalid;
             }
           }
@@ -1091,7 +1109,7 @@ class _LoginScreenState extends State<LoginScreen>
         },
       ),
       const SizedBox(height: 20),
-      
+
       // Student ID field (optional) / Öğrenci no alanı (opsiyonel)
       _buildCleanInputField(
         controller: _studentIdSignupController,
@@ -1101,29 +1119,29 @@ class _LoginScreenState extends State<LoginScreen>
         textInputType: TextInputType.number,
       ),
       const SizedBox(height: 20),
-      
+
       // Year of study dropdown / Sınıf seçimi
       _buildYearOfStudyDropdown(),
       const SizedBox(height: 20),
-      
+
       // Gender dropdown / Cinsiyet seçimi
       _buildGenderDropdown(),
       const SizedBox(height: 20),
-      
+
       // Birth date picker / Doğum tarihi seçimi
       _buildBirthDatePicker(),
       const SizedBox(height: 20),
-      
+
       // Terms checkbox / Kullanım şartları onay kutusu
       _buildTermsCheckbox(),
       const SizedBox(height: 28),
     ];
   }
-  
+
   /// Sign-in form fields / Giriş formu alanları
   List<Widget> _buildSignInFields() {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return [
       // Email field / Email alanı
       _buildCleanInputField(
@@ -1166,10 +1184,7 @@ class _LoginScreenState extends State<LoginScreen>
         child: TextButton(
           onPressed: _launchPasswordResetUrl,
           style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6),
             ),
@@ -1187,7 +1202,7 @@ class _LoginScreenState extends State<LoginScreen>
       const SizedBox(height: 28),
     ];
   }
-  
+
   /// Department dropdown / Bölüm seçim dropdown'ı
   Widget _buildDepartmentDropdown() {
     final l10n = AppLocalizations.of(context)!;
@@ -1199,7 +1214,7 @@ class _LoginScreenState extends State<LoginScreen>
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.shade200;
     final labelColor = isDark ? Colors.white : Colors.black87;
-    
+
     const departments = [
       'Bilgisayar Mühendisliği',
       'Tıp Fakültesi',
@@ -1211,7 +1226,7 @@ class _LoginScreenState extends State<LoginScreen>
       'Elektrik-Elektronik Mühendisliği',
       'Diğer',
     ];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1306,12 +1321,12 @@ class _LoginScreenState extends State<LoginScreen>
       ],
     );
   }
-  
+
   /// Terms and conditions checkbox / Kullanım şartları onay kutusu
   Widget _buildTermsCheckbox() {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1323,9 +1338,7 @@ class _LoginScreenState extends State<LoginScreen>
             });
           },
           activeColor: AppConstants.primaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         ),
         Expanded(
           child: GestureDetector(
@@ -1362,7 +1375,9 @@ class _LoginScreenState extends State<LoginScreen>
                         decoration: TextDecoration.underline,
                       ),
                     ),
-                    const TextSpan(text: 'ını okuduğumu ve kabul ettiğimi onaylarım.'),
+                    const TextSpan(
+                      text: 'ını okuduğumu ve kabul ettiğimi onaylarım.',
+                    ),
                   ],
                 ),
               ),
@@ -1372,7 +1387,7 @@ class _LoginScreenState extends State<LoginScreen>
       ],
     );
   }
-  
+
   /// Authentication button / Kimlik doğrulama butonu
   Widget _buildAuthButton(AppLocalizations l10n) {
     return SizedBox(
@@ -1381,7 +1396,9 @@ class _LoginScreenState extends State<LoginScreen>
       child: ElevatedButton(
         onPressed: _isLoading
             ? null
-            : (_authMode == AuthMode.signIn ? _handleFirebaseSignIn : _handleFirebaseSignUp),
+            : (_authMode == AuthMode.signIn
+                  ? _handleFirebaseSignIn
+                  : _handleFirebaseSignUp),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppConstants.primaryColor,
           foregroundColor: Colors.white,
@@ -1390,7 +1407,9 @@ class _LoginScreenState extends State<LoginScreen>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          disabledBackgroundColor: AppConstants.primaryColor.withValues(alpha: 0.6),
+          disabledBackgroundColor: AppConstants.primaryColor.withValues(
+            alpha: 0.6,
+          ),
         ),
         child: _isLoading
             ? const SizedBox(
@@ -1402,7 +1421,9 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
               )
             : Text(
-                _authMode == AuthMode.signIn ? l10n.loginButton : l10n.createAccount,
+                _authMode == AuthMode.signIn
+                    ? l10n.loginButton
+                    : l10n.createAccount,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -1412,11 +1433,11 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
-  
+
   /// Authentication mode toggle / Kimlik doğrulama modu değiştirici
   Widget _buildAuthModeToggle(AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -1446,7 +1467,7 @@ class _LoginScreenState extends State<LoginScreen>
       ],
     );
   }
-  
+
   /// Year of study dropdown / Sınıf seçim dropdown'u
   Widget _buildYearOfStudyDropdown() {
     final l10n = AppLocalizations.of(context)!;
@@ -1458,7 +1479,7 @@ class _LoginScreenState extends State<LoginScreen>
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.shade200;
     final labelColor = isDark ? Colors.white : Colors.black87;
-    
+
     final years = [
       l10n.firstYear,
       l10n.secondYear,
@@ -1467,7 +1488,7 @@ class _LoginScreenState extends State<LoginScreen>
       l10n.graduateStudent,
       l10n.phdStudent,
     ];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1543,7 +1564,7 @@ class _LoginScreenState extends State<LoginScreen>
       ],
     );
   }
-  
+
   /// Gender dropdown / Cinsiyet seçim dropdown'u
   Widget _buildGenderDropdown() {
     final l10n = AppLocalizations.of(context)!;
@@ -1555,13 +1576,9 @@ class _LoginScreenState extends State<LoginScreen>
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.shade200;
     final labelColor = isDark ? Colors.white : Colors.black87;
-    
-    final genders = [
-      l10n.male,
-      l10n.female,
-      l10n.preferNotToSay,
-    ];
-    
+
+    final genders = [l10n.male, l10n.female, l10n.preferNotToSay];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1637,7 +1654,7 @@ class _LoginScreenState extends State<LoginScreen>
       ],
     );
   }
-  
+
   /// Birth date picker / Doğum tarihi seçici
   Widget _buildBirthDatePicker() {
     final l10n = AppLocalizations.of(context)!;
@@ -1649,7 +1666,7 @@ class _LoginScreenState extends State<LoginScreen>
         ? Colors.white.withValues(alpha: 0.08)
         : Colors.grey.shade200;
     final labelColor = isDark ? Colors.white : Colors.black87;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1705,8 +1722,8 @@ class _LoginScreenState extends State<LoginScreen>
                       fontWeight: FontWeight.w500,
                       color: _selectedBirthDate == null
                           ? (isDark
-                              ? Colors.white.withValues(alpha: 0.4)
-                              : Colors.grey.shade500)
+                                ? Colors.white.withValues(alpha: 0.4)
+                                : Colors.grey.shade500)
                           : (isDark ? Colors.white : Colors.black87),
                     ),
                   ),
@@ -1735,7 +1752,4 @@ class _LoginScreenState extends State<LoginScreen>
 }
 
 /// Authentication mode enum / Kimlik doğrulama modu enum'ı
-enum AuthMode {
-  signIn,
-  signUp,
-}
+enum AuthMode { signIn, signUp }

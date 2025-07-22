@@ -50,7 +50,7 @@ class UserCoursesService {
       }
 
       print('🔍 UserCoursesService: Fetching courses for user $uid');
-      
+
       final querySnapshot = await _firestore
           .collection('users')
           .doc(uid)
@@ -87,7 +87,7 @@ class UserCoursesService {
       }
 
       print('🔍 UserCoursesService: Fetching course $courseId for user $uid');
-      
+
       final courseDoc = await _firestore
           .collection('users')
           .doc(uid)
@@ -100,8 +100,11 @@ class UserCoursesService {
         return null;
       }
 
-      final course = UserCourse.fromFirestoreData(courseDoc.data()!, courseDoc.id);
-      
+      final course = UserCourse.fromFirestoreData(
+        courseDoc.data()!,
+        courseDoc.id,
+      );
+
       print('✅ UserCoursesService: Course retrieved successfully');
       return course;
     } catch (e) {
@@ -118,12 +121,16 @@ class UserCoursesService {
         throw Exception('User not authenticated');
       }
 
-      print('🔄 UserCoursesService: Adding course ${course.courseCode} for user $uid');
+      print(
+        '🔄 UserCoursesService: Adding course ${course.courseCode} for user $uid',
+      );
 
       // Check for schedule conflicts
       final hasConflict = await hasScheduleConflict(course, uid);
       if (hasConflict) {
-        throw Exception('Schedule conflict detected. Please check your existing courses.');
+        throw Exception(
+          'Schedule conflict detected. Please check your existing courses.',
+        );
       }
 
       // Create course document
@@ -145,7 +152,9 @@ class UserCoursesService {
       // Clear cache to force refresh
       _courseCache.remove(uid);
 
-      print('✅ UserCoursesService: Course added successfully with ID: ${courseRef.id}');
+      print(
+        '✅ UserCoursesService: Course added successfully with ID: ${courseRef.id}',
+      );
       return courseRef.id;
     } catch (e) {
       print('❌ UserCoursesService: Failed to add course - $e');
@@ -154,7 +163,11 @@ class UserCoursesService {
   }
 
   /// Dersi güncelle / Update course
-  Future<void> updateCourse(String courseId, UserCourse course, [String? userId]) async {
+  Future<void> updateCourse(
+    String courseId,
+    UserCourse course, [
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) {
@@ -164,9 +177,15 @@ class UserCoursesService {
       print('🔄 UserCoursesService: Updating course $courseId for user $uid');
 
       // Check for schedule conflicts (excluding current course)
-      final hasConflict = await hasScheduleConflict(course, uid, excludeCourseId: courseId);
+      final hasConflict = await hasScheduleConflict(
+        course,
+        uid,
+        excludeCourseId: courseId,
+      );
       if (hasConflict) {
-        throw Exception('Schedule conflict detected. Please check your existing courses.');
+        throw Exception(
+          'Schedule conflict detected. Please check your existing courses.',
+        );
       }
 
       final courseRef = _firestore
@@ -220,7 +239,11 @@ class UserCoursesService {
   }
 
   /// Dersi tamamlanmış olarak işaretle / Mark course as completed
-  Future<void> markCourseAsCompleted(String courseId, String? grade, [String? userId]) async {
+  Future<void> markCourseAsCompleted(
+    String courseId,
+    String? grade, [
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) {
@@ -235,11 +258,11 @@ class UserCoursesService {
           .collection('courses')
           .doc(courseId)
           .update({
-        'isCompleted': true,
-        'isActive': false,
-        'grade': grade,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+            'isCompleted': true,
+            'isActive': false,
+            'grade': grade,
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
 
       // Clear cache to force refresh
       _courseCache.remove(uid);
@@ -260,7 +283,7 @@ class UserCoursesService {
     try {
       final courses = await getUserCourses(userId);
       final today = DateTime.now().weekday;
-      
+
       final todaysCourses = courses.where((course) {
         return course.hasClassOnDay(today);
       }).toList();
@@ -272,7 +295,9 @@ class UserCoursesService {
         return aSchedule.startHour.compareTo(bSchedule.startHour);
       });
 
-      print('✅ UserCoursesService: Found ${todaysCourses.length} courses for today');
+      print(
+        '✅ UserCoursesService: Found ${todaysCourses.length} courses for today',
+      );
       return todaysCourses;
     } catch (e) {
       print('❌ UserCoursesService: Failed to get today\'s courses - $e');
@@ -281,10 +306,13 @@ class UserCoursesService {
   }
 
   /// Belirli bir gün için dersleri getir / Get courses for a specific day
-  Future<List<UserCourse>> getCoursesForDay(int dayOfWeek, [String? userId]) async {
+  Future<List<UserCourse>> getCoursesForDay(
+    int dayOfWeek, [
+    String? userId,
+  ]) async {
     try {
       final courses = await getUserCourses(userId);
-      
+
       final dayCourses = courses.where((course) {
         return course.hasClassOnDay(dayOfWeek);
       }).toList();
@@ -298,24 +326,34 @@ class UserCoursesService {
 
       return dayCourses;
     } catch (e) {
-      print('❌ UserCoursesService: Failed to get courses for day $dayOfWeek - $e');
+      print(
+        '❌ UserCoursesService: Failed to get courses for day $dayOfWeek - $e',
+      );
       return [];
     }
   }
 
   /// Belirli bir tarih için dersleri getir / Get courses for a specific date
-  Future<List<UserCourse>> getCoursesForDate(DateTime date, [String? userId]) async {
+  Future<List<UserCourse>> getCoursesForDate(
+    DateTime date, [
+    String? userId,
+  ]) async {
     return getCoursesForDay(date.weekday, userId);
   }
 
   /// Program çakışması kontrol et / Check for schedule conflicts
-  Future<bool> hasScheduleConflict(UserCourse newCourse, String userId, {String? excludeCourseId}) async {
+  Future<bool> hasScheduleConflict(
+    UserCourse newCourse,
+    String userId, {
+    String? excludeCourseId,
+  }) async {
     try {
       final existingCourses = await getUserCourses(userId);
-      
+
       for (final existingCourse in existingCourses) {
         // Skip if this is the course being updated
-        if (excludeCourseId != null && existingCourse.courseId == excludeCourseId) {
+        if (excludeCourseId != null &&
+            existingCourse.courseId == excludeCourseId) {
           continue;
         }
 
@@ -323,7 +361,9 @@ class UserCoursesService {
         for (final newSchedule in newCourse.schedule) {
           for (final existingSchedule in existingCourse.schedule) {
             if (newSchedule.conflictsWith(existingSchedule)) {
-              print('⚠️ UserCoursesService: Schedule conflict detected between ${newCourse.courseCode} and ${existingCourse.courseCode}');
+              print(
+                '⚠️ UserCoursesService: Schedule conflict detected between ${newCourse.courseCode} and ${existingCourse.courseCode}',
+              );
               return true;
             }
           }
@@ -373,12 +413,14 @@ class UserCoursesService {
   Stream<List<UserCourse>> watchUserCourses([String? userId]) {
     final uid = userId ?? currentUserId;
     if (uid == null) {
-      print('❌ UserCoursesService: Cannot watch courses - user not authenticated');
+      print(
+        '❌ UserCoursesService: Cannot watch courses - user not authenticated',
+      );
       return Stream.value([]);
     }
 
     print('👁️ UserCoursesService: Starting to watch courses for user $uid');
-    
+
     return _firestore
         .collection('users')
         .doc(uid)
@@ -434,10 +476,10 @@ class UserCoursesService {
 
       final filteredCourses = courses.where((course) {
         return course.courseCode.toLowerCase().contains(searchQuery) ||
-               course.courseName.toLowerCase().contains(searchQuery) ||
-               course.instructor.name.toLowerCase().contains(searchQuery) ||
-               course.department.toLowerCase().contains(searchQuery) ||
-               (course.alias?.toLowerCase().contains(searchQuery) ?? false);
+            course.courseName.toLowerCase().contains(searchQuery) ||
+            course.instructor.name.toLowerCase().contains(searchQuery) ||
+            course.department.toLowerCase().contains(searchQuery) ||
+            (course.alias?.toLowerCase().contains(searchQuery) ?? false);
       }).toList();
 
       return filteredCourses;
@@ -459,11 +501,18 @@ class UserCoursesService {
   }
 
   /// Bölüme göre dersleri filtrele / Filter courses by department
-  Future<List<UserCourse>> getCoursesByDepartment(String department, [String? userId]) async {
+  Future<List<UserCourse>> getCoursesByDepartment(
+    String department, [
+    String? userId,
+  ]) async {
     try {
       final courses = await getUserCourses(userId);
-      return courses.where((course) => 
-          course.department.toLowerCase() == department.toLowerCase()).toList();
+      return courses
+          .where(
+            (course) =>
+                course.department.toLowerCase() == department.toLowerCase(),
+          )
+          .toList();
     } catch (e) {
       print('❌ UserCoursesService: Failed to get courses by department - $e');
       return [];
@@ -492,7 +541,8 @@ class UserCoursesService {
       instructor: CourseInstructor(name: instructorName),
       schedule: schedule,
       credits: credits,
-      semester: '${DateTime.now().year}-${DateTime.now().month <= 6 ? 'Spring' : 'Fall'}',
+      semester:
+          '${DateTime.now().year}-${DateTime.now().month <= 6 ? 'Spring' : 'Fall'}',
       year: DateTime.now().year,
       semesterNumber: DateTime.now().month <= 6 ? 2 : 1,
       department: department,

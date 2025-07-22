@@ -10,90 +10,90 @@ part 'user_course_model.g.dart';
 class UserCourse {
   @JsonKey(name: 'courseId')
   final String courseId;
-  
+
   @JsonKey(name: 'courseCode')
   final String courseCode;
-  
+
   @JsonKey(name: 'courseName')
   final String courseName;
-  
+
   @JsonKey(name: 'courseNameEn')
   final String? courseNameEn;
-  
+
   @JsonKey(name: 'courseNameTr')
   final String? courseNameTr;
-  
+
   @JsonKey(name: 'instructor')
   final CourseInstructor instructor;
-  
+
   @JsonKey(name: 'schedule')
   final List<CourseSchedule> schedule;
-  
+
   @JsonKey(name: 'credits')
   final int credits;
-  
+
   @JsonKey(name: 'semester')
   final String semester;
-  
+
   @JsonKey(name: 'year')
   final int year;
-  
+
   @JsonKey(name: 'semesterNumber')
   final int semesterNumber; // 1=Fall, 2=Spring, 3=Summer
-  
+
   @JsonKey(name: 'department')
   final String department;
-  
+
   @JsonKey(name: 'faculty')
   final String faculty;
-  
+
   @JsonKey(name: 'level')
   final String level; // 'undergraduate', 'graduate', 'phd'
-  
+
   @JsonKey(name: 'prerequisite')
   final List<String>? prerequisite;
-  
+
   // User Customization
   @JsonKey(name: 'color')
   final String color; // Hex color
-  
+
   @JsonKey(name: 'alias')
   final String? alias;
-  
+
   @JsonKey(name: 'notes')
   final String? notes;
-  
+
   @JsonKey(name: 'priority')
   final String priority; // 'high', 'medium', 'low'
-  
+
   @JsonKey(name: 'favorited')
   final bool favorited;
-  
+
   // Status & Settings
   @JsonKey(name: 'isActive')
   final bool isActive;
-  
+
   @JsonKey(name: 'isCompleted')
   final bool isCompleted;
-  
+
   @JsonKey(name: 'grade')
   final String? grade;
-  
+
   @JsonKey(name: 'attendance')
   final CourseAttendance? attendance;
-  
+
   @JsonKey(name: 'notifications')
   final CourseNotifications notifications;
-  
+
   // Timestamps
   @JsonKey(name: 'createdAt', includeIfNull: false)
   @TimestampConverter()
   final DateTime? createdAt;
-  
+
   @JsonKey(name: 'updatedAt', includeIfNull: false)
   @TimestampConverter()
   final DateTime? updatedAt;
-  
+
   @JsonKey(name: 'enrolledAt', includeIfNull: false)
   @TimestampConverter()
   final DateTime? enrolledAt;
@@ -130,7 +130,8 @@ class UserCourse {
   });
 
   /// JSON'dan UserCourse oluştur / Create UserCourse from JSON
-  factory UserCourse.fromJson(Map<String, dynamic> json) => _$UserCourseFromJson(json);
+  factory UserCourse.fromJson(Map<String, dynamic> json) =>
+      _$UserCourseFromJson(json);
 
   /// UserCourse'u JSON'a çevir / Convert UserCourse to JSON
   Map<String, dynamic> toJson() => _$UserCourseToJson(this);
@@ -138,7 +139,7 @@ class UserCourse {
   /// Firebase'e uygun veri oluştur / Create Firebase-compatible data
   Map<String, dynamic> toFirestoreData() {
     final data = toJson();
-    
+
     // Manually handle complex objects to ensure proper serialization
     data['instructor'] = instructor.toJson();
     data['schedule'] = schedule.map((s) => s.toJson()).toList();
@@ -146,7 +147,7 @@ class UserCourse {
     if (attendance != null) {
       data['attendance'] = attendance!.toJson();
     }
-    
+
     // Ensure timestamps are properly converted
     if (createdAt != null) {
       data['createdAt'] = Timestamp.fromDate(createdAt!);
@@ -157,30 +158,39 @@ class UserCourse {
     if (enrolledAt != null) {
       data['enrolledAt'] = Timestamp.fromDate(enrolledAt!);
     }
-    
+
     return data;
   }
 
   /// Firebase verilerinden UserCourse oluştur / Create UserCourse from Firebase data
-  factory UserCourse.fromFirestoreData(Map<String, dynamic> data, String documentId) {
+  factory UserCourse.fromFirestoreData(
+    Map<String, dynamic> data,
+    String documentId,
+  ) {
     final jsonData = Map<String, dynamic>.from(data);
-    
+
     // Set course ID if not present
     if (!jsonData.containsKey('courseId')) {
       jsonData['courseId'] = documentId;
     }
-    
+
     // Convert Timestamps to DateTime strings for JSON parsing
     if (data['createdAt'] is Timestamp) {
-      jsonData['createdAt'] = (data['createdAt'] as Timestamp).toDate().toIso8601String();
+      jsonData['createdAt'] = (data['createdAt'] as Timestamp)
+          .toDate()
+          .toIso8601String();
     }
     if (data['updatedAt'] is Timestamp) {
-      jsonData['updatedAt'] = (data['updatedAt'] as Timestamp).toDate().toIso8601String();
+      jsonData['updatedAt'] = (data['updatedAt'] as Timestamp)
+          .toDate()
+          .toIso8601String();
     }
     if (data['enrolledAt'] is Timestamp) {
-      jsonData['enrolledAt'] = (data['enrolledAt'] as Timestamp).toDate().toIso8601String();
+      jsonData['enrolledAt'] = (data['enrolledAt'] as Timestamp)
+          .toDate()
+          .toIso8601String();
     }
-    
+
     return UserCourse.fromJson(jsonData);
   }
 
@@ -307,13 +317,13 @@ class UserCourse {
 class CourseInstructor {
   @JsonKey(name: 'name')
   final String name;
-  
+
   @JsonKey(name: 'email')
   final String? email;
-  
+
   @JsonKey(name: 'office')
   final String? office;
-  
+
   @JsonKey(name: 'officeHours')
   final String? officeHours;
 
@@ -324,7 +334,8 @@ class CourseInstructor {
     this.officeHours,
   });
 
-  factory CourseInstructor.fromJson(Map<String, dynamic> json) => _$CourseInstructorFromJson(json);
+  factory CourseInstructor.fromJson(Map<String, dynamic> json) =>
+      _$CourseInstructorFromJson(json);
   Map<String, dynamic> toJson() => _$CourseInstructorToJson(this);
 }
 
@@ -333,28 +344,28 @@ class CourseInstructor {
 class CourseSchedule {
   @JsonKey(name: 'dayOfWeek')
   final int dayOfWeek; // 1=Monday, 2=Tuesday, ..., 7=Sunday
-  
+
   @JsonKey(name: 'startTime')
   final String startTime; // "08:00"
-  
+
   @JsonKey(name: 'endTime')
   final String endTime; // "10:00"
-  
+
   @JsonKey(name: 'startHour')
   final int startHour; // 8
-  
+
   @JsonKey(name: 'duration')
   final double duration; // 2.0
-  
+
   @JsonKey(name: 'room')
   final String room; // "B201"
-  
+
   @JsonKey(name: 'building')
   final String? building; // "Engineering"
-  
+
   @JsonKey(name: 'floor')
   final int? floor; // 2
-  
+
   @JsonKey(name: 'classType')
   final String classType; // 'lecture', 'lab', 'tutorial', 'exam'
 
@@ -370,7 +381,8 @@ class CourseSchedule {
     this.classType = 'lecture',
   });
 
-  factory CourseSchedule.fromJson(Map<String, dynamic> json) => _$CourseScheduleFromJson(json);
+  factory CourseSchedule.fromJson(Map<String, dynamic> json) =>
+      _$CourseScheduleFromJson(json);
   Map<String, dynamic> toJson() => _$CourseScheduleToJson(this);
 
   /// Bitiş saatini hesapla / Calculate end hour
@@ -386,40 +398,57 @@ class CourseSchedule {
   /// Gün adını getir / Get day name
   String getDayName() {
     switch (dayOfWeek) {
-      case 1: return 'Monday';
-      case 2: return 'Tuesday';
-      case 3: return 'Wednesday';
-      case 4: return 'Thursday';
-      case 5: return 'Friday';
-      case 6: return 'Saturday';
-      case 7: return 'Sunday';
-      default: return 'Unknown';
+      case 1:
+        return 'Monday';
+      case 2:
+        return 'Tuesday';
+      case 3:
+        return 'Wednesday';
+      case 4:
+        return 'Thursday';
+      case 5:
+        return 'Friday';
+      case 6:
+        return 'Saturday';
+      case 7:
+        return 'Sunday';
+      default:
+        return 'Unknown';
     }
   }
 
   /// Türkçe gün adını getir / Get Turkish day name
   String getDayNameTr() {
     switch (dayOfWeek) {
-      case 1: return 'Pazartesi';
-      case 2: return 'Salı';
-      case 3: return 'Çarşamba';
-      case 4: return 'Perşembe';
-      case 5: return 'Cuma';
-      case 6: return 'Cumartesi';
-      case 7: return 'Pazar';
-      default: return 'Bilinmiyor';
+      case 1:
+        return 'Pazartesi';
+      case 2:
+        return 'Salı';
+      case 3:
+        return 'Çarşamba';
+      case 4:
+        return 'Perşembe';
+      case 5:
+        return 'Cuma';
+      case 6:
+        return 'Cumartesi';
+      case 7:
+        return 'Pazar';
+      default:
+        return 'Bilinmiyor';
     }
   }
 
   /// Program çakışması kontrol et / Check schedule conflict
   bool conflictsWith(CourseSchedule other) {
     if (dayOfWeek != other.dayOfWeek) return false;
-    
+
     final thisStart = startHour * 60 + int.parse(startTime.split(':')[1]);
     final thisEnd = thisStart + (duration * 60).round();
-    final otherStart = other.startHour * 60 + int.parse(other.startTime.split(':')[1]);
+    final otherStart =
+        other.startHour * 60 + int.parse(other.startTime.split(':')[1]);
     final otherEnd = otherStart + (other.duration * 60).round();
-    
+
     return (thisStart < otherEnd) && (thisEnd > otherStart);
   }
 }
@@ -429,10 +458,10 @@ class CourseSchedule {
 class CourseAttendance {
   @JsonKey(name: 'attended')
   final int attended;
-  
+
   @JsonKey(name: 'total')
   final int total;
-  
+
   @JsonKey(name: 'percentage')
   final double percentage;
 
@@ -442,12 +471,13 @@ class CourseAttendance {
     required this.percentage,
   });
 
-  factory CourseAttendance.fromJson(Map<String, dynamic> json) => _$CourseAttendanceFromJson(json);
+  factory CourseAttendance.fromJson(Map<String, dynamic> json) =>
+      _$CourseAttendanceFromJson(json);
   Map<String, dynamic> toJson() => _$CourseAttendanceToJson(this);
 
   /// Devam durumu iyi mi? / Is attendance good?
   bool get isGood => percentage >= 70.0;
-  
+
   /// Devam durumu kritik mi? / Is attendance critical?
   bool get isCritical => percentage < 50.0;
 }
@@ -457,13 +487,13 @@ class CourseAttendance {
 class CourseNotifications {
   @JsonKey(name: 'beforeClass')
   final int beforeClass; // Minutes before class
-  
+
   @JsonKey(name: 'classReminder')
   final bool classReminder;
-  
+
   @JsonKey(name: 'examReminder')
   final bool examReminder;
-  
+
   @JsonKey(name: 'assignmentReminder')
   final bool assignmentReminder;
 
@@ -474,7 +504,8 @@ class CourseNotifications {
     this.assignmentReminder = true,
   });
 
-  factory CourseNotifications.fromJson(Map<String, dynamic> json) => _$CourseNotificationsFromJson(json);
+  factory CourseNotifications.fromJson(Map<String, dynamic> json) =>
+      _$CourseNotificationsFromJson(json);
   Map<String, dynamic> toJson() => _$CourseNotificationsToJson(this);
 }
 

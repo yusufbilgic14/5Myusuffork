@@ -49,6 +49,7 @@ class AppConstants {
     final firebaseAuthService = FirebaseAuthService();
     return firebaseAuthService.currentAppUser?.displayName ?? 'Elif Yılmaz';
   }
+
   static const String userRole = 'Öğrenci';
   static const String userDepartment = 'Yönetim Bilişim Sistemleri';
   static const String userGrade = '3. Sınıf';

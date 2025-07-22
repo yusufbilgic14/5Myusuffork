@@ -119,7 +119,8 @@ class AnnouncementModel {
   });
 
   /// JSON'dan AnnouncementModel oluştur / Create AnnouncementModel from JSON
-  factory AnnouncementModel.fromJson(Map<String, dynamic> json) => _$AnnouncementModelFromJson(json);
+  factory AnnouncementModel.fromJson(Map<String, dynamic> json) =>
+      _$AnnouncementModelFromJson(json);
 
   /// AnnouncementModel'i JSON'a çevir / Convert AnnouncementModel to JSON
   Map<String, dynamic> toJson() => _$AnnouncementModelToJson(this);
@@ -134,23 +135,25 @@ class AnnouncementModel {
   /// Firebase'e uygun veri formatına çevir / Convert to Firebase-compatible format
   Map<String, dynamic> toFirestore() {
     final data = toJson();
-    data.remove('id'); // Firestore document ID olarak ayarlanacak / Will be set as Firestore document ID
+    data.remove(
+      'id',
+    ); // Firestore document ID olarak ayarlanacak / Will be set as Firestore document ID
     return data;
   }
 
   /// Duyurunun aktif olup olmadığını kontrol et / Check if announcement is active
   bool get isActive {
     final now = DateTime.now();
-    
+
     // Status kontrolü / Status check
     if (status != AnnouncementStatus.published) return false;
-    
+
     // Yayınlanma tarihi kontrolü / Publish date check
     if (publishAt != null && publishAt!.isAfter(now)) return false;
-    
+
     // Son kullanma tarihi kontrolü / Expiry date check
     if (expiresAt != null && expiresAt!.isBefore(now)) return false;
-    
+
     return true;
   }
 
@@ -164,42 +167,42 @@ class AnnouncementModel {
   }) {
     // Herkese açık duyurular / Public announcements
     if (targetAudience.roles.contains('all')) return true;
-    
+
     // Rol bazlı kontrol / Role-based check
     if (!targetAudience.roles.contains(userRole)) return false;
-    
+
     // Bölüm kontrolü / Department check
-    if (targetAudience.departments != null && 
-        targetAudience.departments!.isNotEmpty && 
+    if (targetAudience.departments != null &&
+        targetAudience.departments!.isNotEmpty &&
         department != null &&
         !targetAudience.departments!.contains(department)) {
       return false;
     }
-    
+
     // Fakülte kontrolü / Faculty check
-    if (targetAudience.faculties != null && 
-        targetAudience.faculties!.isNotEmpty && 
+    if (targetAudience.faculties != null &&
+        targetAudience.faculties!.isNotEmpty &&
         faculty != null &&
         !targetAudience.faculties!.contains(faculty)) {
       return false;
     }
-    
+
     // Sınıf kontrolü (öğrenciler için) / Year check (for students)
-    if (targetAudience.years != null && 
-        targetAudience.years!.isNotEmpty && 
+    if (targetAudience.years != null &&
+        targetAudience.years!.isNotEmpty &&
         year != null &&
         !targetAudience.years!.contains(year)) {
       return false;
     }
-    
+
     // Özel kullanıcı kontrolü / Specific user check
-    if (targetAudience.userIds != null && 
-        targetAudience.userIds!.isNotEmpty && 
+    if (targetAudience.userIds != null &&
+        targetAudience.userIds!.isNotEmpty &&
         userId != null &&
         !targetAudience.userIds!.contains(userId)) {
       return false;
     }
-    
+
     return true;
   }
 
@@ -208,10 +211,10 @@ class AnnouncementModel {
     if (summary != null && summary!.isNotEmpty) {
       return summary!;
     }
-    
+
     // HTML etiketlerini temizle ve ilk 150 karakteri al / Clean HTML tags and take first 150 characters
     final cleanContent = content.replaceAll(RegExp(r'<[^>]*>'), '');
-    return cleanContent.length > 150 
+    return cleanContent.length > 150
         ? '${cleanContent.substring(0, 150)}...'
         : cleanContent;
   }
@@ -230,7 +233,6 @@ class AnnouncementModel {
       case AnnouncementCategory.event:
         return '#9C27B0';
       case AnnouncementCategory.general:
-      default:
         return '#757575';
     }
   }
@@ -245,7 +247,6 @@ class AnnouncementModel {
       case AnnouncementPriority.medium:
         return '📢';
       case AnnouncementPriority.low:
-      default:
         return 'ℹ️';
     }
   }
@@ -333,14 +334,16 @@ class AttachmentModel {
     required this.size,
   });
 
-  factory AttachmentModel.fromJson(Map<String, dynamic> json) => _$AttachmentModelFromJson(json);
+  factory AttachmentModel.fromJson(Map<String, dynamic> json) =>
+      _$AttachmentModelFromJson(json);
   Map<String, dynamic> toJson() => _$AttachmentModelToJson(this);
 
   /// Dosya boyutunu human-readable formatta getir / Get file size in human-readable format
   String get formattedSize {
     if (size < 1024) return '${size}B';
     if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)}KB';
-    if (size < 1024 * 1024 * 1024) return '${(size / (1024 * 1024)).toStringAsFixed(1)}MB';
+    if (size < 1024 * 1024 * 1024)
+      return '${(size / (1024 * 1024)).toStringAsFixed(1)}MB';
     return '${(size / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 
@@ -405,7 +408,8 @@ class TargetAudienceModel {
     this.userIds,
   });
 
-  factory TargetAudienceModel.fromJson(Map<String, dynamic> json) => _$TargetAudienceModelFromJson(json);
+  factory TargetAudienceModel.fromJson(Map<String, dynamic> json) =>
+      _$TargetAudienceModelFromJson(json);
   Map<String, dynamic> toJson() => _$TargetAudienceModelToJson(this);
 
   /// Herkese açık hedef kitle / Public target audience
@@ -497,4 +501,4 @@ class TimestampConverter implements JsonConverter<DateTime?, Object?> {
     if (dateTime == null) return null;
     return Timestamp.fromDate(dateTime);
   }
-} 
+}

@@ -10,10 +10,10 @@ import '../services/firebase_auth_service.dart';
 class AuthenticationProvider extends ChangeNotifier {
   final AuthenticationService _authService = AuthenticationService();
   final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
-  
+
   StreamSubscription<AuthenticationState>? _authSubscription;
   StreamSubscription<FirebaseAuthState>? _firebaseAuthSubscription;
-  
+
   // Durum değişkenleri / State variables
   bool _isLoading = false;
   bool _isAuthenticated = false;
@@ -33,28 +33,30 @@ class AuthenticationProvider extends ChangeNotifier {
     try {
       // Microsoft OAuth servisini başlat / Initialize Microsoft OAuth service
       await _authService.initialize();
-      
+
       // Firebase Auth servisini başlat / Initialize Firebase Auth service
       await _firebaseAuthService.initialize();
-      
+
       // Kimlik doğrulama durumu değişikliklerini dinle
       // Listen to authentication state changes
       _authSubscription = _authService.authStateChanges.listen(
         _handleAuthStateChange,
         onError: _handleAuthError,
       );
-      
+
       // Firebase kimlik doğrulama durumu değişikliklerini dinle
       // Listen to Firebase authentication state changes
       _firebaseAuthSubscription = _firebaseAuthService.authStateChanges.listen(
         _handleFirebaseAuthStateChange,
         onError: _handleFirebaseAuthError,
       );
-      
+
       _isInitialized = true;
       notifyListeners();
     } catch (e) {
-      _handleError('Kimlik doğrulama servisi başlatılamadı / Failed to initialize auth service: $e');
+      _handleError(
+        'Kimlik doğrulama servisi başlatılamadı / Failed to initialize auth service: $e',
+      );
     }
   }
 
@@ -69,12 +71,12 @@ class AuthenticationProvider extends ChangeNotifier {
         await initialize();
       }
 
-      print('🚀 AuthenticationProvider: Starting Microsoft OAuth sign in...');
+      // Microsoft OAuth girişi başlatılıyor / Starting Microsoft OAuth sign in
       final result = await _authService.signInWithMicrosoft();
-      
+
       if (result.isSuccess && result.user != null) {
-        print('✅ AuthenticationProvider: Microsoft OAuth successful, integrating with Firebase...');
-        
+        // Microsoft OAuth başarılı, Firebase ile entegre ediliyor / Microsoft OAuth successful, integrating with Firebase
+
         // Microsoft OAuth başarılı, şimdi Firebase ile entegre et
         // Microsoft OAuth successful, now integrate with Firebase
         try {
@@ -83,20 +85,21 @@ class AuthenticationProvider extends ChangeNotifier {
           if (_firebaseAuthService.isFirebaseConfigured) {
             // Firebase konfigüre edilmişse entegrasyon dene
             // Try integration if Firebase is configured
-            final microsoftUserData = await _authService.getDebugInfo();
-            
+            // Microsoft kullanıcı verileri alındı / Microsoft user data retrieved
+            await _authService.getDebugInfo();
+
             // TODO: Gelecekte custom token veya federated auth kullanılacak
             // TODO: Will use custom token or federated auth in the future
-            print('🔥 AuthenticationProvider: Firebase integration prepared');
+            // Firebase entegrasyonu hazırlandı / Firebase integration prepared
           } else {
-            print('⚠️ AuthenticationProvider: Firebase not configured, continuing with Microsoft OAuth only');
+            // Firebase konfigüre edilmemiş, sadece Microsoft OAuth ile devam et / Firebase not configured, continuing with Microsoft OAuth only
           }
         } catch (firebaseError) {
-          print('⚠️ AuthenticationProvider: Firebase integration failed, continuing with Microsoft OAuth: $firebaseError');
+          // Firebase entegrasyonu başarısız: $firebaseError / Firebase integration failed: $firebaseError
           // Firebase entegrasyonu başarısız olsa bile Microsoft OAuth'la devam et
           // Continue with Microsoft OAuth even if Firebase integration fails
         }
-        
+
         // AuthenticationState stream zaten durumu güncelleyecek
         // AuthenticationState stream will update the state
         return true;
@@ -121,25 +124,25 @@ class AuthenticationProvider extends ChangeNotifier {
       _setLoading(true);
       _clearError();
 
-      print('🚪 AuthenticationProvider: Starting sign out process...');
-      
+      // Çıkış işlemi başlatılıyor / Starting sign out process
+
       // Microsoft OAuth'dan çıkış yap / Sign out from Microsoft OAuth
       await _authService.signOut();
-      
+
       // Firebase'den çıkış yap / Sign out from Firebase
       try {
         if (_firebaseAuthService.isFirebaseConfigured) {
           await _firebaseAuthService.signOut();
-          print('✅ AuthenticationProvider: Firebase sign out completed');
+          // Firebase çıkış işlemi tamamlandı / Firebase sign out completed
         }
       } catch (firebaseError) {
-        print('⚠️ AuthenticationProvider: Firebase sign out error (continuing): $firebaseError');
+        // Firebase çıkış hatası (devam ediliyor) / Firebase sign out error (continuing): $firebaseError
         // Firebase çıkış hatası olsa bile Microsoft OAuth çıkışıyla devam et
         // Continue with Microsoft OAuth sign out even if Firebase sign out fails
       }
-      
-      print('✅ AuthenticationProvider: Sign out completed');
-      
+
+      // Çıkış işlemi tamamlandı / Sign out completed
+
       // Durum AuthenticationState stream tarafından güncellenecek
       // State will be updated by AuthenticationState stream
     } catch (e) {
@@ -188,23 +191,23 @@ class AuthenticationProvider extends ChangeNotifier {
   void _handleFirebaseAuthStateChange(FirebaseAuthState state) {
     if (state == FirebaseAuthState.loading) {
       // Firebase loading state handled in combination with MSAL
-      print('🔥 Firebase Auth: Loading state');
+      // Firebase Auth yükleniyor / Firebase Auth loading state
     } else if (state.runtimeType.toString().contains('_AuthenticatedState')) {
       // Firebase authenticated - this means Microsoft OAuth + Firebase integration successful
-      print('✅ Firebase Auth: User authenticated in Firebase');
+      // Firebase Auth: Kullanıcı Firebase'de doğrulandı / Firebase Auth: User authenticated in Firebase
     } else if (state == FirebaseAuthState.unauthenticated) {
-      print('👤 Firebase Auth: User unauthenticated in Firebase');
+      // Firebase Auth: Kullanıcı Firebase'de doğrulanmamış / Firebase Auth: User unauthenticated in Firebase
     } else if (state == FirebaseAuthState.notConfigured) {
-      print('⚙️ Firebase Auth: Not configured yet');
+      // Firebase Auth: Henüz konfigüre edilmemiş / Firebase Auth: Not configured yet
     } else if (state.runtimeType.toString().contains('_ErrorState')) {
-      print('❌ Firebase Auth: Error occurred');
+      // Firebase Auth: Hata oluştu / Firebase Auth: Error occurred
     }
     // Firebase state changes complement MSAL state, no need to modify main UI state here
   }
 
   /// Firebase kimlik doğrulama hatalarını işle / Handle Firebase authentication errors
   void _handleFirebaseAuthError(dynamic error) {
-    print('❌ Firebase Auth stream error: $error');
+    // Firebase Auth stream hatası / Firebase Auth stream error: $error
     // Firebase errors are logged but don't break the main authentication flow
   }
 
@@ -307,7 +310,8 @@ class AuthenticationProvider extends ChangeNotifier {
 
   /// Kullanıcı avatarı için initials getir / Get initials for user avatar
   String get userInitials {
-    if (_currentUser?.displayName != null && _currentUser!.displayName.isNotEmpty) {
+    if (_currentUser?.displayName != null &&
+        _currentUser!.displayName.isNotEmpty) {
       final nameParts = _currentUser!.displayName.split(' ');
       if (nameParts.length >= 2) {
         return '${nameParts[0][0]}${nameParts[1][0]}'.toUpperCase();
@@ -332,11 +336,15 @@ class AuthenticationProvider extends ChangeNotifier {
           notifyListeners();
         } else {
           // Token yenilenemedi, yeniden giriş gerekli / Cannot refresh token, need to sign in again
-          _handleError('Oturum süresi doldu, lütfen yeniden giriş yapın / Session expired, please sign in again');
+          _handleError(
+            'Oturum süresi doldu, lütfen yeniden giriş yapın / Session expired, please sign in again',
+          );
           await signOut();
         }
       } catch (e) {
-        _handleError('Kullanıcı bilgileri yenilenemedi / Failed to refresh user info: $e');
+        _handleError(
+          'Kullanıcı bilgileri yenilenemedi / Failed to refresh user info: $e',
+        );
       }
     }
   }
@@ -357,4 +365,4 @@ class AuthenticationGuard {
     final authProvider = context.read<AuthenticationProvider>();
     return authProvider.currentUser;
   }
-} 
+}

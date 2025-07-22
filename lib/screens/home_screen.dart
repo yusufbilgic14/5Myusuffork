@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _autoAdvanceTimer;
   bool _showNotifications = false;
   bool _showCafeteriaMenu = false;
-  
+
   // Firebase service and user courses
   final UserCoursesService _coursesService = UserCoursesService();
   List<UserCourse> _todaysUserCourses = [];
@@ -158,7 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
       'type': 'announcement',
     },
   ];
-
 
   @override
   void initState() {
@@ -419,7 +418,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Tek bir duyuru kartı
-  Widget _buildAnnouncementCard(BuildContext context, Map<String, String> announcement) {
+  Widget _buildAnnouncementCard(
+    BuildContext context,
+    Map<String, String> announcement,
+  ) {
     return GestureDetector(
       onTap: () => _openAnnouncementsPage(),
       child: Container(
@@ -428,7 +430,9 @@ class _HomeScreenState extends State<HomeScreen> {
           color: AppThemes.getSurfaceColor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+            color: AppThemes.getSecondaryTextColor(
+              context,
+            ).withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -448,7 +452,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Duyuru kartı arka plan resmi
-  Widget _buildAnnouncementCardBackground(BuildContext context, Map<String, String> announcement) {
+  Widget _buildAnnouncementCardBackground(
+    BuildContext context,
+    Map<String, String> announcement,
+  ) {
     return Positioned.fill(
       child: Image.asset(
         announcement['image']!,
@@ -486,10 +493,7 @@ class _HomeScreenState extends State<HomeScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.transparent,
-              Colors.black.withValues(alpha: 0.6),
-            ],
+            colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
           ),
         ),
       ),
@@ -497,15 +501,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Duyuru kartı tarih etiketi
-  Widget _buildAnnouncementCardDateLabel(BuildContext context, Map<String, String> announcement) {
+  Widget _buildAnnouncementCardDateLabel(
+    BuildContext context,
+    Map<String, String> announcement,
+  ) {
     return Positioned(
       top: 12,
       right: 12,
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 4,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(6),
@@ -576,7 +580,9 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               color: index == _currentAnnouncementIndex
                   ? AppThemes.getPrimaryColor(context)
-                  : AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.3),
+                  : AppThemes.getSecondaryTextColor(
+                      context,
+                    ).withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(3),
             ),
           ),
@@ -620,7 +626,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+                color: AppThemes.getPrimaryColor(
+                  context,
+                ).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
@@ -667,7 +675,9 @@ class _HomeScreenState extends State<HomeScreen> {
           color: AppThemes.getSurfaceColor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+            color: AppThemes.getSecondaryTextColor(
+              context,
+            ).withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -677,7 +687,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Icon(
               Icons.calendar_today_outlined,
               size: 48,
-              color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.5),
+              color: AppThemes.getSecondaryTextColor(
+                context,
+              ).withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -711,7 +723,9 @@ class _HomeScreenState extends State<HomeScreen> {
     int index,
   ) {
     final todaysSchedules = course.getTodaysSchedules();
-    final firstSchedule = todaysSchedules.isNotEmpty ? todaysSchedules.first : null;
+    final firstSchedule = todaysSchedules.isNotEmpty
+        ? todaysSchedules.first
+        : null;
 
     if (firstSchedule == null) return const SizedBox.shrink();
 
@@ -725,7 +739,9 @@ class _HomeScreenState extends State<HomeScreen> {
           color: AppThemes.getSurfaceColor(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+            color: AppThemes.getSecondaryTextColor(
+              context,
+            ).withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -866,7 +882,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showUserCourseDetails(BuildContext context, UserCourse course) {
     final theme = Theme.of(context);
     final todaysSchedules = course.getTodaysSchedules();
-    final firstSchedule = todaysSchedules.isNotEmpty ? todaysSchedules.first : null;
+    final firstSchedule = todaysSchedules.isNotEmpty
+        ? todaysSchedules.first
+        : null;
 
     showModalBottomSheet(
       context: context,
@@ -885,7 +903,10 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: course.colorAsColor,
                     borderRadius: BorderRadius.circular(20),
@@ -957,7 +978,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value, ThemeData theme) {
+  Widget _buildDetailRow(
+    IconData icon,
+    String label,
+    String value,
+    ThemeData theme,
+  ) {
     return Row(
       children: [
         Container(
@@ -966,11 +992,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: theme.colorScheme.primary,
-            size: 20,
-          ),
+          child: Icon(icon, color: theme.colorScheme.primary, size: 20),
         ),
         const SizedBox(width: 16),
         Column(
@@ -1015,7 +1037,9 @@ class _HomeScreenState extends State<HomeScreen> {
       color: AppThemes.getSurfaceColor(context),
       border: Border(
         bottom: BorderSide(
-          color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+          color: AppThemes.getSecondaryTextColor(
+            context,
+          ).withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -1158,7 +1182,9 @@ class _HomeScreenState extends State<HomeScreen> {
           : AppThemes.getPrimaryColor(context).withValues(alpha: 0.05),
       border: Border(
         bottom: BorderSide(
-          color: AppThemes.getSecondaryTextColor(context).withValues(alpha: 0.1),
+          color: AppThemes.getSecondaryTextColor(
+            context,
+          ).withValues(alpha: 0.1),
           width: 1,
         ),
       ),
@@ -1341,7 +1367,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Widget> _buildCafeteriaMenuDays(BuildContext context) {
     final now = DateTime.now();
     final menus = _getCafeteriaMenuData();
-    
+
     return List.generate(4, (i) {
       final date = now.add(Duration(days: i));
       return Column(
@@ -1361,7 +1387,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
     final weekdayNames = _getWeekdayNames(context);
     final weekday = weekdayNames[date.weekday - 1];
-    
+
     return Row(
       children: [
         Icon(
@@ -1392,9 +1418,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Cafeteria menü öğeleri
-  Widget _buildCafeteriaMenuItems(BuildContext context, List<String> menuItems) {
+  Widget _buildCafeteriaMenuItems(
+    BuildContext context,
+    List<String> menuItems,
+  ) {
     final theme = Theme.of(context);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

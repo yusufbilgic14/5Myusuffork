@@ -289,7 +289,11 @@ class _ProfileScreenState extends State<ProfileScreen>
               if (currentLocale.languageCode == 'tr')
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child: Icon(Icons.check, color: Theme.of(context).colorScheme.primary, size: 16),
+                  child: Icon(
+                    Icons.check,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 16,
+                  ),
                 ),
             ],
           ),
@@ -304,7 +308,11 @@ class _ProfileScreenState extends State<ProfileScreen>
               if (currentLocale.languageCode == 'en')
                 Padding(
                   padding: const EdgeInsets.only(left: 8),
-                  child: Icon(Icons.check, color: Theme.of(context).colorScheme.primary, size: 16),
+                  child: Icon(
+                    Icons.check,
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 16,
+                  ),
                 ),
             ],
           ),
@@ -533,7 +541,9 @@ class _ProfileScreenState extends State<ProfileScreen>
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppConstants.getIconColor(context).withValues(alpha: 0.1),
+                color: AppConstants.getIconColor(
+                  context,
+                ).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
               ),
               child: Icon(
@@ -562,7 +572,10 @@ class _ProfileScreenState extends State<ProfileScreen>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.keyboard_arrow_down, color: AppConstants.getIconColor(context),),
+                  Icon(
+                    Icons.keyboard_arrow_down,
+                    color: AppConstants.getIconColor(context),
+                  ),
                 ],
               ),
             ),

@@ -22,15 +22,15 @@ class AppDrawerWidget extends StatelessWidget {
   // Firebase'den kullanıcı adını al / Get user name from Firebase
   String _getUserName(BuildContext context) {
     final firebaseAuthService = FirebaseAuthService();
-    return firebaseAuthService.currentAppUser?.displayName ?? 
-           AppLocalizations.of(context)!.userName;
+    return firebaseAuthService.currentAppUser?.displayName ??
+        AppLocalizations.of(context)!.userName;
   }
 
   // Firebase'den kullanıcı bölümünü al / Get user department from Firebase
   String _getUserDepartment(BuildContext context) {
     final firebaseAuthService = FirebaseAuthService();
-    return firebaseAuthService.currentAppUser?.department ?? 
-           AppLocalizations.of(context)!.userDepartment;
+    return firebaseAuthService.currentAppUser?.department ??
+        AppLocalizations.of(context)!.userDepartment;
   }
 
   // Firebase'den kullanıcı rolünü al / Get user role from Firebase
@@ -52,7 +52,10 @@ class AppDrawerWidget extends StatelessWidget {
   Widget _buildModernSideDrawer(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgGradient = isDark
-        ? [const Color(0xFF181F2A), AppConstants.primaryColor.withValues(alpha: 0.85)]
+        ? [
+            const Color(0xFF181F2A),
+            AppConstants.primaryColor.withValues(alpha: 0.85),
+          ]
         : [
             AppConstants.primaryColor,
             AppConstants.primaryColor.withValues(alpha: 0.85),
@@ -237,7 +240,9 @@ class AppDrawerWidget extends StatelessWidget {
                     ),
                     child: Icon(
                       Icons.person,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 40,
                     ),
                   );
@@ -500,7 +505,10 @@ class AppDrawerWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+            width: 1,
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

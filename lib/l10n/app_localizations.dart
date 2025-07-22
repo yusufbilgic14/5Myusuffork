@@ -1804,6 +1804,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Address:'**
   String get address;
+
+  /// No description provided for @feedbackOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback Only'**
+  String get feedbackOnly;
+
+  /// No description provided for @pleaseAcceptTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Please accept the terms'**
+  String get pleaseAcceptTerms;
+
+  /// No description provided for @accountCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created successfully'**
+  String get accountCreatedSuccessfully;
+
+  /// No description provided for @signUpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUpTitle;
+
+  /// No description provided for @signUpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your account'**
+  String get signUpSubtitle;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @fullNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your full name'**
+  String get fullNameHint;
+
+  /// No description provided for @fullNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name is required'**
+  String get fullNameRequired;
+
+  /// No description provided for @fullNameInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid full name'**
+  String get fullNameInvalid;
+
+  /// No description provided for @emailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address'**
+  String get emailAddress;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get emailHint;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get emailRequired;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email address'**
+  String get emailInvalid;
+
+  /// No description provided for @createPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Password'**
+  String get createPassword;
+
+  /// No description provided for @createPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a password'**
+  String get createPasswordHint;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is too short'**
+  String get passwordTooShort;
+
+  /// No description provided for @passwordTooWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is too weak'**
+  String get passwordTooWeak;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @confirmPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get confirmPasswordRequired;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @phoneOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone (optional)'**
+  String get phoneOptional;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number'**
+  String get phoneHint;
+
+  /// No description provided for @phoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number'**
+  String get phoneInvalid;
+
+  /// No description provided for @studentIdOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Student ID (optional)'**
+  String get studentIdOptional;
+
+  /// No description provided for @studentIdHintSignup.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your student ID'**
+  String get studentIdHintSignup;
+
+  /// No description provided for @departmentOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Department (optional)'**
+  String get departmentOptional;
+
+  /// No description provided for @selectDepartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Select department'**
+  String get selectDepartment;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get dontHaveAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @signUpHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up here'**
+  String get signUpHere;
+
+  /// No description provided for @signInHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in here'**
+  String get signInHere;
+
+  /// No description provided for @firstYear.
+  ///
+  /// In en, this message translates to:
+  /// **'First Year'**
+  String get firstYear;
+
+  /// No description provided for @secondYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Second Year'**
+  String get secondYear;
+
+  /// No description provided for @thirdYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Third Year'**
+  String get thirdYear;
+
+  /// No description provided for @fourthYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Fourth Year'**
+  String get fourthYear;
+
+  /// No description provided for @graduateStudent.
+  ///
+  /// In en, this message translates to:
+  /// **'Graduate Student'**
+  String get graduateStudent;
+
+  /// No description provided for @phdStudent.
+  ///
+  /// In en, this message translates to:
+  /// **'PhD Student'**
+  String get phdStudent;
+
+  /// No description provided for @yearOfStudyOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Year of Study (optional)'**
+  String get yearOfStudyOptional;
+
+  /// No description provided for @selectYearOfStudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Select year of study'**
+  String get selectYearOfStudy;
+
+  /// No description provided for @birthDateOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth Date (optional)'**
+  String get birthDateOptional;
+
+  /// No description provided for @selectBirthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select birth date'**
+  String get selectBirthDate;
+
+  /// No description provided for @male.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get male;
+
+  /// No description provided for @female.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get female;
+
+  /// No description provided for @preferNotToSay.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer not to say'**
+  String get preferNotToSay;
+
+  /// No description provided for @genderOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender (optional)'**
+  String get genderOptional;
+
+  /// No description provided for @selectGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Select gender'**
+  String get selectGender;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @languageDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the app language'**
+  String get languageDesc;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

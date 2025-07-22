@@ -24,7 +24,10 @@ class ModernAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgGradient = isDark
-        ? [const Color(0xFF181F2A), AppConstants.primaryColor.withValues(alpha: 0.85)]
+        ? [
+            const Color(0xFF181F2A),
+            AppConstants.primaryColor.withValues(alpha: 0.85),
+          ]
         : [
             AppConstants.primaryColor,
             AppConstants.primaryColor.withValues(alpha: 0.85),

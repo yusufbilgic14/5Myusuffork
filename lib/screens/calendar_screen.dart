@@ -6,7 +6,6 @@ import '../constants/app_constants.dart';
 import '../widgets/common/app_bar_widget.dart';
 import '../widgets/common/app_drawer_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
-import '../themes/app_themes.dart';
 import '../providers/theme_provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/user_courses_service.dart';
@@ -32,7 +31,7 @@ class _CalendarScreenState extends State<CalendarScreen>
 
   // Firebase services
   final UserCoursesService _coursesService = UserCoursesService();
-  
+
   // User courses data
   List<UserCourse> _userCourses = [];
   bool _isLoadingCourses = false;
@@ -68,7 +67,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   /// Kullanıcının derslerini yükle / Load user's courses
   Future<void> _loadUserCourses() async {
     if (!mounted) return;
-    
+
     setState(() {
       _isLoadingCourses = true;
       _coursesError = null;
@@ -109,7 +108,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     try {
       await _coursesService.addCourse(course);
       await _loadUserCourses();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -180,10 +179,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             children: [
               const CircularProgressIndicator(),
               const SizedBox(height: 16),
-              Text(
-                l10n.mapLoading,
-                style: theme.textTheme.bodyMedium,
-              ),
+              Text(l10n.mapLoading, style: theme.textTheme.bodyMedium),
             ],
           ),
         ),
@@ -209,10 +205,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         actions: [
           // Add Course button
           IconButton(
-            icon: Icon(
-              Icons.add_rounded,
-              color: theme.colorScheme.onPrimary,
-            ),
+            icon: Icon(Icons.add_rounded, color: theme.colorScheme.onPrimary),
             tooltip: 'Ders Ekle',
             onPressed: _showAddCourseDialog,
           ),
@@ -286,8 +279,10 @@ class _CalendarScreenState extends State<CalendarScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  DateFormat('MMMM yyyy', Localizations.localeOf(context).toString())
-                      .format(_selectedDate),
+                  DateFormat(
+                    'MMMM yyyy',
+                    Localizations.localeOf(context).toString(),
+                  ).format(_selectedDate),
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onSurface,
@@ -374,14 +369,13 @@ class _CalendarScreenState extends State<CalendarScreen>
           IconButton(
             onPressed: () {
               setState(() {
-                _currentWeekStart = _currentWeekStart.subtract(const Duration(days: 7));
+                _currentWeekStart = _currentWeekStart.subtract(
+                  const Duration(days: 7),
+                );
                 _selectedDate = _currentWeekStart;
               });
             },
-            icon: Icon(
-              Icons.chevron_left,
-              color: theme.colorScheme.primary,
-            ),
+            icon: Icon(Icons.chevron_left, color: theme.colorScheme.primary),
           ),
           Expanded(
             child: ListView.builder(
@@ -403,7 +397,10 @@ class _CalendarScreenState extends State<CalendarScreen>
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     width: 60,
-                    margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? theme.colorScheme.primary
@@ -428,7 +425,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                                 ? theme.colorScheme.onPrimary
                                 : isToday
                                 ? theme.colorScheme.primary
-                                : theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                                : theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.7,
+                                  ),
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
                           ),
@@ -468,14 +467,13 @@ class _CalendarScreenState extends State<CalendarScreen>
           IconButton(
             onPressed: () {
               setState(() {
-                _currentWeekStart = _currentWeekStart.add(const Duration(days: 7));
+                _currentWeekStart = _currentWeekStart.add(
+                  const Duration(days: 7),
+                );
                 _selectedDate = _currentWeekStart;
               });
             },
-            icon: Icon(
-              Icons.chevron_right,
-              color: theme.colorScheme.primary,
-            ),
+            icon: Icon(Icons.chevron_right, color: theme.colorScheme.primary),
           ),
         ],
       ),
@@ -490,10 +488,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           children: [
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
-            Text(
-              'Dersler yükleniyor...',
-              style: theme.textTheme.bodyMedium,
-            ),
+            Text('Dersler yükleniyor...', style: theme.textTheme.bodyMedium),
           ],
         ),
       );
@@ -504,11 +499,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: theme.colorScheme.error,
-            ),
+            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 16),
             Text(
               'Dersler yüklenirken hata oluştu',
@@ -656,7 +647,6 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
   }
 
-
   Widget _buildModernWeekdayHeaders(ThemeData theme, AppLocalizations l10n) {
     final weekdays = [
       l10n.mondayShort,
@@ -667,7 +657,7 @@ class _CalendarScreenState extends State<CalendarScreen>
       l10n.saturdayShort,
       l10n.sundayShort,
     ];
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
@@ -714,7 +704,7 @@ class _CalendarScreenState extends State<CalendarScreen>
     final daysInMonth = lastDayOfMonth.day;
     final totalCells = (firstDayWeekday + daysInMonth);
     final rows = (totalCells / 7).ceil();
-    
+
     return GridView.builder(
       padding: const EdgeInsets.all(8),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -738,7 +728,7 @@ class _CalendarScreenState extends State<CalendarScreen>
           final isToday = _isToday(date);
           final isSelected = _isSameDay(date, _selectedDate);
           final hasEvents = _hasEventsOnDate(date);
-          
+
           return GestureDetector(
             onTap: () {
               setState(() {
@@ -758,15 +748,14 @@ class _CalendarScreenState extends State<CalendarScreen>
                     : Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: isToday && !isSelected
-                    ? Border.all(
-                        color: theme.colorScheme.primary,
-                        width: 2,
-                      )
+                    ? Border.all(color: theme.colorScheme.primary, width: 2)
                     : null,
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.3,
+                          ),
                           offset: const Offset(0, 2),
                           blurRadius: 4,
                         ),
@@ -821,13 +810,13 @@ class _CalendarScreenState extends State<CalendarScreen>
     return coursesToday.expand((course) {
       // Get all schedules for this day (a course might have multiple sessions per day)
       final todaySchedules = course.getSchedulesForDay(selectedDayOfWeek);
-      
+
       return todaySchedules.map((schedule) {
         final startHour = schedule.startHour;
         final duration = schedule.duration;
         final topPosition = (startHour - 7) * 60.0 + 8;
         final cardHeight = duration * 60.0 - 16;
-        
+
         return Positioned(
           left: 72,
           right: 16,
@@ -882,14 +871,18 @@ class _CalendarScreenState extends State<CalendarScreen>
                       children: [
                         Icon(
                           Icons.location_on_rounded,
-                          color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
+                          color: theme.colorScheme.onPrimary.withValues(
+                            alpha: 0.9,
+                          ),
                           size: 16,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           schedule.room,
                           style: TextStyle(
-                            color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
+                            color: theme.colorScheme.onPrimary.withValues(
+                              alpha: 0.9,
+                            ),
                             fontSize: 11,
                             fontWeight: FontWeight.w500,
                           ),
@@ -901,7 +894,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                       children: [
                         Icon(
                           Icons.person_rounded,
-                          color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
+                          color: theme.colorScheme.onPrimary.withValues(
+                            alpha: 0.9,
+                          ),
                           size: 16,
                         ),
                         const SizedBox(width: 4),
@@ -909,7 +904,9 @@ class _CalendarScreenState extends State<CalendarScreen>
                           child: Text(
                             course.instructor.name,
                             style: TextStyle(
-                              color: theme.colorScheme.onPrimary.withValues(alpha: 0.9),
+                              color: theme.colorScheme.onPrimary.withValues(
+                                alpha: 0.9,
+                              ),
                               fontSize: 11,
                             ),
                             maxLines: 1,
@@ -947,8 +944,12 @@ class _CalendarScreenState extends State<CalendarScreen>
     }).toList();
   }
 
-  void _showCourseDetails(BuildContext context, UserCourse course, 
-      ThemeData theme, AppLocalizations l10n) {
+  void _showCourseDetails(
+    BuildContext context,
+    UserCourse course,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -966,7 +967,10 @@ class _CalendarScreenState extends State<CalendarScreen>
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(20),
@@ -1012,7 +1016,9 @@ class _CalendarScreenState extends State<CalendarScreen>
             _buildDetailRow(
               Icons.access_time_rounded,
               'Time',
-              course.schedule.isNotEmpty ? course.schedule.first.timeString : 'TBA',
+              course.schedule.isNotEmpty
+                  ? course.schedule.first.timeString
+                  : 'TBA',
               theme,
             ),
             const SizedBox(height: 16),
@@ -1029,7 +1035,12 @@ class _CalendarScreenState extends State<CalendarScreen>
     );
   }
 
-  Widget _buildDetailRow(IconData icon, String label, String value, ThemeData theme) {
+  Widget _buildDetailRow(
+    IconData icon,
+    String label,
+    String value,
+    ThemeData theme,
+  ) {
     return Row(
       children: [
         Container(
@@ -1038,11 +1049,7 @@ class _CalendarScreenState extends State<CalendarScreen>
             color: theme.colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: theme.colorScheme.primary,
-            size: 20,
-          ),
+          child: Icon(icon, color: theme.colorScheme.primary, size: 20),
         ),
         const SizedBox(width: 16),
         Column(
@@ -1101,7 +1108,7 @@ class _CalendarScreenState extends State<CalendarScreen>
   Widget _buildModernTimeSlot(int hour, ThemeData theme) {
     final timeString = '${hour.toString().padLeft(2, '0')}:00';
     final isCurrentHour = _isViewingToday() && DateTime.now().hour == hour;
-    
+
     return Container(
       height: 60,
       child: Row(
@@ -1173,10 +1180,7 @@ class _CalendarScreenState extends State<CalendarScreen>
         height: 3,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Colors.red.shade400,
-              Colors.red.shade600,
-            ],
+            colors: [Colors.red.shade400, Colors.red.shade600],
           ),
           borderRadius: BorderRadius.circular(2),
           boxShadow: [
@@ -1194,10 +1198,7 @@ class _CalendarScreenState extends State<CalendarScreen>
               height: 12,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    Colors.red.shade400,
-                    Colors.red.shade600,
-                  ],
+                  colors: [Colors.red.shade400, Colors.red.shade600],
                 ),
                 shape: BoxShape.circle,
                 boxShadow: [
@@ -1214,10 +1215,7 @@ class _CalendarScreenState extends State<CalendarScreen>
                 height: 3,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [
-                      Colors.red.shade400,
-                      Colors.red.shade600,
-                    ],
+                    colors: [Colors.red.shade400, Colors.red.shade600],
                   ),
                   borderRadius: BorderRadius.circular(2),
                 ),
@@ -1271,17 +1269,29 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
   final _roomController = TextEditingController();
   final _startTimeController = TextEditingController();
   final _endTimeController = TextEditingController();
-  
+
   int _selectedDay = 1; // Monday
   int _credits = 3;
   Color _selectedColor = const Color(0xFF1E3A8A);
 
   final List<String> _weekDays = [
-    'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'
+    'Pazartesi',
+    'Salı',
+    'Çarşamba',
+    'Perşembe',
+    'Cuma',
+    'Cumartesi',
+    'Pazar',
   ];
 
   final List<String> _weekDaysShort = [
-    'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'
+    'Pzt',
+    'Sal',
+    'Çar',
+    'Per',
+    'Cum',
+    'Cmt',
+    'Paz',
   ];
 
   final List<Color> _courseColors = [
@@ -1317,26 +1327,29 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
               backgroundColor: Theme.of(context).colorScheme.surface,
               hourMinuteTextColor: Theme.of(context).colorScheme.onSurface,
               dialHandColor: Theme.of(context).colorScheme.primary,
-              dialBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+              dialBackgroundColor: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
             ),
           ),
           child: child!,
         );
       },
     );
-    
+
     if (picked != null) {
-      controller.text = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+      controller.text =
+          '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
     }
   }
 
   void _createCourse() {
     if (!_formKey.currentState!.validate()) return;
-    
+
     // Parse start and end times
     final startParts = _startTimeController.text.split(':');
     final endParts = _endTimeController.text.split(':');
-    
+
     if (startParts.length != 2 || endParts.length != 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -1349,7 +1362,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
 
     final startHour = int.tryParse(startParts[0]);
     final endHour = int.tryParse(endParts[0]);
-    
+
     if (startHour == null || endHour == null || startHour >= endHour) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -1361,7 +1374,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
     }
 
     final duration = (endHour - startHour).toDouble();
-    
+
     // Create course schedule
     final schedule = CourseSchedule(
       dayOfWeek: _selectedDay,
@@ -1375,9 +1388,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
     );
 
     // Create course instructor
-    final instructor = CourseInstructor(
-      name: _instructorNameController.text,
-    );
+    final instructor = CourseInstructor(name: _instructorNameController.text);
 
     // Create user course
     final course = UserCourse(
@@ -1387,13 +1398,15 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
       instructor: instructor,
       schedule: [schedule],
       credits: _credits,
-      semester: '${DateTime.now().year}-${DateTime.now().month <= 6 ? 'Spring' : 'Fall'}',
+      semester:
+          '${DateTime.now().year}-${DateTime.now().month <= 6 ? 'Spring' : 'Fall'}',
       year: DateTime.now().year,
       semesterNumber: DateTime.now().month <= 6 ? 2 : 1,
       department: 'Computer Engineering',
       faculty: 'Engineering and Natural Sciences',
       level: 'undergraduate',
-      color: '#${_selectedColor.value.toRadixString(16).substring(2).toUpperCase()}',
+      color:
+          '#${_selectedColor.value.toRadixString(16).substring(2).toUpperCase()}',
       notifications: const CourseNotifications(),
     );
 
@@ -1403,7 +1416,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
@@ -1435,7 +1448,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
               ],
             ),
             const SizedBox(height: 24),
-            
+
             // Form
             Expanded(
               child: Form(
@@ -1463,7 +1476,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                         textCapitalization: TextCapitalization.characters,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Course Name
                       TextFormField(
                         controller: _courseNameController,
@@ -1484,7 +1497,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                         textCapitalization: TextCapitalization.words,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Instructor
                       TextFormField(
                         controller: _instructorNameController,
@@ -1505,7 +1518,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                         textCapitalization: TextCapitalization.words,
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Day and Room Row
                       Row(
                         children: [
@@ -1519,10 +1532,15 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 prefixIcon: const Icon(Icons.calendar_today),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
                               ),
                               isExpanded: true,
-                              items: _weekDaysShort.asMap().entries.map((entry) {
+                              items: _weekDaysShort.asMap().entries.map((
+                                entry,
+                              ) {
                                 return DropdownMenuItem(
                                   value: entry.key + 1,
                                   child: Text(
@@ -1540,7 +1558,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          
+
                           // Room
                           Expanded(
                             child: TextFormField(
@@ -1552,7 +1570,10 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 prefixIcon: const Icon(Icons.location_on),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
                               ),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
@@ -1566,7 +1587,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Time Row
                       Row(
                         children: [
@@ -1593,7 +1614,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          
+
                           // End Time
                           Expanded(
                             child: TextFormField(
@@ -1619,7 +1640,7 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Credits
                       DropdownButtonFormField<int>(
                         value: _credits,
@@ -1644,15 +1665,12 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Color Picker
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Renk',
-                            style: theme.textTheme.labelLarge,
-                          ),
+                          Text('Renk', style: theme.textTheme.labelLarge),
                           const SizedBox(height: 8),
                           Wrap(
                             spacing: 8,
@@ -1695,9 +1713,9 @@ class _AddCourseDialogState extends State<AddCourseDialog> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Buttons
             Row(
               children: [

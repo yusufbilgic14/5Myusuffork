@@ -9,7 +9,8 @@ import 'firebase_auth_service.dart';
 /// Kullanıcı kulüp takip yönetim servisi
 class UserClubFollowingService {
   // Singleton pattern implementation
-  static final UserClubFollowingService _instance = UserClubFollowingService._internal();
+  static final UserClubFollowingService _instance =
+      UserClubFollowingService._internal();
   factory UserClubFollowingService() => _instance;
   UserClubFollowingService._internal();
 
@@ -50,12 +51,12 @@ class UserClubFollowingService {
       }
 
       debugPrint('🔍 UserClubFollowingService: Fetching all clubs');
-      
+
+      // Simplified query to avoid composite index requirement
       Query query = _firestore
           .collection('clubs')
           .where('status', isEqualTo: 'active')
-          .where('isActive', isEqualTo: true)
-          .orderBy('followerCount', descending: true);
+          .limit(limit * 2); // Get more to filter client-side
 
       if (category != null) {
         query = query.where('category', isEqualTo: category);
@@ -65,19 +66,29 @@ class UserClubFollowingService {
         query = query.where('clubType', isEqualTo: clubType);
       }
 
-      query = query.limit(limit);
-
       final querySnapshot = await query.get();
-      final clubs = querySnapshot.docs.map((doc) {
-        return Club.fromFirestoreData(doc.data() as Map<String, dynamic>, doc.id);
+      final allClubs = querySnapshot.docs.map((doc) {
+        return Club.fromFirestoreData(
+          doc.data() as Map<String, dynamic>,
+          doc.id,
+        );
       }).toList();
 
+      // Client-side filtering and sorting
+      final clubs = allClubs
+          .where((club) => club.isActive)
+          .toList()
+        ..sort((a, b) => b.followerCount.compareTo(a.followerCount));
+
+      // Take only the requested limit
+      final limitedClubs = clubs.take(limit).toList();
+
       // Cache the results
-      _clubsCache[cacheKey] = clubs;
+      _clubsCache[cacheKey] = limitedClubs;
       _startCacheExpireTimer();
 
-      debugPrint('✅ UserClubFollowingService: Retrieved ${clubs.length} clubs');
-      return clubs;
+      debugPrint('✅ UserClubFollowingService: Retrieved ${limitedClubs.length} clubs');
+      return limitedClubs;
     } catch (e) {
       debugPrint('❌ UserClubFollowingService: Failed to get clubs - $e');
       return [];
@@ -88,11 +99,8 @@ class UserClubFollowingService {
   Future<Club?> getClubById(String clubId) async {
     try {
       debugPrint('🔍 UserClubFollowingService: Fetching club $clubId');
-      
-      final clubDoc = await _firestore
-          .collection('clubs')
-          .doc(clubId)
-          .get();
+
+      final clubDoc = await _firestore.collection('clubs').doc(clubId).get();
 
       if (!clubDoc.exists) {
         debugPrint('❌ UserClubFollowingService: Club $clubId not found');
@@ -100,7 +108,7 @@ class UserClubFollowingService {
       }
 
       final club = Club.fromFirestoreData(clubDoc.data()!, clubDoc.id);
-      
+
       debugPrint('✅ UserClubFollowingService: Retrieved club ${club.name}');
       return club;
     } catch (e) {
@@ -115,20 +123,25 @@ class UserClubFollowingService {
       if (query.isEmpty) return [];
 
       debugPrint('🔍 UserClubFollowingService: Searching clubs for: $query');
-      
+
       // For simple implementation, get all clubs and filter client-side
       // In production, you might want to use Algolia or similar service
       final clubs = await getAllClubs(limit: 100);
-      
-      final searchQuery = query.toLowerCase();
-      final filteredClubs = clubs.where((club) {
-        return club.name.toLowerCase().contains(searchQuery) ||
-               club.displayName.toLowerCase().contains(searchQuery) ||
-               club.description.toLowerCase().contains(searchQuery) ||
-               club.category.toLowerCase().contains(searchQuery);
-      }).take(limit).toList();
 
-      debugPrint('✅ UserClubFollowingService: Found ${filteredClubs.length} clubs for query: $query');
+      final searchQuery = query.toLowerCase();
+      final filteredClubs = clubs
+          .where((club) {
+            return club.name.toLowerCase().contains(searchQuery) ||
+                club.displayName.toLowerCase().contains(searchQuery) ||
+                club.description.toLowerCase().contains(searchQuery) ||
+                club.category.toLowerCase().contains(searchQuery);
+          })
+          .take(limit)
+          .toList();
+
+      debugPrint(
+        '✅ UserClubFollowingService: Found ${filteredClubs.length} clubs for query: $query',
+      );
       return filteredClubs;
     } catch (e) {
       debugPrint('❌ UserClubFollowingService: Failed to search clubs - $e');
@@ -152,12 +165,16 @@ class UserClubFollowingService {
       // Check cache first
       final cacheKey = '${uid}_followed_clubs';
       if (_followedClubsCache.containsKey(cacheKey)) {
-        debugPrint('📋 UserClubFollowingService: Returning cached followed clubs');
+        debugPrint(
+          '📋 UserClubFollowingService: Returning cached followed clubs',
+        );
         return _followedClubsCache[cacheKey]!;
       }
 
-      debugPrint('🔍 UserClubFollowingService: Fetching followed clubs for user $uid');
-      
+      debugPrint(
+        '🔍 UserClubFollowingService: Fetching followed clubs for user $uid',
+      );
+
       final querySnapshot = await _firestore
           .collection('users')
           .doc(uid)
@@ -173,10 +190,14 @@ class UserClubFollowingService {
       _followedClubsCache[cacheKey] = followedClubs;
       _startCacheExpireTimer();
 
-      debugPrint('✅ UserClubFollowingService: Retrieved ${followedClubs.length} followed clubs');
+      debugPrint(
+        '✅ UserClubFollowingService: Retrieved ${followedClubs.length} followed clubs',
+      );
       return followedClubs;
     } catch (e) {
-      debugPrint('❌ UserClubFollowingService: Failed to get followed clubs - $e');
+      debugPrint(
+        '❌ UserClubFollowingService: Failed to get followed clubs - $e',
+      );
       return [];
     }
   }
@@ -187,8 +208,10 @@ class UserClubFollowingService {
       final uid = userId ?? currentUserId;
       if (uid == null) return false;
 
-      debugPrint('🔍 UserClubFollowingService: Checking if user follows club $clubId');
-      
+      debugPrint(
+        '🔍 UserClubFollowingService: Checking if user follows club $clubId',
+      );
+
       final followDoc = await _firestore
           .collection('users')
           .doc(uid)
@@ -198,7 +221,9 @@ class UserClubFollowingService {
 
       return followDoc.exists;
     } catch (e) {
-      debugPrint('❌ UserClubFollowingService: Failed to check club follow status - $e');
+      debugPrint(
+        '❌ UserClubFollowingService: Failed to check club follow status - $e',
+      );
       return false;
     }
   }
@@ -211,13 +236,15 @@ class UserClubFollowingService {
         throw Exception('User not authenticated');
       }
 
-      debugPrint('🔄 UserClubFollowingService: Toggling follow for club $clubId');
+      debugPrint(
+        '🔄 UserClubFollowingService: Toggling follow for club $clubId',
+      );
 
       final batch = _firestore.batch();
-      
+
       // Check if already following
       final isCurrentlyFollowing = await isFollowingClub(clubId, uid);
-      
+
       final followRef = _firestore
           .collection('users')
           .doc(uid)
@@ -227,7 +254,7 @@ class UserClubFollowingService {
       if (isCurrentlyFollowing) {
         // Unfollow
         batch.delete(followRef);
-        
+
         // Update club follower count
         final clubRef = _firestore.collection('clubs').doc(clubId);
         batch.update(clubRef, {
@@ -245,7 +272,8 @@ class UserClubFollowingService {
         final clubData = clubDoc.data()!;
         final followedClub = UserFollowedClub(
           clubId: clubId,
-          clubName: clubData['name'] ?? clubData['displayName'] ?? 'Unknown Club',
+          clubName:
+              clubData['name'] ?? clubData['displayName'] ?? 'Unknown Club',
           clubType: clubData['category'] ?? 'student_club',
           clubAvatar: clubData['logoUrl'],
           followedAt: DateTime.now(),
@@ -256,7 +284,7 @@ class UserClubFollowingService {
         );
 
         batch.set(followRef, followedClub.toFirestoreData());
-        
+
         // Update club follower count
         final clubRef = _firestore.collection('clubs').doc(clubId);
         batch.update(clubRef, {
@@ -271,27 +299,33 @@ class UserClubFollowingService {
       _followedClubsCache.remove('${uid}_followed_clubs');
       _clubsCache.clear();
 
-      debugPrint('✅ UserClubFollowingService: Club follow toggled successfully');
+      debugPrint(
+        '✅ UserClubFollowingService: Club follow toggled successfully',
+      );
       return !isCurrentlyFollowing;
     } catch (e) {
-      debugPrint('❌ UserClubFollowingService: Failed to toggle club follow - $e');
+      debugPrint(
+        '❌ UserClubFollowingService: Failed to toggle club follow - $e',
+      );
       rethrow;
     }
   }
 
   /// Update notification preferences for a followed club / Takip edilen kulüp için bildirim ayarlarını güncelle
   Future<void> updateClubNotificationPreferences(
-    String clubId, 
-    bool notificationsEnabled, 
-    [String? userId]
-  ) async {
+    String clubId,
+    bool notificationsEnabled, [
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) {
         throw Exception('User not authenticated');
       }
 
-      debugPrint('🔄 UserClubFollowingService: Updating notification preferences for club $clubId');
+      debugPrint(
+        '🔄 UserClubFollowingService: Updating notification preferences for club $clubId',
+      );
 
       final followRef = _firestore
           .collection('users')
@@ -313,9 +347,13 @@ class UserClubFollowingService {
       // Clear cache
       _followedClubsCache.remove('${uid}_followed_clubs');
 
-      debugPrint('✅ UserClubFollowingService: Notification preferences updated successfully');
+      debugPrint(
+        '✅ UserClubFollowingService: Notification preferences updated successfully',
+      );
     } catch (e) {
-      debugPrint('❌ UserClubFollowingService: Failed to update notification preferences - $e');
+      debugPrint(
+        '❌ UserClubFollowingService: Failed to update notification preferences - $e',
+      );
       rethrow;
     }
   }
@@ -328,12 +366,16 @@ class UserClubFollowingService {
   Stream<List<UserFollowedClub>> watchFollowedClubs([String? userId]) {
     final uid = userId ?? currentUserId;
     if (uid == null) {
-      debugPrint('❌ UserClubFollowingService: Cannot watch followed clubs - user not authenticated');
+      debugPrint(
+        '❌ UserClubFollowingService: Cannot watch followed clubs - user not authenticated',
+      );
       return Stream.value([]);
     }
 
-    debugPrint('👁️ UserClubFollowingService: Starting to watch followed clubs for user $uid');
-    
+    debugPrint(
+      '👁️ UserClubFollowingService: Starting to watch followed clubs for user $uid',
+    );
+
     return _firestore
         .collection('users')
         .doc(uid)
@@ -351,7 +393,9 @@ class UserClubFollowingService {
           return followedClubs;
         })
         .handleError((error) {
-          debugPrint('❌ UserClubFollowingService: Error watching followed clubs - $error');
+          debugPrint(
+            '❌ UserClubFollowingService: Error watching followed clubs - $error',
+          );
         });
   }
 
@@ -362,7 +406,7 @@ class UserClubFollowingService {
     int limit = 50,
   }) {
     debugPrint('👁️ UserClubFollowingService: Starting to watch clubs');
-    
+
     Query query = _firestore
         .collection('clubs')
         .where('status', isEqualTo: 'active')
@@ -379,15 +423,23 @@ class UserClubFollowingService {
 
     query = query.limit(limit);
 
-    return query.snapshots().map((snapshot) {
-      final clubs = snapshot.docs.map((doc) {
-        return Club.fromFirestoreData(doc.data() as Map<String, dynamic>, doc.id);
-      }).toList();
+    return query
+        .snapshots()
+        .map((snapshot) {
+          final clubs = snapshot.docs.map((doc) {
+            return Club.fromFirestoreData(
+              doc.data() as Map<String, dynamic>,
+              doc.id,
+            );
+          }).toList();
 
-      return clubs;
-    }).handleError((error) {
-      debugPrint('❌ UserClubFollowingService: Error watching clubs - $error');
-    });
+          return clubs;
+        })
+        .handleError((error) {
+          debugPrint(
+            '❌ UserClubFollowingService: Error watching clubs - $error',
+          );
+        });
   }
 
   // ==========================================
@@ -398,7 +450,7 @@ class UserClubFollowingService {
   Future<List<String>> getClubCategories() async {
     try {
       debugPrint('🔍 UserClubFollowingService: Fetching club categories');
-      
+
       final querySnapshot = await _firestore
           .collection('clubs')
           .where('status', isEqualTo: 'active')
@@ -413,8 +465,10 @@ class UserClubFollowingService {
       }
 
       final categoriesList = categories.toList()..sort();
-      
-      debugPrint('✅ UserClubFollowingService: Retrieved ${categoriesList.length} categories');
+
+      debugPrint(
+        '✅ UserClubFollowingService: Retrieved ${categoriesList.length} categories',
+      );
       return categoriesList;
     } catch (e) {
       debugPrint('❌ UserClubFollowingService: Failed to get categories - $e');
@@ -423,7 +477,9 @@ class UserClubFollowingService {
   }
 
   /// Get user's club following statistics / Kullanıcının kulüp takip istatistiklerini getir
-  Future<ClubFollowingStatistics> getFollowingStatistics([String? userId]) async {
+  Future<ClubFollowingStatistics> getFollowingStatistics([
+    String? userId,
+  ]) async {
     try {
       final uid = userId ?? currentUserId;
       if (uid == null) {
@@ -435,23 +491,26 @@ class UserClubFollowingService {
         );
       }
 
-      debugPrint('🔍 UserClubFollowingService: Fetching following statistics for user $uid');
-      
+      debugPrint(
+        '🔍 UserClubFollowingService: Fetching following statistics for user $uid',
+      );
+
       final followedClubs = await getFollowedClubs(uid);
-      
+
       final Map<String, int> clubsByCategory = {};
       int notificationsEnabled = 0;
       int totalUpcomingEvents = 0;
 
       for (final club in followedClubs) {
         // Count by category/type
-        clubsByCategory[club.clubType] = (clubsByCategory[club.clubType] ?? 0) + 1;
-        
+        clubsByCategory[club.clubType] =
+            (clubsByCategory[club.clubType] ?? 0) + 1;
+
         // Count notifications enabled
         if (club.notificationsEnabled) {
           notificationsEnabled++;
         }
-        
+
         // Add event count
         totalUpcomingEvents += club.eventCount;
       }
@@ -466,7 +525,9 @@ class UserClubFollowingService {
       debugPrint('✅ UserClubFollowingService: Retrieved following statistics');
       return statistics;
     } catch (e) {
-      debugPrint('❌ UserClubFollowingService: Failed to get following statistics - $e');
+      debugPrint(
+        '❌ UserClubFollowingService: Failed to get following statistics - $e',
+      );
       return const ClubFollowingStatistics(
         totalFollowedClubs: 0,
         clubsByCategory: {},
@@ -525,5 +586,126 @@ class ClubFollowingStatistics {
   });
 
   @override
-  String toString() => 'ClubFollowingStatistics{totalFollowedClubs: $totalFollowedClubs, clubsByCategory: $clubsByCategory, totalUpcomingEvents: $totalUpcomingEvents, notificationsEnabled: $notificationsEnabled}';
+  String toString() =>
+      'ClubFollowingStatistics{totalFollowedClubs: $totalFollowedClubs, clubsByCategory: $clubsByCategory, totalUpcomingEvents: $totalUpcomingEvents, notificationsEnabled: $notificationsEnabled}';
+}
+
+// ==========================================
+// CLUB CREATION EXTENSION / KULÜP OLUŞTURMA EKLEMESİ
+// ==========================================
+
+extension UserClubFollowingServiceCreation on UserClubFollowingService {
+  /// Create a new club / Yeni kulüp oluştur
+  Future<String> createClub(Club club) async {
+    if (!isAuthenticated) {
+      throw Exception('User not authenticated');
+    }
+
+    try {
+      debugPrint('📝 UserClubFollowingService: Creating club - ${club.displayName}');
+
+      // Firebase'e kulübü kaydet
+      await _firestore
+          .collection('clubs')
+          .doc(club.clubId)
+          .set(club.toFirestoreData());
+
+      // Cache'i temizle
+      clearCache();
+
+      debugPrint('✅ UserClubFollowingService: Club created successfully - ${club.clubId}');
+      return club.clubId;
+    } catch (e) {
+      debugPrint('❌ UserClubFollowingService: Failed to create club - $e');
+      throw Exception('Failed to create club: $e');
+    }
+  }
+
+  /// Update an existing club / Mevcut kulübü güncelle
+  Future<void> updateClub(String clubId, Club updatedClub) async {
+    if (!isAuthenticated) {
+      throw Exception('User not authenticated');
+    }
+
+    try {
+      debugPrint('📝 UserClubFollowingService: Updating club - $clubId');
+
+      // Kullanıcının kulübü güncelleme yetkisi var mı kontrol et
+      final currentClub = await getClubById(clubId);
+      if (currentClub == null) {
+        throw Exception('Club not found');
+      }
+
+      if (!currentClub.adminIds.contains(currentUserId) && 
+          !currentClub.moderatorIds.contains(currentUserId)) {
+        throw Exception('Unauthorized to update this club');
+      }
+
+      // Firebase'de kulübü güncelle (updatedAt ile)
+      final updateData = updatedClub.toFirestoreData();
+      updateData['updatedAt'] = Timestamp.fromDate(DateTime.now());
+      
+      await _firestore
+          .collection('clubs')
+          .doc(clubId)
+          .update(updateData);
+
+      // Cache'i temizle
+      clearCache();
+
+      debugPrint('✅ UserClubFollowingService: Club updated successfully - $clubId');
+    } catch (e) {
+      debugPrint('❌ UserClubFollowingService: Failed to update club - $e');
+      throw Exception('Failed to update club: $e');
+    }
+  }
+
+  /// Delete a club / Kulübü sil
+  Future<void> deleteClub(String clubId) async {
+    if (!isAuthenticated) {
+      throw Exception('User not authenticated');
+    }
+
+    try {
+      debugPrint('🗑️ UserClubFollowingService: Deleting club - $clubId');
+
+      // Kullanıcının kulübü silme yetkisi var mı kontrol et
+      final currentClub = await getClubById(clubId);
+      if (currentClub == null) {
+        throw Exception('Club not found');
+      }
+
+      if (!currentClub.adminIds.contains(currentUserId)) {
+        throw Exception('Unauthorized to delete this club');
+      }
+
+      // Firebase'den kulübü sil
+      await _firestore
+          .collection('clubs')
+          .doc(clubId)
+          .delete();
+
+      // İlgili takip verilerini de sil
+      final batch = _firestore.batch();
+      
+      final followingQuery = await _firestore
+          .collection('user_followed_clubs')
+          .where('clubId', isEqualTo: clubId)
+          .get();
+
+      for (final doc in followingQuery.docs) {
+        batch.delete(doc.reference);
+      }
+
+      await batch.commit();
+
+      // Cache'i temizle
+      clearCache();
+
+      debugPrint('✅ UserClubFollowingService: Club deleted successfully - $clubId');
+    } catch (e) {
+      debugPrint('❌ UserClubFollowingService: Failed to delete club - $e');
+      throw Exception('Failed to delete club: $e');
+    }
+  }
 }

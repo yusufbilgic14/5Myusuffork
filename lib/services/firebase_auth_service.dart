@@ -8,7 +8,7 @@ import 'secure_storage_service.dart';
 
 /// Firebase kimlik doğrulama servisi - Bağımsız ve Microsoft OAuth entegrasyonu
 /// Firebase authentication service - Standalone and Microsoft OAuth integration
-/// 
+///
 /// Bu servis hem bağımsız Firebase Auth hem de Microsoft OAuth'u destekler
 /// This service supports both standalone Firebase Auth and Microsoft OAuth
 class FirebaseAuthService {
@@ -19,46 +19,44 @@ class FirebaseAuthService {
 
   // Secure storage service / Güvenli depolama servisi
   final SecureStorageService _storage = SecureStorageService();
-  
+
   // Authentication state stream controller / Kimlik doğrulama durumu stream controller'ı
-  final StreamController<FirebaseAuthState> _authStateController = 
+  final StreamController<FirebaseAuthState> _authStateController =
       StreamController<FirebaseAuthState>.broadcast();
 
   // Current app user with extended info / Genişletilmiş bilgilerle mevcut uygulama kullanıcısı
   AppUser? _currentAppUser;
-  
+
   // Initialization status / Başlatma durumu
   bool _isInitialized = false;
-  
+
   // Firebase configuration status / Firebase konfigürasyon durumu
   bool _isFirebaseConfigured = false;
 
   // Firebase Auth instance / Firebase Auth örneği
   FirebaseAuth? _firebaseAuth;
-  
+
   // Firestore instance for user data / Kullanıcı verileri için Firestore örneği
   FirebaseFirestore? _firestore;
-  
+
   // Google Sign-In instance for OAuth / Google OAuth için GoogleSignIn örneği
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: ['email', 'profile'],
-  );
-  
+  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+
   // Current authentication method / Mevcut kimlik doğrulama yöntemi
   AuthenticationMethod _currentAuthMethod = AuthenticationMethod.none;
 
   // Firebase Authentication state stream / Firebase kimlik doğrulama durumu stream'i
   Stream<FirebaseAuthState> get authStateChanges => _authStateController.stream;
-  
+
   // Current app user getter / Mevcut uygulama kullanıcısı getter'ı
   AppUser? get currentAppUser => _currentAppUser;
-  
+
   // Authentication status / Kimlik doğrulama durumu
   bool get isAuthenticated => _currentAppUser != null && _isFirebaseConfigured;
-  
+
   // Current authentication method / Mevcut kimlik doğrulama yöntemi
   AuthenticationMethod get currentAuthMethod => _currentAuthMethod;
-  
+
   // Firebase configuration status / Firebase konfigürasyon durumu
   bool get isFirebaseConfigured => _isFirebaseConfigured;
 
@@ -66,28 +64,34 @@ class FirebaseAuthService {
   Future<void> initialize() async {
     try {
       if (_isInitialized) return;
-      
+
       print('🔧 FirebaseAuthService: Initializing Firebase Auth service...');
-      
+
       // Check if Firebase is configured / Firebase'in konfigüre edilip edilmediğini kontrol et
       await _checkFirebaseConfiguration();
-      
+
       if (_isFirebaseConfigured) {
         // TODO: Firebase bağlantısı kurulduğunda bu kısmı aktif et
         // TODO: Activate this part when Firebase connection is established
         await _initializeFirebaseServices();
         await _checkCurrentAuthState();
-        print('✅ FirebaseAuthService: Firebase Auth service initialized successfully');
+        print(
+          '✅ FirebaseAuthService: Firebase Auth service initialized successfully',
+        );
       } else {
-        print('⚠️ FirebaseAuthService: Firebase not configured yet. Please complete Firebase Console setup.');
+        print(
+          '⚠️ FirebaseAuthService: Firebase not configured yet. Please complete Firebase Console setup.',
+        );
         _emitAuthState(FirebaseAuthState.notConfigured);
       }
-      
+
       _isInitialized = true;
     } catch (e) {
       print('❌ FirebaseAuthService: Failed to initialize - $e');
       _isInitialized = false;
-      _emitAuthState(FirebaseAuthState.error('Başlatma hatası / Initialization error: $e'));
+      _emitAuthState(
+        FirebaseAuthState.error('Başlatma hatası / Initialization error: $e'),
+      );
       rethrow;
     }
   }
@@ -100,18 +104,24 @@ class FirebaseAuthService {
       try {
         // Import Firebase auth if not already imported
         await _importFirebaseDependencies();
-        
+
         // Firebase apps listesini kontrol et / Check Firebase apps list
         final hasFirebaseApp = await _checkFirebaseApps();
         _isFirebaseConfigured = hasFirebaseApp;
-        
-        print('📋 FirebaseAuthService: Firebase configuration status: $_isFirebaseConfigured');
+
+        print(
+          '📋 FirebaseAuthService: Firebase configuration status: $_isFirebaseConfigured',
+        );
       } catch (e) {
-        print('⚠️ FirebaseAuthService: Firebase not yet available, will be activated after proper setup');
+        print(
+          '⚠️ FirebaseAuthService: Firebase not yet available, will be activated after proper setup',
+        );
         _isFirebaseConfigured = false;
       }
     } catch (e) {
-      print('❌ FirebaseAuthService: Error checking Firebase configuration - $e');
+      print(
+        '❌ FirebaseAuthService: Error checking Firebase configuration - $e',
+      );
       _isFirebaseConfigured = false;
     }
   }
@@ -125,7 +135,9 @@ class FirebaseAuthService {
       // Load Firebase dependencies
       print('📦 FirebaseAuthService: Importing Firebase dependencies...');
     } catch (e) {
-      print('❌ FirebaseAuthService: Failed to import Firebase dependencies - $e');
+      print(
+        '❌ FirebaseAuthService: Failed to import Firebase dependencies - $e',
+      );
       rethrow;
     }
   }
@@ -137,7 +149,7 @@ class FirebaseAuthService {
       // Firebase Core should be imported in main.dart
       // Bu fonksiyon Firebase'in başarıyla başlatıldığını varsayar
       // This function assumes Firebase is successfully initialized
-      
+
       // Şimdilik Firebase konfigürasyonunun tamamlandığını varsayıyoruz
       // For now, we assume Firebase configuration is completed
       return true; // Firebase is now configured!
@@ -153,25 +165,27 @@ class FirebaseAuthService {
       // Firebase Core zaten main.dart'ta başlatıldı
       // Firebase Core is already initialized in main.dart
       print('🔗 FirebaseAuthService: Connecting to Firebase services...');
-      
+
       // Firebase Auth ve Firestore instance'larını oluştur
       // Create Firebase Auth and Firestore instances
       // Note: Bu aşamada dinamik import kullanacağız
       // Note: We'll use dynamic import at this stage
-      
+
       print('📱 FirebaseAuthService: Setting up Firebase Auth...');
       _firebaseAuth = FirebaseAuth.instance;
-      
+
       print('🗄️ FirebaseAuthService: Setting up Firestore...');
       _firestore = FirebaseFirestore.instance;
-      
+
       // Firebase Auth state değişikliklerini dinle
       // Listen to Firebase Auth state changes
       _firebaseAuth?.authStateChanges().listen(_handleFirebaseAuthStateChange);
-      
+
       print('✅ FirebaseAuthService: Firebase services connection prepared');
     } catch (e) {
-      print('❌ FirebaseAuthService: Failed to initialize Firebase services - $e');
+      print(
+        '❌ FirebaseAuthService: Failed to initialize Firebase services - $e',
+      );
       throw e;
     }
   }
@@ -179,11 +193,15 @@ class FirebaseAuthService {
   /// Firebase Auth durumu değişikliklerini işle / Handle Firebase Auth state changes
   void _handleFirebaseAuthStateChange(User? firebaseUser) {
     try {
-      print('🔄 FirebaseAuthService: Firebase auth state changed - User: ${firebaseUser?.uid ?? 'null'}');
-      
+      print(
+        '🔄 FirebaseAuthService: Firebase auth state changed - User: ${firebaseUser?.uid ?? 'null'}',
+      );
+
       if (firebaseUser != null) {
         // Firebase kullanıcısı var / Firebase user exists
-        print('✅ FirebaseAuthService: Firebase user signed in: ${firebaseUser.email}');
+        print(
+          '✅ FirebaseAuthService: Firebase user signed in: ${firebaseUser.email}',
+        );
         // Bu durumda zaten Microsoft OAuth ile giriş yapılmış ve Firebase'e entegre edilmiş demektir
         // This means Microsoft OAuth sign-in has already been done and integrated with Firebase
       } else {
@@ -191,7 +209,9 @@ class FirebaseAuthService {
         print('👤 FirebaseAuthService: No Firebase user found');
       }
     } catch (e) {
-      print('❌ FirebaseAuthService: Error handling Firebase auth state change - $e');
+      print(
+        '❌ FirebaseAuthService: Error handling Firebase auth state change - $e',
+      );
     }
   }
 
@@ -207,7 +227,8 @@ class FirebaseAuthService {
       _emitAuthState(FirebaseAuthState.loading);
 
       if (!_isFirebaseConfigured) {
-        final errorMsg = 'Firebase henüz konfigüre edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
+        final errorMsg =
+            'Firebase henüz konfigüre edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
         _emitAuthState(FirebaseAuthState.error(errorMsg));
         return FirebaseAuthResult.error(errorMsg);
       }
@@ -217,12 +238,14 @@ class FirebaseAuthService {
         id: microsoftUserData['id'],
         displayName: microsoftUserData['displayName'] ?? 'Kullanıcı',
         userPrincipalName: microsoftUserData['userPrincipalName'],
-        email: microsoftUserData['mail'] ?? microsoftUserData['userPrincipalName'],
+        email:
+            microsoftUserData['mail'] ?? microsoftUserData['userPrincipalName'],
         firstName: microsoftUserData['givenName'],
         lastName: microsoftUserData['surname'],
         jobTitle: microsoftUserData['jobTitle'],
         department: microsoftUserData['department'],
-        businessPhones: (microsoftUserData['businessPhones'] as List<dynamic>?)?.cast<String>(),
+        businessPhones: (microsoftUserData['businessPhones'] as List<dynamic>?)
+            ?.cast<String>(),
         mobilePhone: microsoftUserData['mobilePhone'],
         officeLocation: microsoftUserData['officeLocation'],
         preferredLanguage: microsoftUserData['preferredLanguage'],
@@ -230,23 +253,31 @@ class FirebaseAuthService {
 
       // Geçici olarak kullanıcıyı sakla / Temporarily store the user
       _currentAppUser = appUser;
-      
+
       // Firebase'e kullanıcı kaydet / Save user to Firebase
-      await _createOrUpdateUserDocument(appUser, microsoftUserData, accessToken);
-      
+      await _createOrUpdateUserDocument(
+        appUser,
+        microsoftUserData,
+        accessToken,
+      );
+
       // Sistem koleksiyonlarını oluştur / Create system collections
       await _createSystemCollectionsIfNeeded();
-      
+
       // Token'ları güvenli şekilde sakla / Store tokens securely
       await _storeAuthTokens(accessToken, idToken);
-      
+
       _emitAuthState(FirebaseAuthState.authenticated(appUser));
-      
-      print('🎉 FirebaseAuthService: Successfully signed in user: ${appUser.displayName}');
+
+      print(
+        '🎉 FirebaseAuthService: Successfully signed in user: ${appUser.displayName}',
+      );
       return FirebaseAuthResult.success(appUser);
     } catch (e) {
       print('❌ FirebaseAuthService: Sign in failed - $e');
-      _emitAuthState(FirebaseAuthState.error('Giriş hatası / Sign in error: $e'));
+      _emitAuthState(
+        FirebaseAuthState.error('Giriş hatası / Sign in error: $e'),
+      );
       return FirebaseAuthResult.error('Sign in error: $e');
     }
   }
@@ -266,16 +297,15 @@ class FirebaseAuthService {
       _emitAuthState(FirebaseAuthState.loading);
 
       if (!_isFirebaseConfigured || _firebaseAuth == null) {
-        final errorMsg = 'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
+        final errorMsg =
+            'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
         _emitAuthState(FirebaseAuthState.error(errorMsg));
         return FirebaseAuthResult.error(errorMsg);
       }
 
       // Create Firebase user account / Firebase kullanıcı hesabı oluştur
-      final userCredential = await _firebaseAuth!.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      final userCredential = await _firebaseAuth!
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       final firebaseUser = userCredential.user;
       if (firebaseUser == null) {
@@ -311,10 +341,10 @@ class FirebaseAuthService {
 
       _currentAppUser = appUser;
       _currentAuthMethod = AuthenticationMethod.firebaseEmail;
-      
+
       // Store auth state / Kimlik doğrulama durumunu sakla
       await _storage.storeAuthState(true);
-      
+
       // Store user data with safe JSON conversion / Güvenli JSON dönüştürmeyle kullanıcı verilerini sakla
       try {
         await _storage.storeUserData(appUser.toJson());
@@ -324,8 +354,10 @@ class FirebaseAuthService {
       }
 
       _emitAuthState(FirebaseAuthState.authenticated(appUser));
-      
-      print('🎉 FirebaseAuthService: Successfully created user account: $email');
+
+      print(
+        '🎉 FirebaseAuthService: Successfully created user account: $email',
+      );
       return FirebaseAuthResult.success(appUser);
     } on FirebaseAuthException catch (e) {
       String errorMessage;
@@ -363,7 +395,8 @@ class FirebaseAuthService {
       _emitAuthState(FirebaseAuthState.loading);
 
       if (!_isFirebaseConfigured || _firebaseAuth == null) {
-        final errorMsg = 'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
+        final errorMsg =
+            'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
         _emitAuthState(FirebaseAuthState.error(errorMsg));
         return FirebaseAuthResult.error(errorMsg);
       }
@@ -390,10 +423,10 @@ class FirebaseAuthService {
 
       _currentAppUser = appUser;
       _currentAuthMethod = AuthenticationMethod.firebaseEmail;
-      
+
       // Store auth state / Kimlik doğrulama durumunu sakla
       await _storage.storeAuthState(true);
-      
+
       // Store user data with safe JSON conversion / Güvenli JSON dönüştürmeyle kullanıcı verilerini sakla
       try {
         await _storage.storeUserData(appUser.toJson());
@@ -403,7 +436,7 @@ class FirebaseAuthService {
       }
 
       _emitAuthState(FirebaseAuthState.authenticated(appUser));
-      
+
       print('🎉 FirebaseAuthService: Successfully signed in user: $email');
       return FirebaseAuthResult.success(appUser);
     } on FirebaseAuthException catch (e) {
@@ -422,7 +455,8 @@ class FirebaseAuthService {
           errorMessage = 'Bu kullanıcı hesabı devre dışı bırakılmıştır.';
           break;
         case 'too-many-requests':
-          errorMessage = 'Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.';
+          errorMessage =
+              'Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.';
           break;
         default:
           errorMessage = 'Giriş sırasında bir hata oluştu: ${e.message}';
@@ -445,7 +479,8 @@ class FirebaseAuthService {
       _emitAuthState(FirebaseAuthState.loading);
 
       if (!_isFirebaseConfigured || _firebaseAuth == null) {
-        final errorMsg = 'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
+        final errorMsg =
+            'Firebase henüz konfigure edilmedi. Lütfen Firebase Console kurulumunu tamamlayın.';
         _emitAuthState(FirebaseAuthState.error(errorMsg));
         return FirebaseAuthResult.error(errorMsg);
       }
@@ -468,16 +503,18 @@ class FirebaseAuthService {
       );
 
       // Sign in to Firebase with the Google credential / Google credential ile Firebase'e giriş yap
-      final userCredential = await _firebaseAuth!.signInWithCredential(credential);
+      final userCredential = await _firebaseAuth!.signInWithCredential(
+        credential,
+      );
       final firebaseUser = userCredential.user;
-      
+
       if (firebaseUser == null) {
         throw Exception('Google girişi başarısız');
       }
 
       // Check if this is a new user / Yeni kullanıcı olup olmadığını kontrol et
       AppUser? appUser = await _loadUserDataFromFirestore(firebaseUser.uid);
-      
+
       if (appUser == null) {
         // Create new user document for Google sign-in / Google girişi için yeni kullanıcı belgesi oluştur
         appUser = AppUser(
@@ -491,7 +528,7 @@ class FirebaseAuthService {
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
         );
-        
+
         await _createStandaloneUserDocument(appUser);
       } else {
         // Update last login time / Son giriş zamanını güncelle
@@ -500,10 +537,10 @@ class FirebaseAuthService {
 
       _currentAppUser = appUser;
       _currentAuthMethod = AuthenticationMethod.firebaseGoogle;
-      
+
       // Store auth state / Kimlik doğrulama durumunu sakla
       await _storage.storeAuthState(true);
-      
+
       // Store user data with safe JSON conversion / Güvenli JSON dönüştürmeyle kullanıcı verilerini sakla
       try {
         await _storage.storeUserData(appUser.toJson());
@@ -513,8 +550,10 @@ class FirebaseAuthService {
       }
 
       _emitAuthState(FirebaseAuthState.authenticated(appUser));
-      
-      print('🎉 FirebaseAuthService: Successfully signed in with Google: ${appUser.email}');
+
+      print(
+        '🎉 FirebaseAuthService: Successfully signed in with Google: ${appUser.email}',
+      );
       return FirebaseAuthResult.success(appUser);
     } catch (e) {
       final errorMsg = 'Google girişi sırasında bir hata oluştu: $e';
@@ -535,7 +574,7 @@ class FirebaseAuthService {
       }
 
       await _firebaseAuth!.sendPasswordResetEmail(email: email);
-      
+
       print('✅ FirebaseAuthService: Password reset email sent successfully');
       return FirebaseAuthResult.successWithoutUser();
     } on FirebaseAuthException catch (e) {
@@ -625,7 +664,7 @@ class FirebaseAuthService {
 
       // Saklanan kimlik doğrulama durumunu kontrol et / Check stored auth state
       final isAuthenticated = await _storage.getAuthState();
-      
+
       if (isAuthenticated) {
         // Kullanıcı verilerini yükle / Load user data
         final userData = await _storage.getUserData();
@@ -639,7 +678,9 @@ class FirebaseAuthService {
       _emitAuthState(FirebaseAuthState.unauthenticated);
     } catch (e) {
       print('❌ FirebaseAuthService: Failed to check auth state - $e');
-      _emitAuthState(FirebaseAuthState.error('Kimlik doğrulama durumu kontrol edilemedi'));
+      _emitAuthState(
+        FirebaseAuthState.error('Kimlik doğrulama durumu kontrol edilemedi'),
+      );
     }
   }
 
@@ -653,19 +694,19 @@ class FirebaseAuthService {
       if (_isFirebaseConfigured && _firebaseAuth != null) {
         await _firebaseAuth!.signOut();
       }
-      
+
       // Sign out from Google if currently signed in / Google'dan çıkış yap (eğer giriş yapılmışsa)
       if (_currentAuthMethod == AuthenticationMethod.firebaseGoogle) {
         await _googleSignIn.signOut();
       }
-      
+
       // Clear stored tokens / Saklanan token'ları temizle
       await _storage.clearAllAuthData();
-      
+
       // Clear current user data / Mevcut kullanıcı verilerini temizle
       _currentAppUser = null;
       _currentAuthMethod = AuthenticationMethod.none;
-      
+
       _emitAuthState(FirebaseAuthState.unauthenticated);
       print('✅ FirebaseAuthService: Sign out completed');
     } catch (e) {
@@ -682,7 +723,9 @@ class FirebaseAuthService {
   Future<void> refreshUserData() async {
     try {
       if (!_isFirebaseConfigured) {
-        print('⚠️ FirebaseAuthService: Cannot refresh user data - Firebase not configured');
+        print(
+          '⚠️ FirebaseAuthService: Cannot refresh user data - Firebase not configured',
+        );
         return;
       }
 
@@ -694,8 +737,10 @@ class FirebaseAuthService {
         //   _currentAppUser = userData;
         //   _emitAuthState(FirebaseAuthState.authenticated(userData));
         // }
-        
-        print('✅ FirebaseAuthService: User data refresh requested (Firebase not configured yet)');
+
+        print(
+          '✅ FirebaseAuthService: User data refresh requested (Firebase not configured yet)',
+        );
       }
     } catch (e) {
       print('❌ FirebaseAuthService: Failed to refresh user data - $e');
@@ -706,7 +751,9 @@ class FirebaseAuthService {
   Future<bool> updateUserProfile(Map<String, dynamic> updates) async {
     try {
       if (!_isFirebaseConfigured) {
-        print('⚠️ FirebaseAuthService: Cannot update profile - Firebase not configured');
+        print(
+          '⚠️ FirebaseAuthService: Cannot update profile - Firebase not configured',
+        );
         return false;
       }
 
@@ -715,11 +762,13 @@ class FirebaseAuthService {
         // TODO: Update user profile in Firestore
         // updates['updatedAt'] = FieldValue.serverTimestamp();
         // await _firestore!.collection('users').doc(_currentAppUser!.id).update(updates);
-        
+
         // Refresh user data after update / Güncelleme sonrası kullanıcı verilerini yenile
         await refreshUserData();
-        
-        print('✅ FirebaseAuthService: User profile update requested (Firebase not configured yet)');
+
+        print(
+          '✅ FirebaseAuthService: User profile update requested (Firebase not configured yet)',
+        );
         return true;
       }
       return false;
@@ -734,9 +783,9 @@ class FirebaseAuthService {
   Future<void> configureFirebase() async {
     try {
       print('🔧 FirebaseAuthService: Configuring Firebase...');
-      
+
       await _checkFirebaseConfiguration();
-      
+
       if (_isFirebaseConfigured) {
         await _initializeFirebaseServices();
         await _checkCurrentAuthState();
@@ -746,7 +795,11 @@ class FirebaseAuthService {
       }
     } catch (e) {
       print('❌ FirebaseAuthService: Failed to configure Firebase - $e');
-      _emitAuthState(FirebaseAuthState.error('Firebase konfigürasyon hatası / Firebase configuration error'));
+      _emitAuthState(
+        FirebaseAuthState.error(
+          'Firebase konfigürasyon hatası / Firebase configuration error',
+        ),
+      );
       rethrow;
     }
   }
@@ -754,9 +807,9 @@ class FirebaseAuthService {
   /// Firebase'e kullanıcı belgesi oluştur veya güncelle
   /// Create or update user document in Firebase
   Future<void> _createOrUpdateUserDocument(
-    AppUser appUser, 
-    Map<String, dynamic> microsoftUserData, 
-    String accessToken
+    AppUser appUser,
+    Map<String, dynamic> microsoftUserData,
+    String accessToken,
   ) async {
     try {
       if (!_isFirebaseConfigured || _firestore == null) {
@@ -765,11 +818,11 @@ class FirebaseAuthService {
       }
 
       final userDocRef = _firestore!.collection('users').doc(appUser.id);
-      
+
       // Check if user document already exists
       final docSnapshot = await userDocRef.get();
       final now = FieldValue.serverTimestamp();
-      
+
       if (docSnapshot.exists) {
         // Update existing user
         await userDocRef.update({
@@ -789,8 +842,9 @@ class FirebaseAuthService {
           'displayName': appUser.displayName,
           'firstName': microsoftUserData['givenName'] ?? '',
           'lastName': microsoftUserData['surname'] ?? '',
-          'userPrincipalName': microsoftUserData['userPrincipalName'] ?? appUser.email,
-          
+          'userPrincipalName':
+              microsoftUserData['userPrincipalName'] ?? appUser.email,
+
           // University-specific Data (will be populated later)
           'studentId': null,
           'employeeId': null,
@@ -798,12 +852,16 @@ class FirebaseAuthService {
           'faculty': null,
           'year': null,
           'semester': null,
-          
+
           // System Data
           'role': 'student', // Default role
-          'permissions': ['read_announcements', 'read_calendar', 'read_cafeteria'],
+          'permissions': [
+            'read_announcements',
+            'read_calendar',
+            'read_cafeteria',
+          ],
           'isActive': true,
-          
+
           // Preferences
           'preferences': {
             'language': 'tr',
@@ -818,7 +876,7 @@ class FirebaseAuthService {
             'theme': 'system',
             'timezone': 'Europe/Istanbul',
           },
-          
+
           // Profile Data
           'profile': {
             'profilePhotoUrl': null,
@@ -827,7 +885,7 @@ class FirebaseAuthService {
             'emergencyContact': null,
             'socialLinks': null,
           },
-          
+
           // Timestamps
           'createdAt': now,
           'updatedAt': now,
@@ -848,14 +906,16 @@ class FirebaseAuthService {
   Future<void> _createSystemCollectionsIfNeeded() async {
     try {
       if (!_isFirebaseConfigured || _firestore == null) {
-        print('⚠️ Firebase not configured, skipping system collections creation');
+        print(
+          '⚠️ Firebase not configured, skipping system collections creation',
+        );
         return;
       }
 
       // Check if app_config already exists
       final appConfigRef = _firestore!.collection('system').doc('app_config');
       final appConfigSnapshot = await appConfigRef.get();
-      
+
       if (!appConfigSnapshot.exists) {
         // Create initial system configuration
         await appConfigRef.set({
@@ -876,9 +936,11 @@ class FirebaseAuthService {
       }
 
       // Create feature flags if not exist
-      final featureFlagsRef = _firestore!.collection('system').doc('feature_flags');
+      final featureFlagsRef = _firestore!
+          .collection('system')
+          .doc('feature_flags');
       final featureFlagsSnapshot = await featureFlagsRef.get();
-      
+
       if (!featureFlagsSnapshot.exists) {
         await featureFlagsRef.set({
           'gradesEnabled': true,
@@ -894,14 +956,17 @@ class FirebaseAuthService {
       }
 
       // Create university data if not exist
-      final universityDataRef = _firestore!.collection('system').doc('university_data');
+      final universityDataRef = _firestore!
+          .collection('system')
+          .doc('university_data');
       final universityDataSnapshot = await universityDataRef.get();
-      
+
       if (!universityDataSnapshot.exists) {
         await universityDataRef.set({
           'name': 'İstanbul Medipol Üniversitesi',
           'nameEn': 'Istanbul Medipol University',
-          'address': 'Göztepe Mahallesi, Atatürk Caddesi No:40/16, 34815 Beykoz/İstanbul',
+          'address':
+              'Göztepe Mahallesi, Atatürk Caddesi No:40/16, 34815 Beykoz/İstanbul',
           'phone': '+90 216 681 51 00',
           'email': 'info@medipol.edu.tr',
           'website': 'https://www.medipol.edu.tr',
@@ -912,17 +977,21 @@ class FirebaseAuthService {
               'coordinates': {
                 'latitude': 41.088612162240274,
                 'longitude': 29.08920602676745,
-              }
-            }
+              },
+            },
           },
           'departments': ['Bilgisayar Mühendisliği', 'Tıp', 'Hukuk', 'İşletme'],
-          'faculties': ['Mühendislik ve Doğa Bilimleri', 'Tıp', 'Hukuk', 'İşletme ve Yönetim Bilimleri'],
+          'faculties': [
+            'Mühendislik ve Doğa Bilimleri',
+            'Tıp',
+            'Hukuk',
+            'İşletme ve Yönetim Bilimleri',
+          ],
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),
         });
         print('✅ Created initial university_data document');
       }
-
     } catch (e) {
       print('❌ Failed to create system collections: $e');
       // Don't rethrow to avoid breaking authentication flow
@@ -945,7 +1014,7 @@ class FirebaseAuthService {
 
       final userDocRef = _firestore!.collection('users').doc(appUser.id);
       final now = FieldValue.serverTimestamp();
-      
+
       await userDocRef.set({
         // Firebase Native Data
         'uid': appUser.firebaseUid ?? appUser.id,
@@ -954,7 +1023,7 @@ class FirebaseAuthService {
         'emailVerified': false, // Will be updated when verified
         'photoURL': null,
         'phoneNumber': phoneNumber,
-        
+
         // University Information (user-provided)
         'studentId': studentId,
         'employeeId': null,
@@ -963,7 +1032,7 @@ class FirebaseAuthService {
         'enrollmentYear': DateTime.now().year,
         'year': 1, // Default first year
         'semester': null,
-        
+
         // App Preferences
         'preferences': {
           'theme': 'system',
@@ -974,22 +1043,26 @@ class FirebaseAuthService {
             'calendar': true,
             'cafeteria': true,
             'general': true,
-          }
+          },
         },
-        
+
         // System Data
         'role': appUser.userRole?.toString().split('.').last ?? 'student',
-        'permissions': ['read_announcements', 'read_calendar', 'read_cafeteria'],
+        'permissions': [
+          'read_announcements',
+          'read_calendar',
+          'read_cafeteria',
+        ],
         'isActive': true,
         'accountType': 'firebase',
-        
+
         // Timestamps
         'createdAt': now,
         'updatedAt': now,
         'lastLoginAt': now,
         'emailVerifiedAt': null,
       });
-      
+
       print('✅ Created standalone Firebase user document');
     } catch (e) {
       print('❌ Failed to create standalone user document: $e');
@@ -1018,8 +1091,10 @@ class FirebaseAuthService {
         firebaseUid: uid,
         userRole: _parseUserRole(data['role']),
         isActive: data['isActive'] ?? true,
-        createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-        updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        createdAt:
+            (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+        updatedAt:
+            (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       );
     } catch (e) {
       print('❌ Failed to load user data from Firestore: $e');
@@ -1059,7 +1134,9 @@ class FirebaseAuthService {
   /// Kullanıcı tercihi güncelle / Update user preference
   Future<bool> updateUserPreference(String key, dynamic value) async {
     try {
-      if (!_isFirebaseConfigured || _firestore == null || _currentAppUser == null) {
+      if (!_isFirebaseConfigured ||
+          _firestore == null ||
+          _currentAppUser == null) {
         return false;
       }
 
@@ -1067,7 +1144,7 @@ class FirebaseAuthService {
         'preferences.$key': value,
         'updatedAt': FieldValue.serverTimestamp(),
       });
-      
+
       print('✅ Updated user preference: $key = $value');
       return true;
     } catch (e) {
@@ -1079,13 +1156,18 @@ class FirebaseAuthService {
   /// Kullanıcı tercihini al / Get user preference
   Future<T?> getUserPreference<T>(String key) async {
     try {
-      if (!_isFirebaseConfigured || _firestore == null || _currentAppUser == null) {
+      if (!_isFirebaseConfigured ||
+          _firestore == null ||
+          _currentAppUser == null) {
         return null;
       }
 
-      final userDoc = await _firestore!.collection('users').doc(_currentAppUser!.id).get();
+      final userDoc = await _firestore!
+          .collection('users')
+          .doc(_currentAppUser!.id)
+          .get();
       if (!userDoc.exists) return null;
-      
+
       final data = userDoc.data();
       final preferences = data?['preferences'] as Map<String, dynamic>?;
       return preferences?[key] as T?;
@@ -1123,8 +1205,9 @@ abstract class FirebaseAuthState {
   static const FirebaseAuthState loading = _LoadingState();
   static const FirebaseAuthState unauthenticated = _UnauthenticatedState();
   static const FirebaseAuthState notConfigured = _NotConfiguredState();
-  
-  static FirebaseAuthState authenticated(AppUser user) => _AuthenticatedState(user);
+
+  static FirebaseAuthState authenticated(AppUser user) =>
+      _AuthenticatedState(user);
   static FirebaseAuthState error(String message) => _ErrorState(message);
 }
 
@@ -1162,20 +1245,14 @@ class FirebaseAuthResult {
     this.errorMessage,
   });
 
-  static FirebaseAuthResult success(AppUser user) => FirebaseAuthResult._(
-    isSuccess: true,
-    user: user,
-  );
+  static FirebaseAuthResult success(AppUser user) =>
+      FirebaseAuthResult._(isSuccess: true, user: user);
 
-  static FirebaseAuthResult successWithoutUser() => FirebaseAuthResult._(
-    isSuccess: true,
-    user: null,
-  );
+  static FirebaseAuthResult successWithoutUser() =>
+      FirebaseAuthResult._(isSuccess: true, user: null);
 
-  static FirebaseAuthResult error(String message) => FirebaseAuthResult._(
-    isSuccess: false,
-    errorMessage: message,
-  );
+  static FirebaseAuthResult error(String message) =>
+      FirebaseAuthResult._(isSuccess: false, errorMessage: message);
 }
 
 /// Kimlik doğrulama yöntemleri / Authentication methods
@@ -1184,4 +1261,4 @@ enum AuthenticationMethod {
   firebaseEmail,
   firebaseGoogle,
   microsoftOauth,
-} 
+}

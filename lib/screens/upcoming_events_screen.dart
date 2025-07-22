@@ -11,7 +11,9 @@ import '../services/user_club_following_service.dart';
 import '../models/user_event_models.dart';
 import '../models/user_interaction_models.dart';
 import '../widgets/events/realtime_event_card.dart';
-
+import '../widgets/dialogs/add_event_dialog.dart';
+import '../widgets/dialogs/add_club_dialog.dart';
+import 'event_comments_screen.dart';
 
 class UpcomingEventsScreen extends StatefulWidget {
   const UpcomingEventsScreen({super.key});
@@ -25,9 +27,10 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final UserEventsService _eventsService = UserEventsService();
-  final UserInteractionsService _interactionsService = UserInteractionsService();
+  final UserInteractionsService _interactionsService =
+      UserInteractionsService();
   final UserClubFollowingService _clubService = UserClubFollowingService();
-  
+
   String _searchQuery = '';
   String _selectedFilter = 'all'; // all, today, week, month
   String? _selectedEventType;
@@ -35,7 +38,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   late AnimationController _animationController;
   late Animation<double> _animation;
   bool _isSearchVisible = true;
-  
+
   List<Event> _events = [];
   List<UserMyEvent> _myEvents = [];
   List<Club> _clubs = [];
@@ -55,7 +58,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       curve: Curves.easeInOut,
     );
     _animationController.forward();
-    
+
     _scrollController.addListener(_scrollListener);
     _loadData();
   }
@@ -119,7 +122,6 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,9 +159,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       ),
       bottomNavigationBar: const BottomNavigationWidget(currentIndex: -1),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateEventDialog(context),
+        onPressed: () => _showCreateOptionsDialog(context),
         backgroundColor: AppThemes.getPrimaryColor(context),
-        tooltip: 'Etkinlik Oluştur',
+        tooltip: 'Yeni Oluştur',
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -533,10 +535,12 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
         itemBuilder: (context, index) {
           final event = filteredEvents[index];
           return FutureBuilder<Club?>(
-            future: event.clubId != null ? _clubService.getClubById(event.clubId!) : Future.value(null),
+            future: event.clubId != null
+                ? _clubService.getClubById(event.clubId!)
+                : Future.value(null),
             builder: (context, clubSnapshot) {
               final club = clubSnapshot.data;
-              
+
               return RealTimeEventCard(
                 event: event,
                 club: club,
@@ -552,8 +556,6 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
       ),
     );
   }
-
-
 
   /// Kulüp kartı / Club card
   Widget _buildClubCard(BuildContext context, Club club) {
@@ -577,9 +579,11 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                 borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
               ),
               child: Center(
-                child: club.logoUrl != null 
+                child: club.logoUrl != null
                     ? ClipRRect(
-                        borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+                        borderRadius: BorderRadius.circular(
+                          AppConstants.radiusMedium,
+                        ),
                         child: Image.network(
                           club.logoUrl!,
                           width: 50,
@@ -615,7 +619,8 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      if (club.verificationStatus == VerificationStatus.verified) ...[
+                      if (club.verificationStatus ==
+                          VerificationStatus.verified) ...[
                         const SizedBox(width: 4),
                         Icon(
                           Icons.verified,
@@ -653,7 +658,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                 return ElevatedButton(
                   onPressed: () => _toggleFollowClub(club),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isFollowing 
+                    backgroundColor: isFollowing
                         ? Colors.grey[600]
                         : club.colors.primaryColor,
                     foregroundColor: Colors.white,
@@ -783,7 +788,6 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     }
   }
 
-
   /// Aynı gün mü kontrol et / Check if same day
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
@@ -797,7 +801,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   Future<void> _toggleLike(Event event) async {
     try {
       final wasLiked = await _eventsService.toggleEventLike(event.eventId);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -811,10 +815,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hata: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -824,7 +825,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   Future<void> _toggleJoin(Event event) async {
     try {
       final hasJoined = await _eventsService.toggleEventJoin(event.eventId);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -839,10 +840,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hata: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -852,12 +850,12 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   Future<void> _toggleFollowClub(Club club) async {
     try {
       final isNowFollowing = await _clubService.toggleClubFollow(club.clubId);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              isNowFollowing 
+              isNowFollowing
                   ? '${club.displayName} takip edildi'
                   : '${club.displayName} takibi bırakıldı',
             ),
@@ -865,7 +863,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
             duration: const Duration(seconds: 2),
           ),
         );
-        
+
         // Refresh the club data
         setState(() {
           _loadData();
@@ -874,10 +872,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Hata: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Hata: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -885,62 +880,10 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
 
   /// Yorumları göster / Show comments
   void _showComments(BuildContext context, Event event) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.7,
-        decoration: BoxDecoration(
-          color: AppThemes.getSurfaceColor(context),
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppConstants.radiusMedium),
-          ),
-        ),
-        child: Column(
-          children: [
-            // Başlık / Header
-            Container(
-              padding: const EdgeInsets.all(AppConstants.paddingMedium),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: AppThemes.getSecondaryTextColor(
-                      context,
-                    ).withValues(alpha: 0.2),
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Text(
-                    'Yorumlar',
-                    style: TextStyle(
-                      fontSize: AppConstants.fontSizeLarge,
-                      fontWeight: FontWeight.bold,
-                      color: AppThemes.getTextColor(context),
-                    ),
-                  ),
-                  const Spacer(),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-            ),
-
-            // Yorumlar listesi / Comments list
-            const Expanded(
-              child: Center(
-                child: Text(
-                  'Yorumlar yakında eklenecek...',
-                  style: TextStyle(color: Colors.grey),
-                ),
-              ),
-            ),
-          ],
-        ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventCommentsScreen(event: event),
       ),
     );
   }
@@ -983,22 +926,121 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     );
   }
 
-  /// Etkinlik oluştur dialog'u / Create event dialog
+  /// Create options dialog / Oluştur seçenekleri dialog'u
+  void _showCreateOptionsDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppThemes.getSurfaceColor(context),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(AppConstants.radiusMedium),
+          topRight: Radius.circular(AppConstants.radiusMedium),
+        ),
+      ),
+      builder: (context) => SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(AppConstants.paddingMedium),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header / Başlık
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: AppConstants.paddingMedium),
+              
+              Text(
+                'Ne oluşturmak istiyorsunuz?',
+                style: TextStyle(
+                  fontSize: AppConstants.fontSizeLarge,
+                  fontWeight: FontWeight.bold,
+                  color: AppThemes.getTextColor(context),
+                ),
+              ),
+              
+              const SizedBox(height: AppConstants.paddingMedium),
+
+              // Event Option / Etkinlik Seçeneği
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(AppConstants.paddingSmall),
+                  decoration: BoxDecoration(
+                    color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                  ),
+                  child: Icon(
+                    Icons.event,
+                    color: AppThemes.getPrimaryColor(context),
+                  ),
+                ),
+                title: const Text('Yeni Etkinlik'),
+                subtitle: const Text('Konferans, workshop, sosyal etkinlik vb.'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showCreateEventDialog(context);
+                },
+              ),
+
+              const Divider(),
+
+              // Club Option / Kulüp Seçeneği
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(AppConstants.paddingSmall),
+                  decoration: BoxDecoration(
+                    color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                  ),
+                  child: Icon(
+                    Icons.groups,
+                    color: AppThemes.getPrimaryColor(context),
+                  ),
+                ),
+                title: const Text('Yeni Kulüp'),
+                subtitle: const Text('Öğrenci kulübü, topluluk vb.'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showCreateClubDialog(context);
+                },
+              ),
+              
+              const SizedBox(height: AppConstants.paddingMedium),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Show create event dialog / Etkinlik oluştur dialog'unu göster
   void _showCreateEventDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Etkinlik Oluştur'),
-        content: const Text(
-          'Etkinlik oluşturma özelliği yakında kullanıma sunulacak.\n\n'
-          'Kulüp yöneticileri ve yetkili kişiler etkinlik oluşturabilecek.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tamam'),
-          ),
-        ],
+      builder: (context) => AddEventDialog(
+        onEventAdded: () {
+          // Etkinlik eklendikten sonra verileri yenile
+          _loadData();
+        },
+      ),
+    );
+  }
+
+  /// Show create club dialog / Kulüp oluştur dialog'unu göster
+  void _showCreateClubDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AddClubDialog(
+        onClubAdded: () {
+          // Kulüp eklendikten sonra verileri yenile
+          _loadData();
+        },
       ),
     );
   }
@@ -1007,7 +1049,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
   Future<void> _shareEvent(Event event) async {
     try {
       await _eventsService.shareEvent(event.eventId);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

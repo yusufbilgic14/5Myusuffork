@@ -42,65 +42,65 @@ class TimestampConverter implements JsonConverter<DateTime?, Object?> {
 class AppUser {
   @JsonKey(name: 'id')
   final String id;
-  
+
   @JsonKey(name: 'displayName')
   final String displayName;
-  
+
   @JsonKey(name: 'mail')
   final String? email;
-  
+
   @JsonKey(name: 'userPrincipalName')
   final String userPrincipalName;
-  
+
   @JsonKey(name: 'givenName')
   final String? firstName;
-  
+
   @JsonKey(name: 'surname')
   final String? lastName;
-  
+
   @JsonKey(name: 'jobTitle')
   final String? jobTitle;
-  
+
   @JsonKey(name: 'department')
   final String? department;
-  
+
   @JsonKey(name: 'businessPhones')
   final List<String>? businessPhones;
-  
+
   @JsonKey(name: 'mobilePhone')
   final String? mobilePhone;
-  
+
   @JsonKey(name: 'officeLocation')
   final String? officeLocation;
-  
+
   @JsonKey(name: 'preferredLanguage')
   final String? preferredLanguage;
 
   // Firebase-specific fields / Firebase'e özel alanlar
-  
+
   @JsonKey(name: 'firebaseUid')
   final String? firebaseUid;
-  
+
   @JsonKey(name: 'firestoreDocId')
   final String? firestoreDocId;
-  
+
   @JsonKey(name: 'role', includeIfNull: false)
   final UserRole? userRole;
-  
+
   @JsonKey(name: 'permissions')
   final List<String>? permissions;
-  
+
   @JsonKey(name: 'isActive', includeIfNull: false)
   final bool? isActive;
-  
+
   @JsonKey(name: 'createdAt', includeIfNull: false)
   @TimestampConverter()
   final DateTime? createdAt;
-  
+
   @JsonKey(name: 'updatedAt', includeIfNull: false)
   @TimestampConverter()
   final DateTime? updatedAt;
-  
+
   @JsonKey(name: 'lastLoginAt', includeIfNull: false)
   @TimestampConverter()
   final DateTime? lastLoginAt;
@@ -130,7 +130,8 @@ class AppUser {
   });
 
   /// JSON'dan AppUser oluştur / Create AppUser from JSON
-  factory AppUser.fromJson(Map<String, dynamic> json) => _$AppUserFromJson(json);
+  factory AppUser.fromJson(Map<String, dynamic> json) =>
+      _$AppUserFromJson(json);
 
   /// AppUser'ı JSON'a çevir / Convert AppUser to JSON
   Map<String, dynamic> toJson() => _$AppUserToJson(this);
@@ -151,16 +152,15 @@ class AppUser {
   /// Kullanıcının öğrenci olup olmadığını kontrol et / Check if user is a student
   bool get isStudent {
     return userPrincipalName.toLowerCase().contains('student') ||
-           userPrincipalName.toLowerCase().contains('ogrenci') ||
-           (jobTitle?.toLowerCase().contains('student') ?? false) ||
-           (department?.toLowerCase().contains('student') ?? false);
+        userPrincipalName.toLowerCase().contains('ogrenci') ||
+        (jobTitle?.toLowerCase().contains('student') ?? false) ||
+        (department?.toLowerCase().contains('student') ?? false);
   }
 
   /// Kullanıcının personel olup olmadığını kontrol et / Check if user is staff
   bool get isStaff {
-    return !isStudent &&
-           (jobTitle != null && jobTitle!.isNotEmpty) ||
-           (department != null && department!.isNotEmpty);
+    return !isStudent && (jobTitle != null && jobTitle!.isNotEmpty) ||
+        (department != null && department!.isNotEmpty);
   }
 
   /// Kullanıcının rol bilgisini getir / Get user's role information
@@ -188,16 +188,20 @@ class AppUser {
   String? get profilePhotoUrl {
     // Microsoft Graph API'den profil fotoğrafı URL'si alınabilir
     // Can get profile photo URL from Microsoft Graph API
-    return 'https://graph.microsoft.com/v1.0/me/photo/\$value';
+    // TEMPORARILY DISABLED: Microsoft OAuth photo fetching
+    // return 'https://graph.microsoft.com/v1.0/me/photo/\$value';
+    return null; // Use fallback avatars instead
   }
 
   // Firebase-specific methods / Firebase'e özel metodlar
 
   /// Firebase'e bağlı olup olmadığını kontrol et / Check if connected to Firebase
-  bool get isConnectedToFirebase => firebaseUid != null && firebaseUid!.isNotEmpty;
+  bool get isConnectedToFirebase =>
+      firebaseUid != null && firebaseUid!.isNotEmpty;
 
   /// Firestore dokümanı mevcut mu kontrol et / Check if Firestore document exists
-  bool get hasFirestoreDocument => firestoreDocId != null && firestoreDocId!.isNotEmpty;
+  bool get hasFirestoreDocument =>
+      firestoreDocId != null && firestoreDocId!.isNotEmpty;
 
   /// Kullanıcının aktif olup olmadığını kontrol et / Check if user is active
   bool get isUserActive => isActive ?? true;
@@ -213,13 +217,17 @@ class AppUser {
   /// Kullanıcının herhangi bir yetkiye sahip olup olmadığını kontrol et / Check if user has any of the permissions
   bool hasAnyPermission(List<String> permissionList) {
     if (permissions == null || permissions!.isEmpty) return false;
-    return permissionList.any((permission) => permissions!.contains(permission));
+    return permissionList.any(
+      (permission) => permissions!.contains(permission),
+    );
   }
 
   /// Kullanıcının tüm yetkilere sahip olup olmadığını kontrol et / Check if user has all permissions
   bool hasAllPermissions(List<String> permissionList) {
     if (permissions == null || permissions!.isEmpty) return false;
-    return permissionList.every((permission) => permissions!.contains(permission));
+    return permissionList.every(
+      (permission) => permissions!.contains(permission),
+    );
   }
 
   /// Firebase Firestore doküman referansı getir / Get Firebase Firestore document reference
@@ -231,12 +239,12 @@ class AppUser {
   /// Firebase'e uygun kullanıcı verisi oluştur / Create Firebase-compatible user data
   Map<String, dynamic> toFirestoreData() {
     final data = toJson();
-    
+
     // Remove Microsoft-specific fields that shouldn't be stored in Firebase
     data.remove('businessPhones');
     data.remove('mobilePhone');
     data.remove('officeLocation');
-    
+
     // Ensure timestamps are properly converted
     if (createdAt != null) {
       data['createdAt'] = Timestamp.fromDate(createdAt!);
@@ -247,29 +255,38 @@ class AppUser {
     if (lastLoginAt != null) {
       data['lastLoginAt'] = Timestamp.fromDate(lastLoginAt!);
     }
-    
+
     return data;
   }
 
   /// Firebase verilerinden AppUser oluştur / Create AppUser from Firebase data
-  factory AppUser.fromFirestoreData(Map<String, dynamic> data, String documentId) {
+  factory AppUser.fromFirestoreData(
+    Map<String, dynamic> data,
+    String documentId,
+  ) {
     // Convert Firestore data to standard JSON format
     final jsonData = Map<String, dynamic>.from(data);
-    
+
     // Set Firestore document ID
     jsonData['firestoreDocId'] = documentId;
-    
+
     // Convert Timestamps to DateTime strings for JSON parsing
     if (data['createdAt'] is Timestamp) {
-      jsonData['createdAt'] = (data['createdAt'] as Timestamp).toDate().toIso8601String();
+      jsonData['createdAt'] = (data['createdAt'] as Timestamp)
+          .toDate()
+          .toIso8601String();
     }
     if (data['updatedAt'] is Timestamp) {
-      jsonData['updatedAt'] = (data['updatedAt'] as Timestamp).toDate().toIso8601String();
+      jsonData['updatedAt'] = (data['updatedAt'] as Timestamp)
+          .toDate()
+          .toIso8601String();
     }
     if (data['lastLoginAt'] is Timestamp) {
-      jsonData['lastLoginAt'] = (data['lastLoginAt'] as Timestamp).toDate().toIso8601String();
+      jsonData['lastLoginAt'] = (data['lastLoginAt'] as Timestamp)
+          .toDate()
+          .toIso8601String();
     }
-    
+
     return AppUser.fromJson(jsonData);
   }
 
@@ -350,4 +367,4 @@ class AppUser {
       lastLoginAt: lastLoginAt ?? this.lastLoginAt,
     );
   }
-} 
+}

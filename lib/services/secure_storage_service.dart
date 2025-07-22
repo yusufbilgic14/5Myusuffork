@@ -3,14 +3,13 @@ import 'dart:convert';
 
 /// Microsoft OAuth token'ları için güvenli depolama servisi / Secure storage service for Microsoft OAuth tokens
 class SecureStorageService {
-  static const SecureStorageService _instance = SecureStorageService._internal();
+  static const SecureStorageService _instance =
+      SecureStorageService._internal();
   factory SecureStorageService() => _instance;
   const SecureStorageService._internal();
 
   static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
     iOptions: IOSOptions(
       accessibility: KeychainAccessibility.first_unlock_this_device,
     ),
@@ -29,7 +28,9 @@ class SecureStorageService {
     try {
       await _storage.write(key: _accessTokenKey, value: token);
     } catch (e) {
-      throw StorageException('Access token saklanamadı / Failed to store access token: $e');
+      throw StorageException(
+        'Access token saklanamadı / Failed to store access token: $e',
+      );
     }
   }
 
@@ -38,7 +39,9 @@ class SecureStorageService {
     try {
       return await _storage.read(key: _accessTokenKey);
     } catch (e) {
-      throw StorageException('Access token alınamadı / Failed to get access token: $e');
+      throw StorageException(
+        'Access token alınamadı / Failed to get access token: $e',
+      );
     }
   }
 
@@ -47,7 +50,9 @@ class SecureStorageService {
     try {
       await _storage.write(key: _refreshTokenKey, value: token);
     } catch (e) {
-      throw StorageException('Refresh token saklanamadı / Failed to store refresh token: $e');
+      throw StorageException(
+        'Refresh token saklanamadı / Failed to store refresh token: $e',
+      );
     }
   }
 
@@ -56,7 +61,9 @@ class SecureStorageService {
     try {
       return await _storage.read(key: _refreshTokenKey);
     } catch (e) {
-      throw StorageException('Refresh token alınamadı / Failed to get refresh token: $e');
+      throw StorageException(
+        'Refresh token alınamadı / Failed to get refresh token: $e',
+      );
     }
   }
 
@@ -65,7 +72,9 @@ class SecureStorageService {
     try {
       await _storage.write(key: _idTokenKey, value: token);
     } catch (e) {
-      throw StorageException('ID token saklanamadı / Failed to store ID token: $e');
+      throw StorageException(
+        'ID token saklanamadı / Failed to store ID token: $e',
+      );
     }
   }
 
@@ -84,7 +93,9 @@ class SecureStorageService {
       final userDataJson = json.encode(userData);
       await _storage.write(key: _userDataKey, value: userDataJson);
     } catch (e) {
-      throw StorageException('Kullanıcı verisi saklanamadı / Failed to store user data: $e');
+      throw StorageException(
+        'Kullanıcı verisi saklanamadı / Failed to store user data: $e',
+      );
     }
   }
 
@@ -97,7 +108,9 @@ class SecureStorageService {
       }
       return null;
     } catch (e) {
-      throw StorageException('Kullanıcı verisi alınamadı / Failed to get user data: $e');
+      throw StorageException(
+        'Kullanıcı verisi alınamadı / Failed to get user data: $e',
+      );
     }
   }
 
@@ -109,7 +122,9 @@ class SecureStorageService {
         value: expiryTime.millisecondsSinceEpoch.toString(),
       );
     } catch (e) {
-      throw StorageException('Token süre bilgisi saklanamadı / Failed to store token expiry: $e');
+      throw StorageException(
+        'Token süre bilgisi saklanamadı / Failed to store token expiry: $e',
+      );
     }
   }
 
@@ -125,16 +140,23 @@ class SecureStorageService {
       }
       return null;
     } catch (e) {
-      throw StorageException('Token süre bilgisi alınamadı / Failed to get token expiry: $e');
+      throw StorageException(
+        'Token süre bilgisi alınamadı / Failed to get token expiry: $e',
+      );
     }
   }
 
   /// Kimlik doğrulama durumunu sakla / Store authentication state
   Future<void> storeAuthState(bool isAuthenticated) async {
     try {
-      await _storage.write(key: _authStateKey, value: isAuthenticated.toString());
+      await _storage.write(
+        key: _authStateKey,
+        value: isAuthenticated.toString(),
+      );
     } catch (e) {
-      throw StorageException('Auth durumu saklanamadı / Failed to store auth state: $e');
+      throw StorageException(
+        'Auth durumu saklanamadı / Failed to store auth state: $e',
+      );
     }
   }
 
@@ -144,7 +166,9 @@ class SecureStorageService {
       final authState = await _storage.read(key: _authStateKey);
       return authState == 'true';
     } catch (e) {
-      throw StorageException('Auth durumu alınamadı / Failed to get auth state: $e');
+      throw StorageException(
+        'Auth durumu alınamadı / Failed to get auth state: $e',
+      );
     }
   }
 
@@ -153,16 +177,16 @@ class SecureStorageService {
     try {
       final accessToken = await getAccessToken();
       final expiryTime = await getTokenExpiry();
-      
+
       if (accessToken == null || expiryTime == null) {
         return false;
       }
-      
+
       // Token'ın süresi 5 dakika içinde dolarsa yenilenmesi gerekir
       // Token should be refreshed if it expires within 5 minutes
       final now = DateTime.now();
       final fiveMinutesFromNow = now.add(const Duration(minutes: 5));
-      
+
       return expiryTime.isAfter(fiveMinutesFromNow);
     } catch (e) {
       return false;
@@ -181,7 +205,9 @@ class SecureStorageService {
         _storage.delete(key: _authStateKey),
       ]);
     } catch (e) {
-      throw StorageException('Auth verileri temizlenemedi / Failed to clear auth data: $e');
+      throw StorageException(
+        'Auth verileri temizlenemedi / Failed to clear auth data: $e',
+      );
     }
   }
 
@@ -214,7 +240,9 @@ class SecureStorageService {
 
       await Future.wait(futures);
     } catch (e) {
-      throw StorageException('Token paketi saklanamadı / Failed to store token bundle: $e');
+      throw StorageException(
+        'Token paketi saklanamadı / Failed to store token bundle: $e',
+      );
     }
   }
 
@@ -230,7 +258,9 @@ class SecureStorageService {
         'authState': (await getAuthState()).toString(),
       };
     } catch (e) {
-      throw StorageException('Depolama verisi kontrol edilemedi / Failed to check storage data: $e');
+      throw StorageException(
+        'Depolama verisi kontrol edilemedi / Failed to check storage data: $e',
+      );
     }
   }
 }
@@ -242,4 +272,4 @@ class StorageException implements Exception {
 
   @override
   String toString() => 'StorageException: $message';
-} 
+}

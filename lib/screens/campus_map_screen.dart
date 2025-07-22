@@ -706,5 +706,4 @@ class _CampusMapScreenState extends State<CampusMapScreen> {
       ),
     );
   }
-
 }
