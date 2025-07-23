@@ -30,39 +30,58 @@ class _NotificationAppWrapperState extends State<NotificationAppWrapper> {
   @override
   void initState() {
     super.initState();
+    debugPrint('🔔 NotificationWrapper: initState called, setting up notification service');
     _setupNotificationService();
   }
 
   /// Setup notification service with authentication listener
   /// Kimlik doğrulama dinleyicisi ile bildirim servisini ayarla
   void _setupNotificationService() {
+    debugPrint('🔔 NotificationWrapper: _setupNotificationService called');
     // Listen to authentication changes
     // Kimlik doğrulama değişikliklerini dinle
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+      debugPrint('🔔 NotificationWrapper: PostFrameCallback executed');
+      if (!mounted) {
+        debugPrint('🔔 NotificationWrapper: Widget not mounted, skipping setup');
+        return;
+      }
       
       _authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
+      debugPrint('🔔 NotificationWrapper: Got authProvider, isAuthenticated: ${_authProvider!.isAuthenticated}');
       
       // Setup initial state
       if (_authProvider!.isAuthenticated && !_isNotificationInitialized) {
+        debugPrint('🔔 NotificationWrapper: User is authenticated, initializing notifications');
         _initializeNotifications();
+      } else {
+        debugPrint('🔔 NotificationWrapper: User not authenticated or already initialized (auth: ${_authProvider!.isAuthenticated}, initialized: $_isNotificationInitialized)');
       }
 
       // Listen for authentication state changes
       _authProvider!.addListener(_onAuthStateChanged);
+      debugPrint('🔔 NotificationWrapper: Auth listener added');
     });
   }
 
   /// Handle authentication state changes
   /// Kimlik doğrulama durumu değişikliklerini işle
   void _onAuthStateChanged() {
-    if (!mounted || _authProvider == null) return;
+    debugPrint('🔔 NotificationWrapper: _onAuthStateChanged called');
+    if (!mounted || _authProvider == null) {
+      debugPrint('🔔 NotificationWrapper: Widget not mounted or authProvider null');
+      return;
+    }
+    
+    debugPrint('🔔 NotificationWrapper: Auth state - authenticated: ${_authProvider!.isAuthenticated}, initialized: $_isNotificationInitialized');
     
     if (_authProvider!.isAuthenticated && !_isNotificationInitialized) {
       // User logged in, initialize notifications
+      debugPrint('🔔 NotificationWrapper: User logged in, initializing notifications');
       _initializeNotifications();
     } else if (!_authProvider!.isAuthenticated && _isNotificationInitialized) {
       // User logged out, cleanup notifications
+      debugPrint('🔔 NotificationWrapper: User logged out, cleaning up notifications');
       _cleanupNotifications();
     }
   }
