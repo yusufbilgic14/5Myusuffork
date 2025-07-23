@@ -657,12 +657,42 @@ class FirebaseAuthService {
   /// Mevcut kimlik doğrulama durumunu kontrol et / Check current authentication state
   Future<void> _checkCurrentAuthState() async {
     try {
+      print('🔍 FirebaseAuthService: Checking current authentication state...');
+      
       if (!_isFirebaseConfigured) {
+        print('⚠️ FirebaseAuthService: Firebase not configured');
         _emitAuthState(FirebaseAuthState.notConfigured);
         return;
       }
 
-      // Saklanan kimlik doğrulama durumunu kontrol et / Check stored auth state
+      // İlk önce Firebase Auth'un mevcut kullanıcısını kontrol et / First check Firebase Auth's current user
+      if (_firebaseAuth != null) {
+        final currentFirebaseUser = _firebaseAuth!.currentUser;
+        print('🔍 FirebaseAuthService: Firebase current user: ${currentFirebaseUser?.uid}');
+        
+        if (currentFirebaseUser != null) {
+          print('✅ FirebaseAuthService: Found existing Firebase user: ${currentFirebaseUser.email}');
+          
+          // Try to load user data from Firestore
+          final appUser = await _loadUserDataFromFirestore(currentFirebaseUser.uid);
+          if (appUser != null) {
+            _currentAppUser = appUser;
+            _currentAuthMethod = AuthenticationMethod.firebaseEmail; // or determine method
+            await _storage.storeAuthState(true);
+            await _storage.storeUserData(appUser.toJson());
+            print('✅ FirebaseAuthService: Emitting authenticated state for existing user');
+            _emitAuthState(FirebaseAuthState.authenticated(appUser));
+            return;
+          } else {
+            print('⚠️ FirebaseAuthService: Could not load user data from Firestore for existing Firebase user');
+          }
+        } else {
+          print('🔍 FirebaseAuthService: No current Firebase user found');
+        }
+      }
+
+      // Fallback: Saklanan kimlik doğrulama durumunu kontrol et / Fallback: Check stored auth state
+      print('🔍 FirebaseAuthService: Checking stored auth state as fallback...');
       final isAuthenticated = await _storage.getAuthState();
 
       if (isAuthenticated) {
@@ -670,11 +700,13 @@ class FirebaseAuthService {
         final userData = await _storage.getUserData();
         if (userData != null) {
           _currentAppUser = AppUser.fromJson(userData);
+          print('✅ FirebaseAuthService: Loaded user from storage: ${_currentAppUser!.email}');
           _emitAuthState(FirebaseAuthState.authenticated(_currentAppUser!));
           return;
         }
       }
 
+      print('👤 FirebaseAuthService: No authenticated user found, emitting unauthenticated state');
       _emitAuthState(FirebaseAuthState.unauthenticated);
     } catch (e) {
       print('❌ FirebaseAuthService: Failed to check auth state - $e');

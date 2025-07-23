@@ -1022,4 +1022,126 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rememberMe => 'Remember Me';
+
+  // Edit/Delete Event functionality
+  @override
+  String get editEvent => 'Edit Event';
+
+  @override
+  String get deleteEvent => 'Delete Event';
+
+  @override
+  String get deleteEventConfirm => 'Are you sure you want to delete this event? This action cannot be undone.';
+
+  @override
+  String get eventTitle => 'Event Title';
+
+  @override
+  String get eventDescription => 'Event Description';
+
+  @override
+  String get eventLocation => 'Event Location';
+
+  @override
+  String get eventCapacity => 'Event Capacity';
+
+  @override
+  String get eventUpdated => 'Event updated successfully!';
+
+  @override
+  String get eventDeleted => 'Event deleted successfully!';
+
+  @override
+  String get editEventTitle => 'Edit Event';
+
+  @override
+  String get updateEvent => 'Update Event';
+
+  @override
+  String get updating => 'Updating...';
+
+  @override
+  String get deleting => 'Deleting...';
+
+  // Club Overview functionality
+  @override
+  String get clubOverview => 'Club Overview';
+
+  @override
+  String get members => 'Members';
+
+  @override
+  String get establishedIn => 'Established in';
+
+  @override
+  String get contactInformation => 'Contact Information';
+
+  @override
+  String get socialMedia => 'Social Media';
+
+  @override
+  String get aboutClub => 'About Club';
+
+  @override
+  String get clubStats => 'Club Statistics';
+
+  @override
+  String get faculty => 'Faculty';
+
+  @override
+  String get department => 'Department';
+
+  @override
+  String get followClub => 'Follow Club';
+
+  @override
+  String get unfollowClub => 'Unfollow Club';
+
+  @override
+  String get editClub => 'Edit Club';
+
+  @override
+  String get deleteClub => 'Delete Club';
+
+  @override
+  String get deleteClubConfirm => 'Are you sure you want to delete this club? This action cannot be undone.';
+
+  @override
+  String get clubUpdated => 'Club updated successfully!';
+
+  @override
+  String get clubDeleted => 'Club deleted successfully!';
+
+  @override
+  String get following => 'Following';
+
+  @override
+  String get follow => 'Follow';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get instagram => 'Instagram';
+
+  @override
+  String get twitter => 'Twitter';
+
+  @override
+  String get linkedin => 'LinkedIn';
+
+  @override
+  String get youtube => 'YouTube';
+
+  @override
+  String get noDescription => 'No description available';
+
+  @override
+  String get options => 'Options';
+
+  @override
+  String get share => 'Share';
 }

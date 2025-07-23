@@ -354,8 +354,58 @@ class SecureStorageService {
       if (!isRemembered) return false;
 
       final credentials = await getRememberedCredentials();
-      return credentials['email']?.isNotEmpty == true && 
-             credentials['password']?.isNotEmpty == true;
+      final authType = credentials['authType'];
+      
+      if (authType == 'firebase') {
+        // Firebase için email/password kontrolü / Email/password check for Firebase
+        return credentials['email']?.isNotEmpty == true && 
+               credentials['password']?.isNotEmpty == true;
+      } else if (authType == 'microsoft') {
+        // Microsoft OAuth için token geçerliliği kontrolü / Token validity check for Microsoft OAuth
+        return await isTokenValid();
+      }
+      
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Microsoft OAuth ile "Remember Me" durumunu ayarla / Set "Remember Me" state for Microsoft OAuth
+  Future<void> enableMicrosoftRememberMe() async {
+    try {
+      await Future.wait([
+        storeRememberMe(true),
+        _storage.write(key: _rememberMeAuthTypeKey, value: 'microsoft'),
+      ]);
+    } catch (e) {
+      throw StorageException(
+        'Microsoft OAuth remember me ayarlanamadı / Failed to set Microsoft OAuth remember me: $e',
+      );
+    }
+  }
+
+  /// Otomatik giriş için geçerli session var mı kontrol et / Check if there's a valid session for auto-login
+  Future<bool> hasValidSession() async {
+    try {
+      final authType = await _storage.read(key: _rememberMeAuthTypeKey);
+      final isRemembered = await getRememberMe();
+      
+      if (!isRemembered) return false;
+      
+      if (authType == 'microsoft') {
+        // Microsoft OAuth token geçerliliği kontrolü / Microsoft OAuth token validity check
+        final isValid = await isTokenValid();
+        final hasAuthState = await getAuthState();
+        return isValid && hasAuthState;
+      } else if (authType == 'firebase') {
+        // Firebase için credentials kontrolü / Credentials check for Firebase
+        final credentials = await getRememberedCredentials();
+        return credentials['email']?.isNotEmpty == true && 
+               credentials['password']?.isNotEmpty == true;
+      }
+      
+      return false;
     } catch (e) {
       return false;
     }

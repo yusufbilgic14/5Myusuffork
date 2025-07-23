@@ -395,6 +395,31 @@ class UserProfileService {
     }
   }
 
+  /// Get specific user profile by user ID (for notifications)
+  /// Belirli kullanıcı profilini kullanıcı ID'si ile getir (bildirimler için)
+  Future<UserProfile?> getSpecificUserProfile(String userId) async {
+    try {
+      print('👤 UserProfileService: Getting profile for user $userId');
+
+      final profileDoc = await _firestore
+          .collection('userProfiles')
+          .doc(userId)
+          .get();
+
+      if (!profileDoc.exists) {
+        print('❌ UserProfileService: Profile not found for user $userId');
+        return null;
+      }
+
+      final profile = UserProfile.fromFirestoreData(profileDoc.data()!, profileDoc.id);
+      print('✅ UserProfileService: Profile retrieved for user $userId');
+      return profile;
+    } catch (e) {
+      print('❌ UserProfileService: Error getting profile for $userId: $e');
+      return null;
+    }
+  }
+
   // ==========================================
   // MEMORY MANAGEMENT / BELLEK YÖNETİMİ
   // ==========================================

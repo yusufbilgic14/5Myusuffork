@@ -6,7 +6,7 @@ import '../../themes/app_themes.dart';
 import '../../models/user_event_models.dart';
 import '../../models/user_interaction_models.dart';
 import '../../services/user_events_service.dart';
-import '../../services/user_interactions_service.dart';
+import '../../services/firebase_auth_service.dart';
 import '../../l10n/app_localizations.dart';
 
 /// Real-time event card that updates counters live
@@ -19,6 +19,8 @@ class RealTimeEventCard extends StatefulWidget {
   final VoidCallback? onComment;
   final VoidCallback? onShare;
   final VoidCallback? onMoreOptions;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
   const RealTimeEventCard({
     super.key,
@@ -29,6 +31,8 @@ class RealTimeEventCard extends StatefulWidget {
     this.onComment,
     this.onShare,
     this.onMoreOptions,
+    this.onEdit,
+    this.onDelete,
   });
 
   @override
@@ -37,6 +41,7 @@ class RealTimeEventCard extends StatefulWidget {
 
 class _RealTimeEventCardState extends State<RealTimeEventCard> {
   final UserEventsService _eventsService = UserEventsService();
+  final FirebaseAuthService _authService = FirebaseAuthService();
 
   StreamSubscription<EventCounters>? _countersSubscription;
   StreamSubscription<UserEventInteraction?>? _interactionSubscription;
@@ -105,6 +110,13 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
       _currentCounters?.commentCount ?? widget.event.commentCount;
   int get joinCount => _currentCounters?.joinCount ?? widget.event.joinCount;
   int get shareCount => _currentCounters?.shareCount ?? widget.event.shareCount;
+
+  /// Check if current user is the owner of this event
+  /// Mevcut kullanıcının bu etkinliğin sahibi olup olmadığını kontrol et
+  bool get isOwner {
+    final currentUserId = _authService.currentAppUser?.id;
+    return currentUserId != null && currentUserId == widget.event.createdBy;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -208,10 +220,10 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
             ),
           ),
 
-          // More options
+          // More options - show different options based on ownership
           IconButton(
             icon: const Icon(Icons.more_vert),
-            onPressed: widget.onMoreOptions,
+            onPressed: () => _showEventOptionsMenu(context),
           ),
         ],
       ),
@@ -623,5 +635,150 @@ class _RealTimeEventCardState extends State<RealTimeEventCard> {
     } else {
       return '${difference.inDays} gün önce';
     }
+  }
+
+  /// Show event options menu based on ownership
+  /// Sahiplik durumuna göre etkinlik seçenekleri menüsünü göster
+  void _showEventOptionsMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppThemes.getSurfaceColor(context),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(AppConstants.radiusMedium),
+          topRight: Radius.circular(AppConstants.radiusMedium),
+        ),
+      ),
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.symmetric(vertical: AppConstants.paddingMedium),
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+
+            // Owner options (edit/delete)
+            if (isOwner) ...[
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(AppConstants.paddingSmall),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                  ),
+                  child: const Icon(Icons.edit, color: Colors.blue),
+                ),
+                title: Text(AppLocalizations.of(context)!.editEvent),
+                subtitle: Text(AppLocalizations.of(context)!.eventDescription),
+                onTap: () {
+                  Navigator.pop(context);
+                  widget.onEdit?.call();
+                },
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(AppConstants.paddingSmall),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                  ),
+                  child: const Icon(Icons.delete, color: Colors.red),
+                ),
+                title: Text(AppLocalizations.of(context)!.deleteEvent),
+                subtitle: Text(AppLocalizations.of(context)!.deleteEventConfirm),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation(context);
+                },
+              ),
+              const Divider(),
+            ],
+
+            // General options (for all users)
+            ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(AppConstants.paddingSmall),
+                decoration: BoxDecoration(
+                  color: AppThemes.getPrimaryColor(context).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                ),
+                child: Icon(
+                  Icons.share,
+                  color: AppThemes.getPrimaryColor(context),
+                ),
+              ),
+              title: Text(AppLocalizations.of(context)!.share),
+              subtitle: Text('Share this event'),
+              onTap: () {
+                Navigator.pop(context);
+                widget.onShare?.call();
+              },
+            ),
+            if (!isOwner) ...[
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(AppConstants.paddingSmall),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppConstants.radiusSmall),
+                  ),
+                  child: const Icon(Icons.report, color: Colors.orange),
+                ),
+                title: Text('Report'),
+                subtitle: Text('Report this event'),
+                onTap: () {
+                  Navigator.pop(context);
+                  // Handle report functionality
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Şikayet sistemi yakında eklenecek'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                },
+              ),
+            ],
+            
+            const SizedBox(height: AppConstants.paddingMedium),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Show delete confirmation dialog
+  /// Silme onay dialogunu göster
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context)!.deleteEvent),
+        content: Text(AppLocalizations.of(context)!.deleteEventConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)!.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              widget.onDelete?.call();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(AppLocalizations.of(context)!.delete),
+          ),
+        ],
+      ),
+    );
   }
 }

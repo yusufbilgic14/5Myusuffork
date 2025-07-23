@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'providers/theme_provider.dart';
 import 'providers/authentication_provider.dart';
 import 'services/firebase_auth_service.dart';
+import 'services/cleanup_service.dart';
+import 'services/notification_service.dart';
+import 'widgets/common/notification_app_wrapper.dart';
 import 'screens/login_screen.dart';
 import 'constants/app_constants.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,6 +32,16 @@ void main() async {
     // Firebase Auth Service'i başlat / Initialize Firebase Auth Service
     final firebaseAuthService = FirebaseAuthService();
     await firebaseAuthService.initialize();
+    
+    // Setup Firebase Cloud Messaging background message handler
+    // Firebase Cloud Messaging arka plan mesaj işleyicisini ayarla
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    print('🔔 Main: FCM background message handler registered');
+    
+    // Start cleanup service for automatic data maintenance
+    final cleanupService = CleanupService();
+    cleanupService.startCleanupService();
+    print('🧹 Main: Cleanup service started for automatic data maintenance');
 
     // Uygulamayı çalıştır / Run the app
     runApp(const MyApp());
@@ -111,22 +125,24 @@ class _MyAppState extends State<MyApp> {
       ],
       child: Consumer2<ThemeProvider, LanguageProvider>(
         builder: (context, themeProvider, languageProvider, child) {
-          return MaterialApp(
-            title:
-                AppLocalizations.of(context)?.appTitle ??
-                'Medipol Üniversitesi',
-            theme: themeProvider.currentTheme,
-            home: const LoginScreen(),
-            debugShowCheckedModeBanner: false,
-            color: AppConstants.primaryColor,
-            locale: languageProvider.locale,
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
+          return NotificationAppWrapper(
+            child: MaterialApp(
+              title:
+                  AppLocalizations.of(context)?.appTitle ??
+                  'Medipol Üniversitesi',
+              theme: themeProvider.currentTheme,
+              home: const LoginScreen(),
+              debugShowCheckedModeBanner: false,
+              color: AppConstants.primaryColor,
+              locale: languageProvider.locale,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+            ),
           );
         },
       ),

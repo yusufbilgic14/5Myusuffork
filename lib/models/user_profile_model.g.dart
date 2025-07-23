@@ -127,6 +127,9 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => UserProfile(
   interests: (json['interests'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
+  deviceTokens: (json['device_tokens'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
   createdAt: const TimestampConverter().fromJson(json['created_at']),
   updatedAt: const TimestampConverter().fromJson(json['updated_at']),
   isProfileComplete: json['is_profile_complete'] as bool?,
@@ -146,6 +149,7 @@ Map<String, dynamic> _$UserProfileToJson(UserProfile instance) =>
       'app_preferences': instance.appPreferences,
       'notification_preferences': instance.notificationPreferences,
       'interests': instance.interests,
+      'device_tokens': instance.deviceTokens,
       'created_at': const TimestampConverter().toJson(instance.createdAt),
       'updated_at': const TimestampConverter().toJson(instance.updatedAt),
       'is_profile_complete': instance.isProfileComplete,

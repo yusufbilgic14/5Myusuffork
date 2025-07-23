@@ -13,7 +13,9 @@ import '../models/user_interaction_models.dart';
 import '../widgets/events/realtime_event_card.dart';
 import '../widgets/dialogs/add_event_dialog.dart';
 import '../widgets/dialogs/add_club_dialog.dart';
+import '../widgets/dialogs/edit_event_dialog.dart';
 import 'event_comments_screen.dart';
+import 'club_overview_screen.dart';
 
 class UpcomingEventsScreen extends StatefulWidget {
   const UpcomingEventsScreen({super.key});
@@ -549,6 +551,8 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
                 onComment: () => _showComments(context, event),
                 onShare: () => _shareEvent(event),
                 onMoreOptions: () => _showEventOptions(context, event),
+                onEdit: () => _editEvent(context, event),
+                onDelete: () => _deleteEvent(context, event),
               );
             },
           );
@@ -566,112 +570,119 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
         borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
         boxShadow: AppThemes.getCardShadow(context),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppConstants.paddingMedium),
-        child: Row(
-          children: [
-            // Kulüp logosu / Club logo
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: club.colors.primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
-              ),
-              child: Center(
-                child: club.logoUrl != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          AppConstants.radiusMedium,
-                        ),
-                        child: Image.network(
-                          club.logoUrl!,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.group, size: 30);
-                          },
-                        ),
-                      )
-                    : const Icon(Icons.group, size: 30),
-              ),
-            ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+          onTap: () => _navigateToClubOverview(context, club),
+          child: Padding(
+            padding: const EdgeInsets.all(AppConstants.paddingMedium),
+            child: Row(
+              children: [
+                // Kulüp logosu / Club logo
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: club.colors.primaryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppConstants.radiusMedium),
+                  ),
+                  child: Center(
+                    child: club.logoUrl != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(
+                              AppConstants.radiusMedium,
+                            ),
+                            child: Image.network(
+                              club.logoUrl!,
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.group, size: 30);
+                              },
+                            ),
+                          )
+                        : const Icon(Icons.group, size: 30),
+                  ),
+                ),
 
-            const SizedBox(width: AppConstants.paddingMedium),
+                const SizedBox(width: AppConstants.paddingMedium),
 
-            // Kulüp bilgisi / Club info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+                // Kulüp bilgisi / Club info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Flexible(
-                        child: Text(
-                          club.displayName,
-                          style: TextStyle(
-                            fontSize: AppConstants.fontSizeLarge,
-                            fontWeight: FontWeight.bold,
-                            color: AppThemes.getTextColor(context),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              club.displayName,
+                              style: TextStyle(
+                                fontSize: AppConstants.fontSizeLarge,
+                                fontWeight: FontWeight.bold,
+                                color: AppThemes.getTextColor(context),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          if (club.verificationStatus ==
+                              VerificationStatus.verified) ...[
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.verified,
+                              size: 18,
+                              color: AppThemes.getPrimaryColor(context),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        club.description,
+                        style: TextStyle(
+                          fontSize: AppConstants.fontSizeMedium,
+                          color: AppThemes.getSecondaryTextColor(context),
                         ),
                       ),
-                      if (club.verificationStatus ==
-                          VerificationStatus.verified) ...[
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.verified,
-                          size: 18,
-                          color: AppThemes.getPrimaryColor(context),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${club.followerCount} takipçi',
+                        style: TextStyle(
+                          fontSize: AppConstants.fontSizeSmall,
+                          color: AppThemes.getSecondaryTextColor(context),
                         ),
-                      ],
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    club.description,
-                    style: TextStyle(
-                      fontSize: AppConstants.fontSizeMedium,
-                      color: AppThemes.getSecondaryTextColor(context),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${club.followerCount} takipçi',
-                    style: TextStyle(
-                      fontSize: AppConstants.fontSizeSmall,
-                      color: AppThemes.getSecondaryTextColor(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                ),
 
-            // Takip et butonu / Follow button
-            FutureBuilder<bool>(
-              future: _clubService.isFollowingClub(club.clubId),
-              builder: (context, snapshot) {
-                final isFollowing = snapshot.data ?? false;
-                return ElevatedButton(
-                  onPressed: () => _toggleFollowClub(club),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isFollowing
-                        ? Colors.grey[600]
-                        : club.colors.primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppConstants.paddingMedium,
-                      vertical: AppConstants.paddingSmall,
-                    ),
-                  ),
-                  child: Text(isFollowing ? 'Takip Ediliyor' : 'Takip Et'),
-                );
-              },
+                // Takip et butonu / Follow button
+                FutureBuilder<bool>(
+                  future: _clubService.isFollowingClub(club.clubId),
+                  builder: (context, snapshot) {
+                    final isFollowing = snapshot.data ?? false;
+                    return ElevatedButton(
+                      onPressed: () => _toggleFollowClub(club),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isFollowing
+                            ? Colors.grey[600]
+                            : club.colors.primaryColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppConstants.paddingMedium,
+                          vertical: AppConstants.paddingSmall,
+                        ),
+                      ),
+                      child: Text(isFollowing ? 'Joined' : 'Join'),
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -891,6 +902,16 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
     );
   }
 
+  /// Navigate to club overview page / Kulüp genel bakış sayfasına git
+  void _navigateToClubOverview(BuildContext context, Club club) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClubOverviewScreen(club: club),
+      ),
+    );
+  }
+
   /// Etkinlik seçeneklerini göster / Show event options
   void _showEventOptions(BuildContext context, Event event) {
     showModalBottomSheet(
@@ -1095,5 +1116,49 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen>
         duration: Duration(seconds: 2),
       ),
     );
+  }
+
+  /// Etkinliği düzenle / Edit event
+  void _editEvent(BuildContext context, Event event) {
+    showDialog(
+      context: context,
+      builder: (context) => EditEventDialog(
+        event: event,
+        onEventUpdated: () {
+          // Etkinlik güncellendikten sonra verileri yenile
+          _loadData();
+        },
+      ),
+    );
+  }
+
+  /// Etkinliği sil / Delete event
+  Future<void> _deleteEvent(BuildContext context, Event event) async {
+    try {
+      await _eventsService.deleteEvent(event.eventId);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Etkinlik başarıyla silindi'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Refresh data to update the list
+        _loadData();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Silme hatası: $e'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 }

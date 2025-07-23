@@ -295,6 +295,11 @@ class UserProfile {
   
   final List<String>? interests;
   
+  // FCM device tokens for push notifications
+  // Push bildirimler için FCM cihaz token'ları
+  @JsonKey(name: 'device_tokens')
+  final List<String>? deviceTokens;
+  
   // Sistem alanları / System fields
   @JsonKey(name: 'created_at')
   @TimestampConverter()
@@ -321,6 +326,7 @@ class UserProfile {
     this.appPreferences,
     this.notificationPreferences,
     this.interests,
+    this.deviceTokens,
     this.createdAt,
     this.updatedAt,
     this.isProfileComplete,
@@ -442,6 +448,7 @@ class UserProfile {
     UserAppPreferences? appPreferences,
     UserNotificationPreferences? notificationPreferences,
     List<String>? interests,
+    List<String>? deviceTokens,
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isProfileComplete,
@@ -458,6 +465,7 @@ class UserProfile {
       appPreferences: appPreferences ?? this.appPreferences,
       notificationPreferences: notificationPreferences ?? this.notificationPreferences,
       interests: interests ?? this.interests,
+      deviceTokens: deviceTokens ?? this.deviceTokens,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isProfileComplete: isProfileComplete ?? this.isProfileComplete,

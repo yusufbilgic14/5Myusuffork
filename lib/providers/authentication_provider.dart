@@ -33,11 +33,21 @@ class AuthenticationProvider extends ChangeNotifier {
   /// Provider'ı başlat / Initialize provider
   Future<void> initialize() async {
     try {
+      // Firebase Auth servisini önce başlat (session check için)
+      // Initialize Firebase Auth service first (for session check)
+      await _firebaseAuthService.initialize();
+
+      // Mevcut Firebase oturumunu kontrol et / Check existing Firebase session
+      if (_firebaseAuthService.isAuthenticated && _firebaseAuthService.currentAppUser != null) {
+        debugPrint('✅ AuthProvider: Found existing Firebase session, user already logged in');
+        _setAuthenticated(_firebaseAuthService.currentAppUser!);
+        _isInitialized = true;
+        notifyListeners();
+        return;
+      }
+
       // Microsoft OAuth servisini başlat / Initialize Microsoft OAuth service
       await _authService.initialize();
-
-      // Firebase Auth servisini başlat / Initialize Firebase Auth service
-      await _firebaseAuthService.initialize();
 
       // Kimlik doğrulama durumu değişikliklerini dinle
       // Listen to authentication state changes
@@ -200,20 +210,39 @@ class AuthenticationProvider extends ChangeNotifier {
 
   /// Firebase kimlik doğrulama durumu değişikliklerini işle / Handle Firebase authentication state changes
   void _handleFirebaseAuthStateChange(FirebaseAuthState state) {
+    debugPrint('🔄 AuthProvider: Firebase auth state changed: ${state.runtimeType}');
+    debugPrint('🔄 AuthProvider: Current provider state - isAuthenticated: $_isAuthenticated, currentUser: ${_currentUser?.email}');
+    
     if (state == FirebaseAuthState.loading) {
       // Firebase loading state handled in combination with MSAL
       // Firebase Auth yükleniyor / Firebase Auth loading state
+      debugPrint('⏳ AuthProvider: Firebase loading state');
+      _setLoading(true);
     } else if (state.runtimeType.toString().contains('_AuthenticatedState')) {
-      // Firebase authenticated - this means Microsoft OAuth + Firebase integration successful
+      // Firebase authenticated - set as main authenticated user
       // Firebase Auth: Kullanıcı Firebase'de doğrulandı / Firebase Auth: User authenticated in Firebase
+      final authenticatedState = state as dynamic;
+      if (authenticatedState.user != null) {
+        debugPrint('✅ AuthProvider: Firebase user authenticated: ${authenticatedState.user.email}');
+        debugPrint('✅ AuthProvider: Setting user as authenticated in provider');
+        _setAuthenticated(authenticatedState.user);
+        debugPrint('✅ AuthProvider: Provider state updated - isAuthenticated: $_isAuthenticated');
+      } else {
+        debugPrint('⚠️ AuthProvider: Firebase authenticated state but no user found');
+      }
     } else if (state == FirebaseAuthState.unauthenticated) {
       // Firebase Auth: Kullanıcı Firebase'de doğrulanmamış / Firebase Auth: User unauthenticated in Firebase
+      debugPrint('👤 AuthProvider: Firebase user unauthenticated');
+      _setUnauthenticated();
     } else if (state == FirebaseAuthState.notConfigured) {
       // Firebase Auth: Henüz konfigüre edilmemiş / Firebase Auth: Not configured yet
+      debugPrint('⚠️ AuthProvider: Firebase not configured');
     } else if (state.runtimeType.toString().contains('_ErrorState')) {
       // Firebase Auth: Hata oluştu / Firebase Auth: Error occurred
+      final errorState = state as dynamic;
+      debugPrint('❌ AuthProvider: Firebase auth error: ${errorState.message}');
+      _handleError('Firebase auth error: ${errorState.message}');
     }
-    // Firebase state changes complement MSAL state, no need to modify main UI state here
   }
 
   /// Firebase kimlik doğrulama hatalarını işle / Handle Firebase authentication errors

@@ -2116,6 +2116,50 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remember Me'**
   String get rememberMe;
+
+  // Edit/Delete Event functionality
+  String get editEvent;
+  String get deleteEvent;
+  String get deleteEventConfirm;
+  String get eventTitle;
+  String get eventDescription;
+  String get eventLocation;
+  String get eventCapacity;
+  String get eventUpdated;
+  String get eventDeleted;
+  String get editEventTitle;
+  String get updateEvent;
+  String get updating;
+  String get deleting;
+
+  // Club Overview functionality
+  String get clubOverview;
+  String get members;
+  String get establishedIn;
+  String get contactInformation;
+  String get socialMedia;
+  String get aboutClub;
+  String get clubStats;
+  String get faculty;
+  String get department;
+  String get followClub;
+  String get unfollowClub;
+  String get editClub;
+  String get deleteClub;
+  String get deleteClubConfirm;
+  String get clubUpdated;
+  String get clubDeleted;
+  String get following;
+  String get follow;
+  String get phone;
+  String get email;
+  String get instagram;
+  String get twitter;
+  String get linkedin;
+  String get youtube;
+  String get noDescription;
+  String get options;
+  String get share;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

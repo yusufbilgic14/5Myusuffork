@@ -1052,4 +1052,126 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get rememberMe => 'Beni Hatırla';
+
+  // Edit/Delete Event functionality
+  @override
+  String get editEvent => 'Etkinliği Düzenle';
+
+  @override
+  String get deleteEvent => 'Etkinliği Sil';
+
+  @override
+  String get deleteEventConfirm => 'Bu etkinliği silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.';
+
+  @override
+  String get eventTitle => 'Etkinlik Başlığı';
+
+  @override
+  String get eventDescription => 'Etkinlik Açıklaması';
+
+  @override
+  String get eventLocation => 'Etkinlik Konumu';
+
+  @override
+  String get eventCapacity => 'Etkinlik Kapasitesi';
+
+  @override
+  String get eventUpdated => 'Etkinlik başarıyla güncellendi!';
+
+  @override
+  String get eventDeleted => 'Etkinlik başarıyla silindi!';
+
+  @override
+  String get editEventTitle => 'Etkinliği Düzenle';
+
+  @override
+  String get updateEvent => 'Etkinliği Güncelle';
+
+  @override
+  String get updating => 'Güncelleniyor...';
+
+  @override
+  String get deleting => 'Siliniyor...';
+
+  // Club Overview functionality
+  @override
+  String get clubOverview => 'Kulüp Genel Bakış';
+
+  @override
+  String get members => 'Üyeler';
+
+  @override
+  String get establishedIn => 'Kuruluş yılı';
+
+  @override
+  String get contactInformation => 'İletişim Bilgileri';
+
+  @override
+  String get socialMedia => 'Sosyal Medya';
+
+  @override
+  String get aboutClub => 'Kulüp Hakkında';
+
+  @override
+  String get clubStats => 'Kulüp İstatistikleri';
+
+  @override
+  String get faculty => 'Fakülte';
+
+  @override
+  String get department => 'Bölüm';
+
+  @override
+  String get followClub => 'Kulübü Takip Et';
+
+  @override
+  String get unfollowClub => 'Kulübü Takipten Çıkar';
+
+  @override
+  String get editClub => 'Kulübü Düzenle';
+
+  @override
+  String get deleteClub => 'Kulübü Sil';
+
+  @override
+  String get deleteClubConfirm => 'Bu kulübü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.';
+
+  @override
+  String get clubUpdated => 'Kulüp başarıyla güncellendi!';
+
+  @override
+  String get clubDeleted => 'Kulüp başarıyla silindi!';
+
+  @override
+  String get following => 'Takip Ediliyor';
+
+  @override
+  String get follow => 'Takip Et';
+
+  @override
+  String get phone => 'Telefon';
+
+  @override
+  String get email => 'E-posta';
+
+  @override
+  String get instagram => 'Instagram';
+
+  @override
+  String get twitter => 'Twitter';
+
+  @override
+  String get linkedin => 'LinkedIn';
+
+  @override
+  String get youtube => 'YouTube';
+
+  @override
+  String get noDescription => 'Açıklama mevcut değil';
+
+  @override
+  String get options => 'Seçenekler';
+
+  @override
+  String get share => 'Paylaş';
 }
