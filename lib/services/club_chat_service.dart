@@ -43,7 +43,7 @@ class ClubChatService {
   Future<ChatRoom> createOrGetChatRoom({
     required String clubId,
     required String clubName,
-    bool requiresApproval = false, // TEMPORARY: Disabled approval workflow
+    bool requiresApproval = true,
     int? maxParticipants,
   }) async {
     try {
@@ -350,12 +350,7 @@ class ClubChatService {
           .get();
 
       if (!participantDoc.exists) {
-        // TEMPORARY: Disabled approval workflow - auto-add anyone who follows the club
-        // Check if user follows the club or is the creator
-        bool shouldAddAsParticipant = false;
-        String userRole = 'member';
-        
-        // Check if user is the club creator
+        // Check if user is the club creator - if so, auto-add them as participant
         final clubDoc = await _firestore
             .collection('clubs')
             .doc(clubId)
@@ -366,49 +361,20 @@ class ClubChatService {
           final clubCreatedBy = clubData['createdBy'] as String?;
           
           if (clubCreatedBy == currentUserId) {
-            shouldAddAsParticipant = true;
-            userRole = 'creator';
-            debugPrint('🔑 ClubChatService: User is club creator - granting access');
+            // Auto-add club creator as participant
+            final currentUser = _authService.currentAppUser!;
+            await _addChatParticipant(
+              chatRoomId: clubId,
+              clubId: clubId,
+              userId: currentUserId!,
+              userName: currentUser.displayName,
+              userAvatar: currentUser.profilePhotoUrl,
+              role: 'creator',
+            );
+            debugPrint('✅ ClubChatService: Club creator auto-added as participant');
+            return true;
           }
         }
-        
-        // If not creator, check if user follows the club
-        if (!shouldAddAsParticipant) {
-          final followDoc = await _firestore
-              .collection('users')
-              .doc(currentUserId)
-              .collection('followedClubs')
-              .doc(clubId)
-              .get();
-              
-          if (followDoc.exists) {
-            final followData = followDoc.data()!;
-            final isFollowing = followData['isFollowing'] as bool? ?? false;
-            
-            if (isFollowing) {
-              shouldAddAsParticipant = true;
-              userRole = 'member';
-              debugPrint('👥 ClubChatService: User follows club - granting access');
-            }
-          }
-        }
-        
-        // Auto-add as participant if they should have access
-        if (shouldAddAsParticipant) {
-          final currentUser = _authService.currentAppUser!;
-          await _addChatParticipant(
-            chatRoomId: clubId,
-            clubId: clubId,
-            userId: currentUserId!,
-            userName: currentUser.displayName,
-            userAvatar: currentUser.profilePhotoUrl,
-            role: userRole,
-          );
-          debugPrint('✅ ClubChatService: User auto-added as chat participant with role: $userRole');
-          return true;
-        }
-        
-        debugPrint('❌ ClubChatService: User does not follow club - access denied');
         return false;
       }
 

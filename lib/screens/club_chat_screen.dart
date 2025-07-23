@@ -76,7 +76,7 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
       await _chatService.createOrGetChatRoom(
         clubId: widget.club.clubId,
         clubName: widget.club.displayName,
-        requiresApproval: false, // TEMPORARY: Disabled approval workflow
+        requiresApproval: true,
       );
       
       setState(() {

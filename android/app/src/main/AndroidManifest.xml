@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- Camera permission for QR scanning -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- FCM permissions for push notifications -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     
     <application
         android:label="medipolapp"
@@ -59,6 +62,11 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDJYu2V_nZBZ1TLD2KWmcCXeoK2cT9eewE" />
+            
+        <!-- Firebase Cloud Messaging notification channel -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="chat_messages" />
             
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
