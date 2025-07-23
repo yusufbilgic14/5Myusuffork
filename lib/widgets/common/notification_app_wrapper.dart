@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
 
 import '../../services/notification_service.dart';
 import '../../services/user_club_following_service.dart';
+import '../../services/firebase_auth_service.dart';
 import '../../providers/authentication_provider.dart';
 import '../../screens/club_chat_screen.dart';
 import '../../models/user_interaction_models.dart';
@@ -24,8 +26,10 @@ class NotificationAppWrapper extends StatefulWidget {
 class _NotificationAppWrapperState extends State<NotificationAppWrapper> {
   final NotificationService _notificationService = NotificationService();
   final UserClubFollowingService _clubService = UserClubFollowingService();
+  final FirebaseAuthService _firebaseAuthService = FirebaseAuthService();
   bool _isNotificationInitialized = false;
   AuthenticationProvider? _authProvider;
+  StreamSubscription? _firebaseAuthSubscription;
 
   @override
   void initState() {
@@ -38,8 +42,20 @@ class _NotificationAppWrapperState extends State<NotificationAppWrapper> {
   /// Kimlik doğrulama dinleyicisi ile bildirim servisini ayarla
   void _setupNotificationService() {
     debugPrint('🔔 NotificationWrapper: _setupNotificationService called');
-    // Listen to authentication changes
-    // Kimlik doğrulama değişikliklerini dinle
+    
+    // Listen to Firebase Auth changes directly (more reliable)
+    _firebaseAuthSubscription = _firebaseAuthService.authStateChanges.listen((authState) {
+      debugPrint('🔔 NotificationWrapper: Firebase auth state changed: ${authState.runtimeType}');
+      if (authState.runtimeType.toString().contains('_AuthenticatedState') && !_isNotificationInitialized) {
+        debugPrint('🔔 NotificationWrapper: Firebase user authenticated, initializing notifications');
+        _initializeNotifications();
+      } else if (authState.runtimeType.toString().contains('_UnauthenticatedState') && _isNotificationInitialized) {
+        debugPrint('🔔 NotificationWrapper: Firebase user unauthenticated, cleaning up notifications');
+        _cleanupNotifications();
+      }
+    });
+    
+    // Also check current state immediately
     WidgetsBinding.instance.addPostFrameCallback((_) {
       debugPrint('🔔 NotificationWrapper: PostFrameCallback executed');
       if (!mounted) {
@@ -47,18 +63,23 @@ class _NotificationAppWrapperState extends State<NotificationAppWrapper> {
         return;
       }
       
+      // Check Firebase Auth current state
+      if (_firebaseAuthService.isAuthenticated && !_isNotificationInitialized) {
+        debugPrint('🔔 NotificationWrapper: Firebase user already authenticated, initializing notifications');
+        _initializeNotifications();
+      }
+      
+      // Also setup provider listener as backup
       _authProvider = Provider.of<AuthenticationProvider>(context, listen: false);
       debugPrint('🔔 NotificationWrapper: Got authProvider, isAuthenticated: ${_authProvider!.isAuthenticated}');
       
-      // Setup initial state
+      // Setup initial state from provider (backup)
       if (_authProvider!.isAuthenticated && !_isNotificationInitialized) {
-        debugPrint('🔔 NotificationWrapper: User is authenticated, initializing notifications');
+        debugPrint('🔔 NotificationWrapper: Provider shows user authenticated, initializing notifications');
         _initializeNotifications();
-      } else {
-        debugPrint('🔔 NotificationWrapper: User not authenticated or already initialized (auth: ${_authProvider!.isAuthenticated}, initialized: $_isNotificationInitialized)');
       }
 
-      // Listen for authentication state changes
+      // Listen for authentication state changes from provider (backup)
       _authProvider!.addListener(_onAuthStateChanged);
       debugPrint('🔔 NotificationWrapper: Auth listener added');
     });
@@ -195,6 +216,13 @@ class _NotificationAppWrapperState extends State<NotificationAppWrapper> {
       _authProvider?.removeListener(_onAuthStateChanged);
     } catch (e) {
       debugPrint('❌ NotificationWrapper: Error removing auth listener: $e');
+    }
+    
+    // Cancel Firebase auth subscription
+    try {
+      _firebaseAuthSubscription?.cancel();
+    } catch (e) {
+      debugPrint('❌ NotificationWrapper: Error cancelling Firebase auth subscription: $e');
     }
     
     // Dispose notification service
