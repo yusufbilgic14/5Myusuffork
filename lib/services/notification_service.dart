@@ -22,7 +22,7 @@ class NotificationService {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FirebaseAuthService _authService = FirebaseAuthService();
   final UserProfileService _profileService = UserProfileService();
-  final ClubChatService _chatService = ClubChatService();
+  ClubChatService? _chatService;
 
   // Notification handlers
   StreamSubscription<RemoteMessage>? _foregroundSubscription;
@@ -341,8 +341,11 @@ class NotificationService {
   /// Bildirim için sohbet katılımcılarını getir
   Future<List<ChatParticipant>> _getChatParticipants(String clubId) async {
     try {
+      // Lazy initialize chat service to avoid circular dependency
+      _chatService ??= ClubChatService();
+      
       // Get participants from chat service
-      final participantsStream = _chatService.streamChatParticipants(clubId);
+      final participantsStream = _chatService!.streamChatParticipants(clubId);
       final participants = await participantsStream.first;
       return participants;
     } catch (e) {

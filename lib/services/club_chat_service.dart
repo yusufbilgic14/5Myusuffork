@@ -18,7 +18,7 @@ class ClubChatService {
   // Firebase instances
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuthService _authService = FirebaseAuthService();
-  final NotificationService _notificationService = NotificationService();
+  NotificationService? _notificationService;
 
   // Stream subscriptions for memory management
   final Map<String, StreamSubscription> _subscriptions = {};
@@ -349,7 +349,34 @@ class ClubChatService {
           .doc('${clubId}_$currentUserId')
           .get();
 
-      if (!participantDoc.exists) return false;
+      if (!participantDoc.exists) {
+        // Check if user is the club creator - if so, auto-add them as participant
+        final clubDoc = await _firestore
+            .collection('clubs')
+            .doc(clubId)
+            .get();
+            
+        if (clubDoc.exists) {
+          final clubData = clubDoc.data()!;
+          final clubCreatedBy = clubData['createdBy'] as String?;
+          
+          if (clubCreatedBy == currentUserId) {
+            // Auto-add club creator as participant
+            final currentUser = _authService.currentAppUser!;
+            await _addChatParticipant(
+              chatRoomId: clubId,
+              clubId: clubId,
+              userId: currentUserId!,
+              userName: currentUser.displayName,
+              userAvatar: currentUser.profilePhotoUrl,
+              role: 'creator',
+            );
+            debugPrint('✅ ClubChatService: Club creator auto-added as participant');
+            return true;
+          }
+        }
+        return false;
+      }
 
       final participant = ChatParticipant.fromJson(participantDoc.data()!);
       return participant.isActive;
@@ -452,8 +479,11 @@ class ClubChatService {
       try {
         final chatRoom = await getChatRoom(clubId);
         if (chatRoom != null) {
+          // Lazy initialize notification service to avoid circular dependency
+          _notificationService ??= NotificationService();
+          
           final finalMessage = message.copyWith(messageId: messageRef.id);
-          await _notificationService.sendChatMessageNotification(
+          await _notificationService!.sendChatMessageNotification(
             clubId: clubId,
             clubName: chatRoom.clubName,
             message: finalMessage,
