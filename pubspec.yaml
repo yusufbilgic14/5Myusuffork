@@ -72,6 +72,9 @@ dependencies:
   # HTTP client for API requests / API istekleri için HTTP istemcisi
   http: ^1.2.1
   
+  # Google APIs Auth for FCM v1 API / FCM v1 API için Google APIs Auth
+  googleapis_auth: ^1.4.1
+  
   # JSON annotation for data models / Veri modelleri için JSON annotasyonu
   json_annotation: ^4.9.0
   
