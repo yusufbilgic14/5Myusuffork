@@ -16,7 +16,14 @@
       "Bash(flutter run:*)",
       "Bash(flutter test:*)",
       "Bash(grep:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(dir)",
+      "Bash(npm install:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(firebase functions:list:*)",
+      "Bash(firebase functions:log:*)",
+      "Bash(firebase logout:*)",
+      "Bash(firebase login:*)"
     ],
     "deny": []
   }
