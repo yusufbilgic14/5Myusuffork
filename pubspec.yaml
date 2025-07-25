@@ -51,6 +51,12 @@ dependencies:
   # Camera for QR scanning
   camera: ^0.11.0
   
+  # Image picker for media selection
+  image_picker: ^1.0.7
+  
+  # File picker for document selection
+  file_picker: ^8.0.0+1
+  
   # Permission handler for camera access
   permission_handler: ^11.3.1
   
@@ -105,6 +111,10 @@ dependencies:
   
   # Firebase Cloud Messaging for push notifications / Push bildirimleri için Firebase Cloud Messaging
   firebase_messaging: ^14.7.19
+  
+  # Firebase App Check for security / Güvenlik için Firebase App Check
+  firebase_app_check: ^0.2.2+7
+  
   flutter_localizations:
     sdk: flutter
 

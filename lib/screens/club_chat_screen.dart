@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
+import 'dart:io';
 
-import '../constants/app_constants.dart';
 import '../themes/app_themes.dart';
 import '../models/club_chat_models.dart';
 import '../models/user_interaction_models.dart';
 import '../services/club_chat_service.dart';
 import '../services/firebase_auth_service.dart';
-import '../l10n/app_localizations.dart';
+import '../widgets/chat/media_picker_widget.dart';
+import '../widgets/chat/media_preview_widget.dart';
+import '../widgets/chat/message_reactions_widget.dart';
+import '../widgets/chat/pinned_messages_widget.dart';
+import '../widgets/chat/user_presence_widget.dart';
 
 /// Real-time club chat screen
 /// Gerçek zamanlı kulüp sohbet ekranı
@@ -39,6 +43,14 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
   bool _isLoading = true;
   bool _isSending = false;
   ChatMessage? _replyToMessage;
+  
+  // New feature state variables
+  List<File> _selectedImages = [];
+  File? _selectedDocument;
+  String? _selectedDocumentName;
+  bool _isPinnedCollapsed = true;
+  bool _isTyping = false;
+  Timer? _typingTimer;
 
   @override
   void initState() {
@@ -58,6 +70,7 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
     _scrollController.dispose();
     _messageController.dispose();
     _messageFocusNode.dispose();
+    _typingTimer?.cancel();
     super.dispose();
   }
 
@@ -97,10 +110,31 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
         .streamChatMessages(widget.club.clubId)
         .listen(
       (messages) {
+        final bool isFirstLoad = _messages.isEmpty && messages.isNotEmpty;
+        final int previousMessageCount = _messages.length;
+        
         setState(() {
           _messages = messages;
         });
-        _scrollToBottom();
+        
+        if (isFirstLoad) {
+          // Scroll to bottom after first message load
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _scrollToBottom(animated: false);
+          });
+        } else if (messages.length > previousMessageCount) {
+          // New messages arrived - scroll if user is near the bottom
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_scrollController.hasClients) {
+              final maxScroll = _scrollController.position.maxScrollExtent;
+              final currentScroll = _scrollController.offset;
+              // If user is within 100 pixels of bottom, auto-scroll to new messages
+              if (maxScroll - currentScroll < 100) {
+                _scrollToBottom(animated: true);
+              }
+            }
+          });
+        }
       },
       onError: (error) {
         debugPrint('❌ ClubChatScreen: Error listening to messages: $error');
@@ -131,11 +165,72 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
     _chatService.updateLastSeen(widget.club.clubId);
   }
 
-  /// Scroll to bottom of chat
-  /// Sohbetin altına kaydır
+
+  /// Handle media selection
+  /// Medya seçimini yönet
+  void _showMediaPicker() {
+    debugPrint('📱 ClubChatScreen: Showing media picker...');
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppThemes.getSurfaceColor(context),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => MediaPickerWidget(
+        onImagesSelected: (images) {
+          debugPrint('📷 ClubChatScreen: Received ${images.length} images from MediaPicker');
+          for (int i = 0; i < images.length; i++) {
+            debugPrint('📷 ClubChatScreen: Image $i: ${images[i].path}');
+          }
+          setState(() {
+            _selectedImages.addAll(images);
+          });
+          debugPrint('📷 ClubChatScreen: Total selected images now: ${_selectedImages.length}');
+          debugPrint('📱 ClubChatScreen: Staying on chat screen - MediaPickerWidget handles navigation');
+          // Note: MediaPickerWidget already calls Navigator.pop() internally
+        },
+        onDocumentSelected: (document, fileName) {
+          setState(() {
+            _selectedDocument = document;
+            _selectedDocumentName = fileName;
+          });
+          // Note: MediaPickerWidget already calls Navigator.pop() internally
+        },
+        onVoiceSelected: (voiceFile) {
+          // Note: MediaPickerWidget already calls Navigator.pop() internally
+          _showErrorSnackBar('Voice messages coming soon');
+        },
+      ),
+    );
+  }
+
+  /// Remove selected media
+  /// Seçili medyayı kaldır
+  void _removeSelectedMedia(int index) {
+    setState(() {
+      if (index < _selectedImages.length) {
+        _selectedImages.removeAt(index);
+      }
+    });
+  }
+
+  /// Clear all selected media
+  /// Tüm seçili medyayı temizle
+  void _clearSelectedMedia() {
+    setState(() {
+      _selectedImages.clear();
+      _selectedDocument = null;
+      _selectedDocumentName = null;
+    });
+  }
+
+
+  /// Scroll to bottom of chat (newest messages)
+  /// Sohbetin altına kaydır (en yeni mesajlar)
   void _scrollToBottom({bool animated = true}) {
     if (!_scrollController.hasClients) return;
 
+    // Scroll to bottom to show newest messages
     if (animated) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
@@ -151,16 +246,57 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
   /// Mesaj gönder
   Future<void> _sendMessage() async {
     final content = _messageController.text.trim();
-    if (content.isEmpty || _isSending) return;
+    final hasMedia = _selectedImages.isNotEmpty || _selectedDocument != null;
+    
+    debugPrint('💬 ClubChatScreen: _sendMessage called - content: "$content", hasMedia: $hasMedia, selectedImages: ${_selectedImages.length}');
+    
+    if (content.isEmpty && !hasMedia) return;
+    if (_isSending) return;
 
     setState(() {
       _isSending = true;
     });
 
     try {
+      List<MediaAttachment>? mediaAttachments;
+      
+      // Upload media if selected
+      if (hasMedia) {
+        mediaAttachments = [];
+        
+        // Upload images
+        for (final image in _selectedImages) {
+          final attachment = await _chatService.uploadMediaFile(
+            file: image,
+            clubId: widget.club.clubId,
+            messageId: DateTime.now().millisecondsSinceEpoch.toString(),
+            fileType: 'image',
+          );
+          if (attachment != null) {
+            mediaAttachments.add(attachment);
+          }
+        }
+        
+        // Upload document
+        if (_selectedDocument != null) {
+          final attachment = await _chatService.uploadMediaFile(
+            file: _selectedDocument!,
+            clubId: widget.club.clubId,
+            messageId: DateTime.now().millisecondsSinceEpoch.toString(),
+            fileType: 'document',
+            originalFileName: _selectedDocumentName,
+          );
+          if (attachment != null) {
+            mediaAttachments.add(attachment);
+          }
+        }
+      }
+
       final success = await _chatService.sendMessage(
         clubId: widget.club.clubId,
-        content: content,
+        content: content.isNotEmpty ? content : '[Media message]',
+        mediaUrls: mediaAttachments?.map((a) => a.fileUrl).toList(),
+        mediaAttachments: mediaAttachments,
         replyToMessageId: _replyToMessage?.messageId,
         replyToContent: _replyToMessage?.content,
         replyToSenderName: _replyToMessage?.senderName,
@@ -169,7 +305,16 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
       if (success) {
         _messageController.clear();
         _clearReply();
+        _clearSelectedMedia();
         _scrollToBottom();
+        
+        // Stop typing indicator
+        if (_isTyping) {
+          setState(() {
+            _isTyping = false;
+          });
+          _chatService.updateTypingStatus(clubId: widget.club.clubId, isTyping: false);
+        }
         
         // Haptic feedback
         HapticFeedback.lightImpact();
@@ -240,6 +385,16 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
               ),
             ),
 
+            // React to message
+            ListTile(
+              leading: const Icon(Icons.emoji_emotions),
+              title: const Text('React'),
+              onTap: () {
+                Navigator.pop(context);
+                _showReactionPicker(message);
+              },
+            ),
+
             // Reply option
             ListTile(
               leading: const Icon(Icons.reply),
@@ -249,6 +404,20 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
                 _setReplyToMessage(message);
               },
             ),
+
+            // Pin/Unpin message (admin only)
+            if (_canUserPin())
+              ListTile(
+                leading: Icon(
+                  message.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
+                  color: message.isPinned ? Colors.orange : null,
+                ),
+                title: Text(message.isPinned ? 'Unpin' : 'Pin'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _toggleMessagePin(message);
+                },
+              ),
 
             // Copy text
             ListTile(
@@ -452,10 +621,37 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
   Widget _buildChatInterface() {
     return Column(
       children: [
+        // Pinned messages
+        PinnedMessagesWidget(
+          clubId: widget.club.clubId,
+          isCollapsed: _isPinnedCollapsed,
+          onToggleCollapse: () {
+            setState(() {
+              _isPinnedCollapsed = !_isPinnedCollapsed;
+            });
+          },
+          onMessageTap: (message) {
+            // TODO: Scroll to message
+          },
+        ),
+        
+        // User presence indicator
+        UserPresenceWidget(
+          clubId: widget.club.clubId,
+        ),
+        
         // Messages list
         Expanded(
           child: _buildMessagesList(),
         ),
+        
+        // Media preview
+        if (_selectedImages.isNotEmpty || _selectedDocument != null)
+          MediaPreviewWidget(
+            localFiles: _selectedImages,
+            showDeleteButton: true,
+            onDeletePressed: (index) => _removeSelectedMedia(index),
+          ),
         
         // Reply preview
         if (_replyToMessage != null) _buildReplyPreview(),
@@ -552,6 +748,27 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Pinned indicator
+                    if (message.isPinned)
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.push_pin,
+                            size: 12,
+                            color: isOwnMessage ? Colors.white70 : Colors.grey[600],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Pinned',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: isOwnMessage ? Colors.white70 : Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    
                     // Reply indicator
                     if (message.replyToMessageId != null) 
                       _buildReplyIndicator(message),
@@ -567,14 +784,35 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
                         ),
                       ),
                     
-                    // Message content
-                    Text(
-                      message.content,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: isOwnMessage ? Colors.white : Colors.black87,
+                    // Media attachments
+                    if (message.mediaAttachments != null && message.mediaAttachments!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: MediaPreviewWidget(
+                          mediaAttachments: message.mediaAttachments!,
+                          showDeleteButton: false,
+                        ),
                       ),
-                    ),
+                    
+                    // Message content
+                    if (message.content.isNotEmpty && message.content != '[Media message]')
+                      Text(
+                        message.content,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isOwnMessage ? Colors.white : Colors.black87,
+                        ),
+                      ),
+                    
+                    // Message reactions
+                    if (message.reactions != null && message.reactions!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: MessageReactionsWidget(
+                          message: message,
+                          currentUserId: _authService.currentAppUser?.id ?? '',
+                        ),
+                      ),
                     
                     // Message metadata
                     Row(
@@ -737,6 +975,15 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
       ),
       child: Row(
         children: [
+          // Media picker button
+          IconButton(
+            onPressed: _showMediaPicker,
+            icon: Icon(
+              Icons.add,
+              color: AppThemes.getPrimaryColor(context),
+            ),
+          ),
+          
           Expanded(
             child: TextField(
               controller: _messageController,
@@ -745,7 +992,9 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
               keyboardType: TextInputType.multiline,
               textInputAction: TextInputAction.newline,
               decoration: InputDecoration(
-                hintText: 'Type a message...',
+                hintText: (_selectedImages.isNotEmpty || _selectedDocument != null) 
+                    ? 'Add a caption or send media...' 
+                    : 'Type a message...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(24),
                   borderSide: BorderSide.none,
@@ -758,6 +1007,7 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
                 ),
               ),
               onSubmitted: (_) => _sendMessage(),
+              onChanged: _handleTypingIndicator,
             ),
           ),
           const SizedBox(width: 8),
@@ -777,8 +1027,10 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
-                  : const Icon(
-                      Icons.send,
+                  : Icon(
+                      (_selectedImages.isNotEmpty || _selectedDocument != null) 
+                          ? Icons.photo_camera 
+                          : Icons.send,
                       color: Colors.white,
                     ),
             ),
@@ -892,5 +1144,124 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
     } else {
       return 'now';
     }
+  }
+
+
+  /// Handle typing indicator
+  /// Yazma göstergesini işle
+  void _handleTypingIndicator(String text) {
+    if (_typingTimer?.isActive == true) {
+      _typingTimer!.cancel();
+    }
+
+    if (text.isNotEmpty) {
+      // User is typing - simplified implementation
+      debugPrint('User is typing in ${widget.club.clubId}');
+
+      _typingTimer = Timer(const Duration(seconds: 2), () {
+        debugPrint('User stopped typing in ${widget.club.clubId}');
+      });
+    } else {
+      debugPrint('User cleared input in ${widget.club.clubId}');
+    }
+  }
+
+  /// Handle reaction tap
+  /// Reaksiyon dokunuşunu işle
+  void _handleReactionTap(ChatMessage message, String emoji) async {
+    final success = await _chatService.addReaction(
+      messageId: message.messageId,
+      emoji: emoji,
+    );
+    
+    if (!success) {
+      _showErrorSnackBar('Failed to add reaction');
+    }
+  }
+
+  /// Show reaction picker
+  /// Reaksiyon seçiciyi göster
+  void _showReactionPicker(ChatMessage message) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppThemes.getSurfaceColor(context),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'React to message',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 16,
+                children: ['👍', '❤️', '😂', '😮', '😢', '😡'].map((emoji) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleReactionTap(message, emoji);
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        emoji,
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Toggle message pin
+  /// Mesaj sabitlemesini değiştir
+  void _toggleMessagePin(ChatMessage message) async {
+    final success = await _chatService.toggleMessagePin(
+      clubId: widget.club.clubId,
+      messageId: message.messageId,
+    );
+    
+    if (!success) {
+      _showErrorSnackBar('Failed to ${message.isPinned ? 'unpin' : 'pin'} message');
+    }
+  }
+
+  /// Check if user can pin messages
+  /// Kullanıcının mesaj sabitleyip sabitleyemeyeceğini kontrol et
+  bool _canUserPin() {
+    final currentUser = _authService.currentAppUser;
+    if (currentUser == null) return false;
+    
+    final participant = _participants.firstWhere(
+      (p) => p.userId == currentUser.id,
+      orElse: () => ChatParticipant(
+        chatRoomId: widget.club.clubId,
+        clubId: widget.club.clubId,
+        participantId: '',
+        userId: '',
+        userName: '',
+        userAvatar: null,
+        role: 'member',
+        joinedAt: DateTime.now(),
+      ),
+    );
+    
+    return participant.role == 'creator' || participant.role == 'admin';
   }
 }

@@ -7,6 +7,7 @@ import '../../screens/feedback_screen.dart';
 import '../../screens/course_grades_screen.dart';
 import '../../screens/upcoming_events_screen.dart';
 import '../../screens/academic_calendar_screen.dart';
+import '../../screens/exam_calculator_screen.dart';
 import '../../l10n/app_localizations.dart';
 import '../../screens/home_screen.dart';
 import '../../constants/app_constants.dart';
@@ -182,6 +183,20 @@ class _AppDrawerWidgetState extends State<AppDrawerWidget> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => const CourseGradesScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildModernDrawerItem(
+                      context,
+                      icon: Icons.calculate_outlined,
+                      title: AppLocalizations.of(context)!.examCalculator,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ExamCalculatorScreen(),
                           ),
                         );
                       },

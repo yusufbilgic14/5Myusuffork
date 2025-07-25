@@ -23,7 +23,13 @@
       "Bash(firebase functions:list:*)",
       "Bash(firebase functions:log:*)",
       "Bash(firebase logout:*)",
-      "Bash(firebase login:*)"
+      "Bash(firebase login:*)",
+      "Bash(git checkout:*)",
+      "Bash(git stash:*)",
+      "Bash(rm:*)",
+      "Bash(dart analyze:*)",
+      "Bash(flutter:*)",
+      "Bash(dart:*)"
     ],
     "deny": []
   }

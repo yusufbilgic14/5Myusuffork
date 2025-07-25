@@ -5,8 +5,11 @@
     <!-- Location permissions for Google Maps -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!-- Camera permission for QR scanning -->
+    <!-- Camera permission for QR scanning and photo capture -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Storage permissions for image picker -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- FCM permissions for push notifications -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />

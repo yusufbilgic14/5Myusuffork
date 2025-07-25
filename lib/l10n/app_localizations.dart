@@ -2117,49 +2117,515 @@ abstract class AppLocalizations {
   /// **'Remember Me'**
   String get rememberMe;
 
-  // Edit/Delete Event functionality
-  String get editEvent;
-  String get deleteEvent;
-  String get deleteEventConfirm;
-  String get eventTitle;
-  String get eventDescription;
-  String get eventLocation;
-  String get eventCapacity;
-  String get eventUpdated;
-  String get eventDeleted;
-  String get editEventTitle;
-  String get updateEvent;
-  String get updating;
-  String get deleting;
+  /// No description provided for @examCalculator.
+  ///
+  /// In en, this message translates to:
+  /// **'Exam Calculator'**
+  String get examCalculator;
 
-  // Club Overview functionality
-  String get clubOverview;
-  String get members;
-  String get establishedIn;
-  String get contactInformation;
-  String get socialMedia;
-  String get aboutClub;
-  String get clubStats;
-  String get faculty;
-  String get department;
-  String get followClub;
-  String get unfollowClub;
-  String get editClub;
-  String get deleteClub;
-  String get deleteClubConfirm;
-  String get clubUpdated;
-  String get clubDeleted;
-  String get following;
-  String get follow;
-  String get phone;
-  String get email;
-  String get instagram;
-  String get twitter;
-  String get linkedin;
-  String get youtube;
-  String get noDescription;
-  String get options;
+  /// No description provided for @examCalculatorSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Grade Calculation Tool'**
+  String get examCalculatorSubtitle;
+
+  /// No description provided for @calculationMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation Mode'**
+  String get calculationMode;
+
+  /// No description provided for @requiredScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Required Score'**
+  String get requiredScore;
+
+  /// No description provided for @requiredScoreDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculate required score to pass the course'**
+  String get requiredScoreDescription;
+
+  /// No description provided for @currentAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Average'**
+  String get currentAverage;
+
+  /// No description provided for @currentAverageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculate current grade average'**
+  String get currentAverageDescription;
+
+  /// No description provided for @courseInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Course Information'**
+  String get courseInfo;
+
+  /// No description provided for @courseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Course Name'**
+  String get courseName;
+
+  /// No description provided for @courseNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Mathematics I'**
+  String get courseNameHint;
+
+  /// No description provided for @courseCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Course Code'**
+  String get courseCode;
+
+  /// No description provided for @courseCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'MAT101'**
+  String get courseCodeHint;
+
+  /// No description provided for @passingGrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Passing Grade'**
+  String get passingGrade;
+
+  /// No description provided for @examsAndWeights.
+  ///
+  /// In en, this message translates to:
+  /// **'Exams and Weights'**
+  String get examsAndWeights;
+
+  /// No description provided for @selectTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Template'**
+  String get selectTemplate;
+
+  /// No description provided for @totalWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Weight'**
+  String get totalWeight;
+
+  /// No description provided for @mustBe100.
+  ///
+  /// In en, this message translates to:
+  /// **'(must be 100%)'**
+  String get mustBe100;
+
+  /// No description provided for @examName.
+  ///
+  /// In en, this message translates to:
+  /// **'Exam Name'**
+  String get examName;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// No description provided for @score.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get score;
+
+  /// No description provided for @notEnteredYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not entered yet'**
+  String get notEnteredYet;
+
+  /// No description provided for @maxScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get maxScore;
+
+  /// No description provided for @addExam.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Exam'**
+  String get addExam;
+
+  /// No description provided for @calculateRequiredScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculate Required Score'**
+  String get calculateRequiredScore;
+
+  /// No description provided for @calculateAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculate Average'**
+  String get calculateAverage;
+
+  /// No description provided for @results.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get results;
+
+  /// No description provided for @requiredScoreToPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Required Score to Pass Course'**
+  String get requiredScoreToPass;
+
+  /// No description provided for @projectedFinalGrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Projected Final Grade'**
+  String get projectedFinalGrade;
+
+  /// No description provided for @allExamsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'All exams completed'**
+  String get allExamsCompleted;
+
+  /// No description provided for @noRemainingWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'No remaining exam weight'**
+  String get noRemainingWeight;
+
+  /// No description provided for @impossibleToPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Impossible to pass the course'**
+  String get impossibleToPass;
+
+  /// No description provided for @sufficientToPass.
+  ///
+  /// In en, this message translates to:
+  /// **'Sufficient score to pass already achieved'**
+  String get sufficientToPass;
+
+  /// No description provided for @passingAchievable.
+  ///
+  /// In en, this message translates to:
+  /// **'Passing the course is achievable'**
+  String get passingAchievable;
+
+  /// No description provided for @excellentSituation.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent situation!'**
+  String get excellentSituation;
+
+  /// No description provided for @goodSituation.
+  ///
+  /// In en, this message translates to:
+  /// **'Good situation'**
+  String get goodSituation;
+
+  /// No description provided for @challengingButPossible.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenging but possible'**
+  String get challengingButPossible;
+
+  /// No description provided for @targetUnreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Target unreachable'**
+  String get targetUnreachable;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @saveCalculation.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Calculation'**
+  String get saveCalculation;
+
+  /// No description provided for @shareResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Result'**
+  String get shareResult;
+
+  /// No description provided for @help.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get help;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @howToUse.
+  ///
+  /// In en, this message translates to:
+  /// **'How to Use?'**
+  String get howToUse;
+
+  /// No description provided for @helpText.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Select calculation mode:\\n   • Required Score: How much you need from the last exam to pass\\n   • Current Average: See your current grade average\\n\\n2. Enter course information (optional)\\n\\n3. Add exams and their weights:\\n   • Weights must total 100%\\n   • Enter your scores\\n\\n4. Click the calculate button\\n\\nTip: You can use templates for quick setup!'**
+  String get helpText;
+
+  /// No description provided for @calculationSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation saved'**
+  String get calculationSaved;
+
+  /// No description provided for @shareFeatureComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Share feature coming soon'**
+  String get shareFeatureComingSoon;
+
+  /// No description provided for @historyFeatureComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation history feature coming soon'**
+  String get historyFeatureComingSoon;
+
+  /// No description provided for @calculationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculation error'**
+  String get calculationError;
+
+  /// No description provided for @standardCourse.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Course'**
+  String get standardCourse;
+
+  /// No description provided for @standardCourseDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Midterm (40%) + Final (60%)'**
+  String get standardCourseDescription;
+
+  /// No description provided for @selectExamTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Exam Template'**
+  String get selectExamTemplate;
+
+  /// No description provided for @atLeastOneExam.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one exam must be added'**
+  String get atLeastOneExam;
+
+  /// No description provided for @weightsMustBe100.
+  ///
+  /// In en, this message translates to:
+  /// **'Weights must total 100%'**
+  String get weightsMustBe100;
+
+  /// No description provided for @weightsCurrently.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently'**
+  String get weightsCurrently;
+
+  /// No description provided for @weightsMustBePositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight values must be greater than 0'**
+  String get weightsMustBePositive;
+
+  /// No description provided for @examNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'All exam names must be entered'**
+  String get examNameRequired;
+
+  /// No description provided for @scoreOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'score must be between 0 and {maxScore}'**
+  String scoreOutOfRange(Object maxScore);
+
+  /// No description provided for @atLeastOneExamEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one exam must be left empty for required score calculation'**
+  String get atLeastOneExamEmpty;
+
+  /// No description provided for @atLeastOneExamScored.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one exam score must be entered for average calculation'**
+  String get atLeastOneExamScored;
+
+  /// No description provided for @passingGradeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Passing grade must be between 0 and 100'**
+  String get passingGradeRange;
+
+  /// No description provided for @formValid.
+  ///
+  /// In en, this message translates to:
+  /// **'Form is valid'**
+  String get formValid;
+
+  /// No description provided for @vize.
+  ///
+  /// In en, this message translates to:
+  /// **'Midterm'**
+  String get vize;
+
+  /// No description provided for @finalExam.
+  ///
+  /// In en, this message translates to:
+  /// **'Final'**
+  String get finalExam;
+
+  /// No description provided for @editEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Event'**
+  String get editEvent;
+
+  /// No description provided for @eventDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event details'**
+  String get eventDescription;
+
+  /// No description provided for @deleteEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Event'**
+  String get deleteEvent;
+
+  /// No description provided for @deleteEventConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this event?'**
+  String get deleteEventConfirm;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
   String get share;
+
+  /// No description provided for @updateEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Event'**
+  String get updateEvent;
+
+  /// No description provided for @eventUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Event updated successfully'**
+  String get eventUpdated;
+
+  /// No description provided for @deleteClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Club'**
+  String get deleteClub;
+
+  /// No description provided for @clubDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Club deleted successfully'**
+  String get clubDeleted;
+
+  /// No description provided for @department.
+  ///
+  /// In en, this message translates to:
+  /// **'Department'**
+  String get department;
+
+  /// No description provided for @establishedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Established In'**
+  String get establishedIn;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @socialMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Social Media'**
+  String get socialMedia;
+
+  /// No description provided for @instagram.
+  ///
+  /// In en, this message translates to:
+  /// **'Instagram'**
+  String get instagram;
+
+  /// No description provided for @twitter.
+  ///
+  /// In en, this message translates to:
+  /// **'Twitter'**
+  String get twitter;
+
+  /// No description provided for @linkedin.
+  ///
+  /// In en, this message translates to:
+  /// **'LinkedIn'**
+  String get linkedin;
+
+  /// No description provided for @faculty.
+  ///
+  /// In en, this message translates to:
+  /// **'Faculty'**
+  String get faculty;
+
+  /// No description provided for @members.
+  ///
+  /// In en, this message translates to:
+  /// **'members'**
+  String get members;
+
+  /// No description provided for @following.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get following;
+
+  /// No description provided for @follow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get follow;
+
+  /// No description provided for @exam.
+  ///
+  /// In en, this message translates to:
+  /// **'Exam'**
+  String get exam;
+
+  /// No description provided for @course.
+  ///
+  /// In en, this message translates to:
+  /// **'Course'**
+  String get course;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -305,7 +305,16 @@ class FirebaseAuthService {
 
       // Create Firebase user account / Firebase kullanıcı hesabı oluştur
       final userCredential = await _firebaseAuth!
-          .createUserWithEmailAndPassword(email: email, password: password);
+          .createUserWithEmailAndPassword(email: email, password: password)
+          .timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          throw FirebaseAuthException(
+            code: 'network-timeout',
+            message: 'Kayıt işlemi zaman aşımına uğradı. İnternet bağlantınızı kontrol edin.',
+          );
+        },
+      );
 
       final firebaseUser = userCredential.user;
       if (firebaseUser == null) {
@@ -371,6 +380,12 @@ class FirebaseAuthService {
         case 'invalid-email':
           errorMessage = 'Geçersiz email adresi.';
           break;
+        case 'network-timeout':
+          errorMessage = 'Kayıt işlemi zaman aşımına uğradı. İnternet bağlantınızı kontrol edin.';
+          break;
+        case 'network-request-failed':
+          errorMessage = 'Ağ bağlantısı hatası. İnternet bağlantınızı kontrol edin.';
+          break;
         default:
           errorMessage = 'Kayıt sırasında bir hata oluştu: ${e.message}';
       }
@@ -405,6 +420,14 @@ class FirebaseAuthService {
       final userCredential = await _firebaseAuth!.signInWithEmailAndPassword(
         email: email,
         password: password,
+      ).timeout(
+        const Duration(seconds: 15),
+        onTimeout: () {
+          throw FirebaseAuthException(
+            code: 'network-timeout',
+            message: 'Giriş işlemi zaman aşımına uğradı. İnternet bağlantınızı kontrol edin.',
+          );
+        },
       );
 
       final firebaseUser = userCredential.user;
@@ -457,6 +480,12 @@ class FirebaseAuthService {
         case 'too-many-requests':
           errorMessage =
               'Çok fazla başarısız giriş denemesi. Lütfen daha sonra tekrar deneyin.';
+          break;
+        case 'network-timeout':
+          errorMessage = 'Giriş işlemi zaman aşımına uğradı. İnternet bağlantınızı kontrol edin.';
+          break;
+        case 'network-request-failed':
+          errorMessage = 'Ağ bağlantısı hatası. İnternet bağlantınızı kontrol edin.';
           break;
         default:
           errorMessage = 'Giriş sırasında bir hata oluştu: ${e.message}';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'providers/theme_provider.dart';
@@ -28,6 +29,14 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     // Firebase başarıyla başlatıldı / Firebase initialized successfully
+    
+    // Firebase App Check'i başlat / Initialize Firebase App Check
+    await FirebaseAppCheck.instance.activate(
+      // Debug mode için geliştirme ortamında debug token kullan
+      // Use debug token in development environment for debug mode
+      androidProvider: AndroidProvider.debug,
+    );
+    print('🔒 Main: Firebase App Check activated with debug provider');
 
     // Firebase Auth Service'i başlat / Initialize Firebase Auth Service
     final firebaseAuthService = FirebaseAuthService();

@@ -1023,106 +1023,235 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get rememberMe => 'Remember Me';
 
-  // Edit/Delete Event functionality
+  @override
+  String get examCalculator => 'Exam Calculator';
+
+  @override
+  String get examCalculatorSubtitle => 'Grade Calculation Tool';
+
+  @override
+  String get calculationMode => 'Calculation Mode';
+
+  @override
+  String get requiredScore => 'Required Score';
+
+  @override
+  String get requiredScoreDescription => 'Calculate required score to pass the course';
+
+  @override
+  String get currentAverage => 'Current Average';
+
+  @override
+  String get currentAverageDescription => 'Calculate current grade average';
+
+  @override
+  String get courseInfo => 'Course Information';
+
+  @override
+  String get courseName => 'Course Name';
+
+  @override
+  String get courseNameHint => 'e.g. Mathematics I';
+
+  @override
+  String get courseCode => 'Course Code';
+
+  @override
+  String get courseCodeHint => 'MAT101';
+
+  @override
+  String get passingGrade => 'Passing Grade';
+
+  @override
+  String get examsAndWeights => 'Exams and Weights';
+
+  @override
+  String get selectTemplate => 'Select Template';
+
+  @override
+  String get totalWeight => 'Total Weight';
+
+  @override
+  String get mustBe100 => '(must be 100%)';
+
+  @override
+  String get examName => 'Exam Name';
+
+  @override
+  String get weight => 'Weight';
+
+  @override
+  String get score => 'Score';
+
+  @override
+  String get notEnteredYet => 'Not entered yet';
+
+  @override
+  String get maxScore => 'Max';
+
+  @override
+  String get addExam => 'Add Exam';
+
+  @override
+  String get calculateRequiredScore => 'Calculate Required Score';
+
+  @override
+  String get calculateAverage => 'Calculate Average';
+
+  @override
+  String get results => 'Results';
+
+  @override
+  String get requiredScoreToPass => 'Required Score to Pass Course';
+
+  @override
+  String get projectedFinalGrade => 'Projected Final Grade';
+
+  @override
+  String get allExamsCompleted => 'All exams completed';
+
+  @override
+  String get noRemainingWeight => 'No remaining exam weight';
+
+  @override
+  String get impossibleToPass => 'Impossible to pass the course';
+
+  @override
+  String get sufficientToPass => 'Sufficient score to pass already achieved';
+
+  @override
+  String get passingAchievable => 'Passing the course is achievable';
+
+  @override
+  String get excellentSituation => 'Excellent situation!';
+
+  @override
+  String get goodSituation => 'Good situation';
+
+  @override
+  String get challengingButPossible => 'Challenging but possible';
+
+  @override
+  String get targetUnreachable => 'Target unreachable';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get saveCalculation => 'Save Calculation';
+
+  @override
+  String get shareResult => 'Share Result';
+
+  @override
+  String get help => 'Help';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String get howToUse => 'How to Use?';
+
+  @override
+  String get helpText => '1. Select calculation mode:\\n   • Required Score: How much you need from the last exam to pass\\n   • Current Average: See your current grade average\\n\\n2. Enter course information (optional)\\n\\n3. Add exams and their weights:\\n   • Weights must total 100%\\n   • Enter your scores\\n\\n4. Click the calculate button\\n\\nTip: You can use templates for quick setup!';
+
+  @override
+  String get calculationSaved => 'Calculation saved';
+
+  @override
+  String get shareFeatureComingSoon => 'Share feature coming soon';
+
+  @override
+  String get historyFeatureComingSoon => 'Calculation history feature coming soon';
+
+  @override
+  String get calculationError => 'Calculation error';
+
+  @override
+  String get standardCourse => 'Standard Course';
+
+  @override
+  String get standardCourseDescription => 'Midterm (40%) + Final (60%)';
+
+  @override
+  String get selectExamTemplate => 'Select Exam Template';
+
+  @override
+  String get atLeastOneExam => 'At least one exam must be added';
+
+  @override
+  String get weightsMustBe100 => 'Weights must total 100%';
+
+  @override
+  String get weightsCurrently => 'Currently';
+
+  @override
+  String get weightsMustBePositive => 'Weight values must be greater than 0';
+
+  @override
+  String get examNameRequired => 'All exam names must be entered';
+
+  @override
+  String scoreOutOfRange(Object maxScore) {
+    return 'score must be between 0 and $maxScore';
+  }
+
+  @override
+  String get atLeastOneExamEmpty => 'At least one exam must be left empty for required score calculation';
+
+  @override
+  String get atLeastOneExamScored => 'At least one exam score must be entered for average calculation';
+
+  @override
+  String get passingGradeRange => 'Passing grade must be between 0 and 100';
+
+  @override
+  String get formValid => 'Form is valid';
+
+  @override
+  String get vize => 'Midterm';
+
+  @override
+  String get finalExam => 'Final';
+
   @override
   String get editEvent => 'Edit Event';
+
+  @override
+  String get eventDescription => 'Edit event details';
 
   @override
   String get deleteEvent => 'Delete Event';
 
   @override
-  String get deleteEventConfirm => 'Are you sure you want to delete this event? This action cannot be undone.';
+  String get deleteEventConfirm => 'Are you sure you want to delete this event?';
 
   @override
-  String get eventTitle => 'Event Title';
-
-  @override
-  String get eventDescription => 'Event Description';
-
-  @override
-  String get eventLocation => 'Event Location';
-
-  @override
-  String get eventCapacity => 'Event Capacity';
-
-  @override
-  String get eventUpdated => 'Event updated successfully!';
-
-  @override
-  String get eventDeleted => 'Event deleted successfully!';
-
-  @override
-  String get editEventTitle => 'Edit Event';
+  String get share => 'Share';
 
   @override
   String get updateEvent => 'Update Event';
 
   @override
-  String get updating => 'Updating...';
-
-  @override
-  String get deleting => 'Deleting...';
-
-  // Club Overview functionality
-  @override
-  String get clubOverview => 'Club Overview';
-
-  @override
-  String get members => 'Members';
-
-  @override
-  String get establishedIn => 'Established in';
-
-  @override
-  String get contactInformation => 'Contact Information';
-
-  @override
-  String get socialMedia => 'Social Media';
-
-  @override
-  String get aboutClub => 'About Club';
-
-  @override
-  String get clubStats => 'Club Statistics';
-
-  @override
-  String get faculty => 'Faculty';
-
-  @override
-  String get department => 'Department';
-
-  @override
-  String get followClub => 'Follow Club';
-
-  @override
-  String get unfollowClub => 'Unfollow Club';
-
-  @override
-  String get editClub => 'Edit Club';
+  String get eventUpdated => 'Event updated successfully';
 
   @override
   String get deleteClub => 'Delete Club';
 
   @override
-  String get deleteClubConfirm => 'Are you sure you want to delete this club? This action cannot be undone.';
+  String get clubDeleted => 'Club deleted successfully';
 
   @override
-  String get clubUpdated => 'Club updated successfully!';
+  String get department => 'Department';
 
   @override
-  String get clubDeleted => 'Club deleted successfully!';
-
-  @override
-  String get following => 'Following';
-
-  @override
-  String get follow => 'Follow';
-
-  @override
-  String get phone => 'Phone';
+  String get establishedIn => 'Established In';
 
   @override
   String get email => 'Email';
+
+  @override
+  String get socialMedia => 'Social Media';
 
   @override
   String get instagram => 'Instagram';
@@ -1134,14 +1263,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get linkedin => 'LinkedIn';
 
   @override
-  String get youtube => 'YouTube';
+  String get faculty => 'Faculty';
 
   @override
-  String get noDescription => 'No description available';
+  String get members => 'members';
 
   @override
-  String get options => 'Options';
+  String get following => 'Following';
 
   @override
-  String get share => 'Share';
+  String get follow => 'Follow';
+
+  @override
+  String get exam => 'Exam';
+
+  @override
+  String get course => 'Course';
 }

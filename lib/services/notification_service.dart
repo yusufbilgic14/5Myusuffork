@@ -7,7 +7,7 @@ import 'dart:async';
 
 import '../models/club_chat_models.dart';
 import '../models/user_profile_model.dart';
-import '../config/firebase_config.dart';
+import '../firebase_options.dart';
 import 'firebase_auth_service.dart';
 import 'user_profile_service.dart';
 import 'club_chat_service.dart';

@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
 import '../models/club_chat_models.dart';
 import '../models/user_interaction_models.dart';
@@ -17,6 +20,7 @@ class ClubChatService {
 
   // Firebase instances
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuthService _authService = FirebaseAuthService();
   NotificationService? _notificationService;
 
@@ -106,6 +110,354 @@ class ClubChatService {
       debugPrint('❌ ClubChatService: Error getting chat room: $e');
       return null;
     }
+  }
+
+  // ==========================================
+  // MEDIA UPLOAD & MANAGEMENT / MEDYA YÜKLEMİ VE YÖNETİMİ
+  // ==========================================
+
+  /// Upload media file to Firebase Storage
+  /// Medya dosyasını Firebase Storage'a yükle
+  Future<MediaAttachment?> uploadMediaFile({
+    required File file,
+    required String clubId,
+    required String messageId,
+    required String fileType, // 'image', 'document', 'voice', 'video'
+    String? originalFileName,
+  }) async {
+    try {
+      if (!isAuthenticated || currentUserId == null) {
+        throw Exception('User not authenticated');
+      }
+
+      debugPrint('📤 ClubChatService: Uploading media file for club $clubId');
+
+      // Generate unique file name
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final extension = file.path.split('.').last;
+      final fileName = '${timestamp}_${messageId}_$currentUserId.$extension';
+      
+      // Create storage reference - match Firebase Storage rules path
+      final storageRef = _storage.ref().child('club_chat/$clubId/media/$messageId/$fileName');
+      
+      // Upload file
+      final uploadTask = storageRef.putFile(file);
+      final taskSnapshot = await uploadTask;
+      
+      // Get download URL
+      final downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      
+      // Get file stats
+      final fileSize = await file.length();
+      final mimeType = _getMimeType(extension);
+      
+      // Create media attachment
+      final attachment = MediaAttachment(
+        attachmentId: '${messageId}_${timestamp}',
+        fileName: fileName,
+        originalFileName: originalFileName ?? fileName,
+        fileType: fileType,
+        mimeType: mimeType,
+        fileSize: fileSize,
+        fileUrl: downloadUrl,
+        thumbnailUrl: fileType == 'image' ? downloadUrl : null, // Use original for images
+        uploadedAt: DateTime.now(),
+      );
+
+      debugPrint('✅ ClubChatService: Media file uploaded successfully');
+      return attachment;
+    } catch (e) {
+      debugPrint('❌ ClubChatService: Error uploading media file: $e');
+      return null;
+    }
+  }
+
+  /// Get MIME type from file extension
+  /// Dosya uzantısından MIME tipini al
+  String _getMimeType(String extension) {
+    switch (extension.toLowerCase()) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      case 'pdf':
+        return 'application/pdf';
+      case 'doc':
+        return 'application/msword';
+      case 'docx':
+        return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+      case 'mp3':
+        return 'audio/mpeg';
+      case 'wav':
+        return 'audio/wav';
+      case 'mp4':
+        return 'video/mp4';
+      case 'mov':
+        return 'video/quicktime';
+      default:
+        return 'application/octet-stream';
+    }
+  }
+
+  // ==========================================
+  // MESSAGE REACTIONS / MESAJ REAKSİYONLARI
+  // ==========================================
+
+  /// Add reaction to message
+  /// Mesaja reaksiyon ekle
+  Future<bool> addReaction({
+    required String messageId,
+    required String emoji,
+  }) async {
+    try {
+      if (!isAuthenticated || currentUserId == null) {
+        throw Exception('User not authenticated');
+      }
+
+      final currentUser = _authService.currentAppUser!;
+      debugPrint('😊 ClubChatService: Adding reaction $emoji to message $messageId');
+
+      // Create reaction
+      final reaction = MessageReaction.create(
+        messageId: messageId,
+        userId: currentUserId!,
+        userName: currentUser.displayName,
+        emoji: emoji,
+      );
+
+      // Add reaction to collection
+      await _firestore
+          .collection('message_reactions')
+          .doc(reaction.reactionId)
+          .set(reaction.toJson());
+
+      // Update message reaction count
+      await _updateMessageReactionCounts(messageId);
+
+      debugPrint('✅ ClubChatService: Reaction added successfully');
+      return true;
+    } catch (e) {
+      debugPrint('❌ ClubChatService: Error adding reaction: $e');
+      return false;
+    }
+  }
+
+  /// Remove reaction from message
+  /// Mesajdan reaksiyonu kaldır
+  Future<bool> removeReaction({
+    required String messageId,
+    required String emoji,
+  }) async {
+    try {
+      if (!isAuthenticated || currentUserId == null) {
+        throw Exception('User not authenticated');
+      }
+
+      debugPrint('🚫 ClubChatService: Removing reaction $emoji from message $messageId');
+
+      final reactionId = '${messageId}_${currentUserId}_${emoji.hashCode}';
+
+      // Remove reaction from collection
+      await _firestore
+          .collection('message_reactions')
+          .doc(reactionId)
+          .delete();
+
+      // Update message reaction count
+      await _updateMessageReactionCounts(messageId);
+
+      debugPrint('✅ ClubChatService: Reaction removed successfully');
+      return true;
+    } catch (e) {
+      debugPrint('❌ ClubChatService: Error removing reaction: $e');
+      return false;
+    }
+  }
+
+  /// Get reactions for message
+  /// Mesaj için reaksiyonları getir
+  Stream<List<MessageReaction>> streamMessageReactions(String messageId) {
+    debugPrint('😊 ClubChatService: Streaming reactions for message $messageId');
+
+    return _firestore
+        .collection('message_reactions')
+        .where('messageId', isEqualTo: messageId)
+        .orderBy('createdAt', descending: false)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return MessageReaction.fromJson(doc.data());
+      }).toList();
+    });
+  }
+
+  /// Update message reaction counts in the message document
+  /// Mesaj belgesindeki reaksiyon sayılarını güncelle
+  Future<void> _updateMessageReactionCounts(String messageId) async {
+    try {
+      // Get all reactions for this message
+      final reactionsSnapshot = await _firestore
+          .collection('message_reactions')
+          .where('messageId', isEqualTo: messageId)
+          .get();
+
+      // Count reactions by emoji
+      final Map<String, int> reactionCounts = {};
+      int totalReactions = 0;
+
+      for (final doc in reactionsSnapshot.docs) {
+        final reaction = MessageReaction.fromJson(doc.data());
+        reactionCounts[reaction.emoji] = (reactionCounts[reaction.emoji] ?? 0) + 1;
+        totalReactions++;
+      }
+
+      // Update the message with new reaction counts
+      // messageId is the document ID in Firestore
+      await _firestore
+          .collection('chat_messages')
+          .doc(messageId)
+          .update({
+        'reactions': reactionCounts.isEmpty ? null : reactionCounts,
+        'reactionCount': totalReactions,
+      });
+
+      debugPrint('✅ ClubChatService: Updated reaction counts for message $messageId');
+    } catch (e) {
+      debugPrint('❌ ClubChatService: Error updating reaction counts: $e');
+    }
+  }
+
+  // ==========================================
+  // MESSAGE PINNING / MESAJ SABİTLEME
+  // ==========================================
+
+  /// Pin/Unpin message
+  /// Mesajı sabitle/sabitlmeyi kaldır
+  Future<bool> toggleMessagePin({
+    required String messageId,
+    required String clubId,
+  }) async {
+    try {
+      if (!isAuthenticated || currentUserId == null) {
+        throw Exception('User not authenticated');
+      }
+
+      debugPrint('📌 ClubChatService: Toggling pin for message $messageId');
+
+      // Get the message
+      final messageDoc = await _firestore
+          .collection('chat_messages')
+          .doc(messageId)
+          .get();
+
+      if (!messageDoc.exists) {
+        throw Exception('Message not found');
+      }
+
+      final message = ChatMessage.fromJson({
+        ...messageDoc.data()!,
+        'messageId': messageDoc.id,
+      });
+
+      // Toggle pin status
+      final updatedMessage = message.copyWithPin(
+        pinned: !message.isPinned,
+        pinnedBy: currentUserId!,
+      );
+
+      await _firestore
+          .collection('chat_messages')
+          .doc(messageId)
+          .update({
+        'isPinned': updatedMessage.isPinned,
+        'pinnedAt': updatedMessage.pinnedAt?.toIso8601String(),
+        'pinnedBy': updatedMessage.pinnedBy,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      debugPrint('✅ ClubChatService: Message pin toggled successfully');
+      return true;
+    } catch (e) {
+      debugPrint('❌ ClubChatService: Error toggling message pin: $e');
+      return false;
+    }
+  }
+
+  /// Get pinned messages for club
+  /// Kulüp için sabitlenmiş mesajları getir
+  Stream<List<ChatMessage>> streamPinnedMessages(String clubId) {
+    debugPrint('📌 ClubChatService: Streaming pinned messages for club $clubId');
+
+    return _firestore
+        .collection('chat_messages')
+        .where('clubId', isEqualTo: clubId)
+        .where('isPinned', isEqualTo: true)
+        .where('isDeleted', isEqualTo: false)
+        .orderBy('pinnedAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['messageId'] = doc.id;
+        return ChatMessage.fromJson(data);
+      }).toList();
+    });
+  }
+
+  // ==========================================
+  // USER PRESENCE & TYPING / KULLANICI VARLIĞI VE YAZMA
+  // ==========================================
+
+  /// Update typing status
+  /// Yazma durumunu güncelle
+  Future<void> updateTypingStatus({
+    required String clubId,
+    required bool isTyping,
+  }) async {
+    try {
+      if (!isAuthenticated || currentUserId == null) return;
+
+      await _firestore
+          .collection('user_presence')
+          .doc('${clubId}_$currentUserId')
+          .update({
+        'isTyping': isTyping,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      // Auto-clear typing status after 3 seconds
+      if (isTyping) {
+        Timer(const Duration(seconds: 3), () {
+          updateTypingStatus(clubId: clubId, isTyping: false);
+        });
+      }
+
+      debugPrint('✅ ClubChatService: Typing status updated - typing: $isTyping');
+    } catch (e) {
+      debugPrint('❌ ClubChatService: Error updating typing status: $e');
+    }
+  }
+
+  /// Stream user presence for chat room
+  /// Sohbet odası için kullanıcı varlığını akışla getir
+  Stream<List<UserPresence>> streamUserPresence(String clubId) {
+    debugPrint('👥 ClubChatService: Streaming user presence for club $clubId');
+
+    return _firestore
+        .collection('user_presence')
+        .where('chatRoomId', isEqualTo: clubId)
+        .where('isOnline', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return UserPresence.fromJson(doc.data());
+      }).toList();
+    });
   }
 
   // ==========================================
@@ -415,6 +767,7 @@ class ClubChatService {
     required String content,
     String messageType = 'text',
     List<String>? mediaUrls,
+    List<MediaAttachment>? mediaAttachments,
     String? replyToMessageId,
     String? replyToContent,
     String? replyToSenderName,
@@ -440,6 +793,7 @@ class ClubChatService {
         content: content,
         messageType: messageType,
         mediaUrls: mediaUrls,
+        mediaAttachments: mediaAttachments,
         senderId: currentUserId!,
         senderName: currentUser.displayName,
         senderAvatar: currentUser.profilePhotoUrl,
@@ -452,6 +806,9 @@ class ClubChatService {
       final messageRef = await _firestore
           .collection('chat_messages')
           .add(message.toJson());
+
+      // Update the message with the correct messageId
+      await messageRef.update({'messageId': messageRef.id});
 
       // Update chat room's last message
       await _firestore

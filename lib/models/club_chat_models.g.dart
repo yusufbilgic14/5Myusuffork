@@ -6,6 +6,79 @@ part of 'club_chat_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+MediaAttachment _$MediaAttachmentFromJson(Map<String, dynamic> json) =>
+    MediaAttachment(
+      attachmentId: json['attachmentId'] as String,
+      fileName: json['fileName'] as String,
+      originalFileName: json['originalFileName'] as String,
+      fileType: json['fileType'] as String,
+      mimeType: json['mimeType'] as String,
+      fileSize: (json['fileSize'] as num).toInt(),
+      fileUrl: json['fileUrl'] as String,
+      thumbnailUrl: json['thumbnailUrl'] as String?,
+      width: (json['width'] as num?)?.toInt(),
+      height: (json['height'] as num?)?.toInt(),
+      duration: (json['duration'] as num?)?.toInt(),
+      uploadedAt: MediaAttachment._timestampFromJson(json['uploadedAt']),
+    );
+
+Map<String, dynamic> _$MediaAttachmentToJson(MediaAttachment instance) =>
+    <String, dynamic>{
+      'attachmentId': instance.attachmentId,
+      'fileName': instance.fileName,
+      'originalFileName': instance.originalFileName,
+      'fileType': instance.fileType,
+      'mimeType': instance.mimeType,
+      'fileSize': instance.fileSize,
+      'fileUrl': instance.fileUrl,
+      'thumbnailUrl': instance.thumbnailUrl,
+      'width': instance.width,
+      'height': instance.height,
+      'duration': instance.duration,
+      'uploadedAt': MediaAttachment._timestampToJson(instance.uploadedAt),
+    };
+
+MessageReaction _$MessageReactionFromJson(Map<String, dynamic> json) =>
+    MessageReaction(
+      reactionId: json['reactionId'] as String,
+      messageId: json['messageId'] as String,
+      userId: json['userId'] as String,
+      userName: json['userName'] as String,
+      emoji: json['emoji'] as String,
+      createdAt: MessageReaction._timestampFromJson(json['createdAt']),
+    );
+
+Map<String, dynamic> _$MessageReactionToJson(MessageReaction instance) =>
+    <String, dynamic>{
+      'reactionId': instance.reactionId,
+      'messageId': instance.messageId,
+      'userId': instance.userId,
+      'userName': instance.userName,
+      'emoji': instance.emoji,
+      'createdAt': MessageReaction._timestampToJson(instance.createdAt),
+    };
+
+UserPresence _$UserPresenceFromJson(Map<String, dynamic> json) => UserPresence(
+  userId: json['userId'] as String,
+  userName: json['userName'] as String,
+  chatRoomId: json['chatRoomId'] as String,
+  isOnline: json['isOnline'] as bool? ?? false,
+  isTyping: json['isTyping'] as bool? ?? false,
+  lastSeen: UserPresence._timestampFromJson(json['lastSeen']),
+  updatedAt: UserPresence._timestampFromJson(json['updatedAt']),
+);
+
+Map<String, dynamic> _$UserPresenceToJson(UserPresence instance) =>
+    <String, dynamic>{
+      'userId': instance.userId,
+      'userName': instance.userName,
+      'chatRoomId': instance.chatRoomId,
+      'isOnline': instance.isOnline,
+      'isTyping': instance.isTyping,
+      'lastSeen': UserPresence._timestampToJson(instance.lastSeen),
+      'updatedAt': UserPresence._timestampToJson(instance.updatedAt),
+    };
+
 ChatMessage _$ChatMessageFromJson(Map<String, dynamic> json) => ChatMessage(
   messageId: json['messageId'] as String,
   chatRoomId: json['chatRoomId'] as String,
@@ -15,6 +88,16 @@ ChatMessage _$ChatMessageFromJson(Map<String, dynamic> json) => ChatMessage(
   mediaUrls: (json['mediaUrls'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
+  mediaAttachments: ChatMessage._mediaAttachmentsFromJson(
+    json['mediaAttachments'],
+  ),
+  isPinned: json['isPinned'] as bool? ?? false,
+  pinnedAt: ChatMessage._timestampFromJson(json['pinnedAt']),
+  pinnedBy: json['pinnedBy'] as String?,
+  reactionCount: (json['reactionCount'] as num?)?.toInt() ?? 0,
+  reactions: (json['reactions'] as Map<String, dynamic>?)?.map(
+    (k, e) => MapEntry(k, (e as num).toInt()),
+  ),
   senderId: json['senderId'] as String,
   senderName: json['senderName'] as String,
   senderAvatar: json['senderAvatar'] as String?,
@@ -37,6 +120,14 @@ Map<String, dynamic> _$ChatMessageToJson(ChatMessage instance) =>
       'content': instance.content,
       'messageType': instance.messageType,
       'mediaUrls': instance.mediaUrls,
+      'mediaAttachments': ChatMessage._mediaAttachmentsToJson(
+        instance.mediaAttachments,
+      ),
+      'isPinned': instance.isPinned,
+      'pinnedAt': ChatMessage._timestampToJson(instance.pinnedAt),
+      'pinnedBy': instance.pinnedBy,
+      'reactionCount': instance.reactionCount,
+      'reactions': instance.reactions,
       'senderId': instance.senderId,
       'senderName': instance.senderName,
       'senderAvatar': instance.senderAvatar,
