@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/firebase_converters.dart';
+
 part 'announcement_model.g.dart';
 
 /// Üniversite duyuruları modeli / University announcements model
@@ -342,8 +344,9 @@ class AttachmentModel {
   String get formattedSize {
     if (size < 1024) return '${size}B';
     if (size < 1024 * 1024) return '${(size / 1024).toStringAsFixed(1)}KB';
-    if (size < 1024 * 1024 * 1024)
+    if (size < 1024 * 1024 * 1024) {
       return '${(size / (1024 * 1024)).toStringAsFixed(1)}MB';
+    }
     return '${(size / (1024 * 1024 * 1024)).toStringAsFixed(1)}GB';
   }
 
@@ -482,23 +485,4 @@ enum AnnouncementStatus {
   scheduled,
 }
 
-/// Firestore Timestamp converter for JSON serialization
-/// Firestore Timestamp'i JSON serileştirme için dönüştürücü
-class TimestampConverter implements JsonConverter<DateTime?, Object?> {
-  const TimestampConverter();
-
-  @override
-  DateTime? fromJson(Object? json) {
-    if (json == null) return null;
-    if (json is Timestamp) return json.toDate();
-    if (json is String) return DateTime.tryParse(json);
-    if (json is int) return DateTime.fromMillisecondsSinceEpoch(json);
-    return null;
-  }
-
-  @override
-  Object? toJson(DateTime? dateTime) {
-    if (dateTime == null) return null;
-    return Timestamp.fromDate(dateTime);
-  }
-}
+// Timestamp converter moved to ../utils/firebase_converters.dart

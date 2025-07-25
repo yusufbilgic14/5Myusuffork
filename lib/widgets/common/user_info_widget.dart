@@ -4,16 +4,24 @@ import '../../themes/app_themes.dart';
 import '../../services/firebase_auth_service.dart';
 import '../../services/user_profile_service.dart';
 import '../../models/user_profile_model.dart';
+import 'profile_picture_widget.dart';
+import 'profile_picture_picker_widget.dart';
 
 /// Kullanıcı bilgileri widget'ı / User info widget
 class UserInfoWidget extends StatefulWidget {
   final bool isCompact; // Compact mode for drawer, full mode for profile screen
   final bool showStudentId; // Whether to show student ID
+  final bool showProfilePicker; // Whether to show profile picture picker
+  final VoidCallback? onProfileUpdated; // Callback when profile is updated
+  final UserProfile? currentProfile; // Current profile data
 
   const UserInfoWidget({
     super.key,
     this.isCompact = false,
     this.showStudentId = false,
+    this.showProfilePicker = false,
+    this.onProfileUpdated,
+    this.currentProfile,
   });
 
   @override
@@ -42,30 +50,25 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
         return Column(
           children: [
             // Kullanıcı fotoğrafı / User photo
-            Container(
-              width: widget.isCompact ? 80 : 100,
-              height: widget.isCompact ? 80 : 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: widget.isCompact
-                      ? AppConstants.textColorLight
-                      : AppThemes.getPrimaryColor(context),
-                  width: widget.isCompact ? 2 : 3,
-                ),
-              ),
-              child: ClipOval(
-                child: profile?.profilePhotoUrl != null
-                    ? Image.network(
-                        profile!.profilePhotoUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return _buildAvatarFallback(displayName);
-                        },
-                      )
-                    : _buildAvatarFallback(displayName),
-              ),
-            ),
+            widget.showProfilePicker 
+                ? ProfilePicturePickerWidget(
+                    currentPhotoUrl: widget.currentProfile?.profilePhotoUrl ?? profile?.profilePhotoUrl,
+                    displayName: displayName,
+                    size: widget.isCompact ? 80.0 : 100.0,
+                    onPhotoUpdated: (photoUrl) {
+                      widget.onProfileUpdated?.call();
+                    },
+                  )
+                : ProfilePictureWidget(
+                    profilePhotoUrl: profile?.profilePhotoUrl,
+                    displayName: displayName,
+                    size: widget.isCompact ? 80.0 : 100.0,
+                    showBorder: true,
+                    borderColor: widget.isCompact
+                        ? AppConstants.textColorLight
+                        : AppThemes.getPrimaryColor(context),
+                    borderWidth: widget.isCompact ? 2.0 : 3.0,
+                  ),
 
             SizedBox(height: widget.isCompact ? 12 : 16),
 
@@ -164,43 +167,4 @@ class _UserInfoWidgetState extends State<UserInfoWidget> {
     );
   }
 
-  /// Avatar fallback widget / Avatar yedek widget'ı
-  Widget _buildAvatarFallback(String displayName) {
-    final initials = _getInitials(displayName);
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.red,
-      Colors.teal,
-    ];
-    final colorIndex = displayName.hashCode.abs() % colors.length;
-
-    return Container(
-      color: colors[colorIndex].withValues(alpha: 0.1),
-      child: Center(
-        child: Text(
-          initials,
-          style: TextStyle(
-            color: colors[colorIndex],
-            fontSize: widget.isCompact ? 24 : 32,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Get user initials from display name / Kullanıcı adından baş harfleri al
-  String _getInitials(String name) {
-    if (name.isEmpty) return 'K';
-    
-    final parts = name.trim().split(' ');
-    if (parts.length >= 2) {
-      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-    } else {
-      return parts[0][0].toUpperCase();
-    }
-  }
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'dart:async';
 import '../l10n/app_localizations.dart';
-import '../widgets/common/app_bar_widget.dart';
 import '../widgets/common/bottom_navigation_widget.dart';
 import '../constants/app_constants.dart';
 import '../services/navigation_service.dart';

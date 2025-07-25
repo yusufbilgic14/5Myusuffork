@@ -934,9 +934,9 @@ class _CalendarScreenState extends State<CalendarScreen>
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Flexible(
+                  Expanded(
                     child: Text(
                       '${course.courseCode} - ${course.displayName}',
                       style: TextStyle(
@@ -1000,7 +1000,6 @@ class _CalendarScreenState extends State<CalendarScreen>
                       ],
                     ),
                   ],
-                  const SizedBox(height: 8),
                   Row(
                     children: [
                       Icon(

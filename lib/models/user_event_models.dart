@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/firebase_converters.dart';
+
 part 'user_event_models.g.dart';
 
 /// Event model for representing university events
@@ -36,11 +38,11 @@ class Event {
 
   // Date & Time
   @JsonKey(name: 'startDateTime', includeIfNull: false)
-  @TimestampConverter()
+  @RequiredTimestampConverter()
   final DateTime startDateTime;
 
   @JsonKey(name: 'endDateTime', includeIfNull: false)
-  @TimestampConverter()
+  @RequiredTimestampConverter()
   final DateTime endDateTime;
 
   @JsonKey(name: 'timezone')
@@ -506,11 +508,11 @@ class UserMyEvent {
   final String eventTitle;
 
   @JsonKey(name: 'eventStartDate', includeIfNull: false)
-  @TimestampConverter()
+  @RequiredTimestampConverter()
   final DateTime eventStartDate;
 
   @JsonKey(name: 'eventEndDate', includeIfNull: false)
-  @TimestampConverter()
+  @RequiredTimestampConverter()
   final DateTime eventEndDate;
 
   @JsonKey(name: 'eventLocation')
@@ -521,7 +523,7 @@ class UserMyEvent {
 
   // User Participation
   @JsonKey(name: 'joinedAt', includeIfNull: false)
-  @TimestampConverter()
+  @RequiredTimestampConverter()
   final DateTime joinedAt;
 
   @JsonKey(name: 'joinMethod')
@@ -682,46 +684,7 @@ enum ParticipationStatus {
   cancelled,
 }
 
-/// Firestore Timestamp converter
-/// Firestore Timestamp dönüştürücüsü
-class TimestampConverter implements JsonConverter<DateTime, Object?> {
-  const TimestampConverter();
-
-  @override
-  DateTime fromJson(Object? json) {
-    if (json == null) throw ArgumentError('DateTime cannot be null');
-    if (json is Timestamp) return json.toDate();
-    if (json is String) return DateTime.parse(json);
-    if (json is int) return DateTime.fromMillisecondsSinceEpoch(json);
-    throw ArgumentError('Cannot convert $json to DateTime');
-  }
-
-  @override
-  Object toJson(DateTime dateTime) {
-    return dateTime.toIso8601String();
-  }
-}
-
-/// Nullable Firestore Timestamp converter
-/// Nullable Firestore Timestamp dönüştürücüsü
-class NullableTimestampConverter implements JsonConverter<DateTime?, Object?> {
-  const NullableTimestampConverter();
-
-  @override
-  DateTime? fromJson(Object? json) {
-    if (json == null) return null;
-    if (json is Timestamp) return json.toDate();
-    if (json is String) return DateTime.tryParse(json);
-    if (json is int) return DateTime.fromMillisecondsSinceEpoch(json);
-    return null;
-  }
-
-  @override
-  Object? toJson(DateTime? dateTime) {
-    if (dateTime == null) return null;
-    return dateTime.toIso8601String();
-  }
-}
+// Timestamp converters moved to ../utils/firebase_converters.dart
 
 /// Helper function to convert timestamp fields
 /// Timestamp alanlarını dönüştürme yardımcı fonksiyonu

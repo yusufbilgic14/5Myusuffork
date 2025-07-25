@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/firebase_converters.dart';
+
 part 'user_model.g.dart';
 
 /// Kullanıcı rolleri enum'u / User roles enum
@@ -15,27 +17,7 @@ enum UserRole {
   guest,
 }
 
-/// Firestore Timestamp converter for JSON serialization
-/// Firestore Timestamp'i JSON serileştirme için dönüştürücü
-class TimestampConverter implements JsonConverter<DateTime?, Object?> {
-  const TimestampConverter();
-
-  @override
-  DateTime? fromJson(Object? json) {
-    if (json == null) return null;
-    if (json is Timestamp) return json.toDate();
-    if (json is String) return DateTime.tryParse(json);
-    if (json is int) return DateTime.fromMillisecondsSinceEpoch(json);
-    return null;
-  }
-
-  @override
-  Object? toJson(DateTime? dateTime) {
-    if (dateTime == null) return null;
-    // For JSON serialization, use ISO string format instead of Timestamp
-    return dateTime.toIso8601String();
-  }
-}
+// Timestamp converter moved to ../utils/firebase_converters.dart
 
 /// Microsoft kullanıcı bilgileri modeli / Microsoft user information model
 @JsonSerializable()

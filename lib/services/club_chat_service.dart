@@ -9,6 +9,7 @@ import '../models/club_chat_models.dart';
 import '../models/user_interaction_models.dart';
 import 'firebase_auth_service.dart';
 import 'notification_service.dart';
+import 'user_profile_service.dart';
 
 /// Club chat service with approval workflow
 /// Onay iş akışı ile kulüp sohbet servisi
@@ -22,6 +23,7 @@ class ClubChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuthService _authService = FirebaseAuthService();
+  final UserProfileService _profileService = UserProfileService();
   NotificationService? _notificationService;
 
   // Stream subscriptions for memory management
@@ -499,13 +501,17 @@ class ClubChatService {
         return false;
       }
 
+      // Get actual profile picture URL from UserProfile
+      final userProfile = await _profileService.getUserProfile();
+      final actualProfilePhotoUrl = userProfile?.profilePhotoUrl;
+
       // Create approval request
       final approval = PendingApproval.create(
         chatRoomId: clubId,
         clubId: clubId,
         userId: currentUserId!,
         userName: currentUser.displayName,
-        userAvatar: currentUser.profilePhotoUrl,
+        userAvatar: actualProfilePhotoUrl,
         userEmail: currentUser.email,
         requestMessage: requestMessage,
       );
@@ -715,12 +721,17 @@ class ClubChatService {
           if (clubCreatedBy == currentUserId) {
             // Auto-add club creator as participant
             final currentUser = _authService.currentAppUser!;
+            
+            // Get actual profile picture URL from UserProfile
+            final userProfile = await _profileService.getUserProfile();
+            final actualProfilePhotoUrl = userProfile?.profilePhotoUrl;
+            
             await _addChatParticipant(
               chatRoomId: clubId,
               clubId: clubId,
               userId: currentUserId!,
               userName: currentUser.displayName,
-              userAvatar: currentUser.profilePhotoUrl,
+              userAvatar: actualProfilePhotoUrl,
               role: 'creator',
             );
             debugPrint('✅ ClubChatService: Club creator auto-added as participant');
@@ -786,6 +797,18 @@ class ClubChatService {
       final currentUser = _authService.currentAppUser!;
       debugPrint('💬 ClubChatService: Sending message to club $clubId');
 
+      // Get actual profile picture URL from UserProfile
+      debugPrint('🔍 ClubChatService: Fetching user profile for avatar...');
+      final userProfile = await _profileService.getUserProfile();
+      final actualProfilePhotoUrl = userProfile?.profilePhotoUrl;
+      
+      debugPrint('👤 ClubChatService: User profile data:');
+      debugPrint('  - User ID: ${currentUserId}');
+      debugPrint('  - Display Name: ${currentUser.displayName}');
+      debugPrint('  - Profile loaded: ${userProfile != null}');
+      debugPrint('  - Profile photo URL: ${actualProfilePhotoUrl}');
+      debugPrint('  - Old Graph API URL: ${currentUser.profilePhotoUrl}');
+      
       // Create chat message
       final message = ChatMessage.create(
         chatRoomId: clubId,
@@ -796,11 +819,18 @@ class ClubChatService {
         mediaAttachments: mediaAttachments,
         senderId: currentUserId!,
         senderName: currentUser.displayName,
-        senderAvatar: currentUser.profilePhotoUrl,
+        senderAvatar: actualProfilePhotoUrl,
         replyToMessageId: replyToMessageId,
         replyToContent: replyToContent,
         replyToSenderName: replyToSenderName,
       );
+
+      debugPrint('📝 ClubChatService: ChatMessage created:');
+      debugPrint('  - Message ID: ${message.messageId}');
+      debugPrint('  - Sender ID: ${message.senderId}');
+      debugPrint('  - Sender Name: ${message.senderName}');
+      debugPrint('  - Sender Avatar: ${message.senderAvatar}');
+      debugPrint('  - Content: ${message.content}');
 
       // Add message to Firestore
       final messageRef = await _firestore

@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/firebase_converters.dart';
+
 part 'calendar_model.g.dart';
 
 /// Takvim etkinliği modeli / Calendar event model
@@ -274,11 +276,13 @@ class CalendarEventModel {
     if (!registrationRequired) return false;
     if (attendeeCount != null &&
         maxAttendees != null &&
-        attendeeCount! >= maxAttendees!)
+        attendeeCount! >= maxAttendees!) {
       return false;
+    }
     if (registrationDeadline != null &&
-        registrationDeadline!.isBefore(DateTime.now()))
+        registrationDeadline!.isBefore(DateTime.now())) {
       return false;
+    }
     return status == EventStatus.scheduled;
   }
 
@@ -678,26 +682,7 @@ enum ReminderMethod {
   both,
 }
 
-/// Firestore Timestamp converter for JSON serialization
-/// Firestore Timestamp'i JSON serileştirme için dönüştürücü
-class TimestampConverter implements JsonConverter<DateTime?, Object?> {
-  const TimestampConverter();
-
-  @override
-  DateTime? fromJson(Object? json) {
-    if (json == null) return null;
-    if (json is Timestamp) return json.toDate();
-    if (json is String) return DateTime.tryParse(json);
-    if (json is int) return DateTime.fromMillisecondsSinceEpoch(json);
-    return null;
-  }
-
-  @override
-  Object? toJson(DateTime? dateTime) {
-    if (dateTime == null) return null;
-    return Timestamp.fromDate(dateTime);
-  }
-}
+// Timestamp converter moved to ../utils/firebase_converters.dart
 
 /// Timestamp listesi converter / Timestamp list converter
 class TimestampListConverter

@@ -13,6 +13,7 @@ import '../../constants/app_constants.dart';
 import '../../services/firebase_auth_service.dart';
 import '../../services/user_profile_service.dart';
 import '../../models/user_profile_model.dart';
+import 'profile_picture_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Uygulama drawer widget'ı - Tüm sayfalarda kullanılan ana drawer / App drawer widget - Main drawer used across all pages
@@ -294,41 +295,12 @@ class _AppDrawerWidgetState extends State<AppDrawerWidget> {
       child: Column(
         children: [
           // Modern profil resmi / Modern profile picture
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 3),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                'assets/images/elifyilmaz.png',
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.6),
-                      size: 40,
-                    ),
-                  );
-                },
-              ),
-            ),
+          BorderedProfilePicture(
+            profilePhotoUrl: _userProfile?.profilePhotoUrl,
+            displayName: _getUserName(context),
+            size: 80,
+            borderColor: Colors.white,
+            borderWidth: 3,
           ),
           const SizedBox(height: 16),
           Text(

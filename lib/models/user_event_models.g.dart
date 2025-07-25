@@ -16,8 +16,10 @@ Event _$EventFromJson(Map<String, dynamic> json) => Event(
   location: json['location'] as String,
   building: json['building'] as String?,
   room: json['room'] as String?,
-  startDateTime: const TimestampConverter().fromJson(json['startDateTime']),
-  endDateTime: const TimestampConverter().fromJson(json['endDateTime']),
+  startDateTime: const RequiredTimestampConverter().fromJson(
+    json['startDateTime'],
+  ),
+  endDateTime: const RequiredTimestampConverter().fromJson(json['endDateTime']),
   timezone: json['timezone'] as String? ?? 'Europe/Istanbul',
   maxCapacity: (json['maxCapacity'] as num?)?.toInt(),
   requiresRegistration: json['requiresRegistration'] as bool? ?? false,
@@ -57,8 +59,12 @@ Map<String, dynamic> _$EventToJson(Event instance) => <String, dynamic>{
   'location': instance.location,
   'building': instance.building,
   'room': instance.room,
-  'startDateTime': ?const TimestampConverter().toJson(instance.startDateTime),
-  'endDateTime': ?const TimestampConverter().toJson(instance.endDateTime),
+  'startDateTime': ?const RequiredTimestampConverter().toJson(
+    instance.startDateTime,
+  ),
+  'endDateTime': ?const RequiredTimestampConverter().toJson(
+    instance.endDateTime,
+  ),
   'timezone': instance.timezone,
   'maxCapacity': instance.maxCapacity,
   'requiresRegistration': instance.requiresRegistration,
@@ -139,11 +145,15 @@ UserMyEvent _$UserMyEventFromJson(Map<String, dynamic> json) => UserMyEvent(
   eventId: json['eventId'] as String,
   userId: json['userId'] as String,
   eventTitle: json['eventTitle'] as String,
-  eventStartDate: const TimestampConverter().fromJson(json['eventStartDate']),
-  eventEndDate: const TimestampConverter().fromJson(json['eventEndDate']),
+  eventStartDate: const RequiredTimestampConverter().fromJson(
+    json['eventStartDate'],
+  ),
+  eventEndDate: const RequiredTimestampConverter().fromJson(
+    json['eventEndDate'],
+  ),
   eventLocation: json['eventLocation'] as String,
   organizerName: json['organizerName'] as String,
-  joinedAt: const TimestampConverter().fromJson(json['joinedAt']),
+  joinedAt: const RequiredTimestampConverter().fromJson(json['joinedAt']),
   joinMethod:
       $enumDecodeNullable(_$JoinMethodEnumMap, json['joinMethod']) ??
       JoinMethod.direct,
@@ -171,11 +181,15 @@ Map<String, dynamic> _$UserMyEventToJson(
   'eventId': instance.eventId,
   'userId': instance.userId,
   'eventTitle': instance.eventTitle,
-  'eventStartDate': ?const TimestampConverter().toJson(instance.eventStartDate),
-  'eventEndDate': ?const TimestampConverter().toJson(instance.eventEndDate),
+  'eventStartDate': ?const RequiredTimestampConverter().toJson(
+    instance.eventStartDate,
+  ),
+  'eventEndDate': ?const RequiredTimestampConverter().toJson(
+    instance.eventEndDate,
+  ),
   'eventLocation': instance.eventLocation,
   'organizerName': instance.organizerName,
-  'joinedAt': ?const TimestampConverter().toJson(instance.joinedAt),
+  'joinedAt': ?const RequiredTimestampConverter().toJson(instance.joinedAt),
   'joinMethod': _$JoinMethodEnumMap[instance.joinMethod]!,
   'participationStatus':
       _$ParticipationStatusEnumMap[instance.participationStatus]!,

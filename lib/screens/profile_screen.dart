@@ -19,6 +19,7 @@ import '../widgets/common/app_bar_widget.dart';
 import '../services/user_profile_service.dart';
 import '../models/user_profile_model.dart';
 import '../widgets/dialogs/profile_data_dialog.dart';
+import '../widgets/common/profile_picture_picker_widget.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -470,7 +471,20 @@ class _ProfileScreenState extends State<ProfileScreen>
         borderRadius: BorderRadius.circular(AppConstants.radiusLarge),
         boxShadow: AppThemes.getCardShadow(context),
       ),
-      child: const UserInfoWidget(showStudentId: true),
+      child: Column(
+        children: [
+          // Enhanced user info widget with profile picture picker
+          UserInfoWidget(
+            showStudentId: true,
+            showProfilePicker: true,
+            onProfileUpdated: () {
+              // Refresh profile data when photo is updated
+              _loadProfile();
+            },
+            currentProfile: _currentProfile,
+          ),
+        ],
+      ),
     );
   }
 

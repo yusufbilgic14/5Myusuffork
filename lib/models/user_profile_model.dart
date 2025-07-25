@@ -1,27 +1,9 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../utils/firebase_converters.dart';
+
 part 'user_profile_model.g.dart';
-
-/// Firestore Timestamp converter for JSON serialization
-class TimestampConverter implements JsonConverter<DateTime?, Object?> {
-  const TimestampConverter();
-
-  @override
-  DateTime? fromJson(Object? json) {
-    if (json == null) return null;
-    if (json is Timestamp) return json.toDate();
-    if (json is String) return DateTime.tryParse(json);
-    if (json is int) return DateTime.fromMillisecondsSinceEpoch(json);
-    return null;
-  }
-
-  @override
-  Object? toJson(DateTime? dateTime) {
-    if (dateTime == null) return null;
-    return dateTime.toIso8601String();
-  }
-}
 
 /// Kullanıcı bildirimleri tercihleri modeli / User notification preferences model
 @JsonSerializable(fieldRename: FieldRename.snake)
