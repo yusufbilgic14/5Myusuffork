@@ -558,7 +558,7 @@ class _ExamCalculatorScreenState extends State<ExamCalculatorScreen> with Ticker
         return Transform.scale(
           scale: _resultAnimation.value,
           child: Opacity(
-            opacity: _resultAnimation.value,
+            opacity: _resultAnimation.value.clamp(0.0, 1.0),
             child: Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

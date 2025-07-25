@@ -159,6 +159,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clubs => 'Clubs';
 
   @override
+  String get chats => 'Chats';
+
+  @override
   String get myEvents => 'My Events';
 
   @override

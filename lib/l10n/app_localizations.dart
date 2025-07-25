@@ -395,6 +395,12 @@ abstract class AppLocalizations {
   /// **'Clubs'**
   String get clubs;
 
+  /// No description provided for @chats.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get chats;
+
   /// No description provided for @myEvents.
   ///
   /// In en, this message translates to:

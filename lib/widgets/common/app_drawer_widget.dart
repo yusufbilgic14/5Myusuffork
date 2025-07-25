@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:medipolapp/screens/profile_screen.dart';
 import 'package:medipolapp/screens/help_support_screen.dart';
 import 'package:medipolapp/screens/login_screen.dart';
 import '../../screens/inbox_screen.dart';
 import '../../screens/feedback_screen.dart';
 import '../../screens/course_grades_screen.dart';
 import '../../screens/upcoming_events_screen.dart';
+import '../../screens/chats_screen.dart';
 import '../../screens/academic_calendar_screen.dart';
 import '../../screens/exam_calculator_screen.dart';
 import '../../l10n/app_localizations.dart';
-import '../../screens/home_screen.dart';
 import '../../constants/app_constants.dart';
 import '../../services/firebase_auth_service.dart';
 import '../../services/user_profile_service.dart';
@@ -169,6 +168,20 @@ class _AppDrawerWidgetState extends State<AppDrawerWidget> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => const UpcomingEventsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildModernDrawerItem(
+                      context,
+                      icon: Icons.chat_outlined,
+                      title: AppLocalizations.of(context)!.chats,
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ChatsScreen(),
                           ),
                         );
                       },

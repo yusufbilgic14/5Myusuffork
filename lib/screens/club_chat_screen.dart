@@ -8,6 +8,7 @@ import '../models/club_chat_models.dart';
 import '../models/user_interaction_models.dart';
 import '../services/club_chat_service.dart';
 import '../services/firebase_auth_service.dart';
+import 'club_overview_screen.dart';
 import '../widgets/chat/media_picker_widget.dart';
 import '../widgets/chat/media_preview_widget.dart';
 import '../widgets/chat/message_reactions_widget.dart';
@@ -587,6 +588,14 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
           onSelected: _handleChatMenuAction,
           itemBuilder: (context) => [
             const PopupMenuItem(
+              value: 'club_overview',
+              child: ListTile(
+                leading: Icon(Icons.info_outline),
+                title: Text('Club Overview'),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            const PopupMenuItem(
               value: 'participants',
               child: ListTile(
                 leading: Icon(Icons.people),
@@ -1117,6 +1126,14 @@ class _ClubChatScreenState extends State<ClubChatScreen> with WidgetsBindingObse
   /// Sohbet menü eylemlerini işle
   void _handleChatMenuAction(String action) {
     switch (action) {
+      case 'club_overview':
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ClubOverviewScreen(club: widget.club),
+          ),
+        );
+        break;
       case 'participants':
         _showParticipantsList();
         break;

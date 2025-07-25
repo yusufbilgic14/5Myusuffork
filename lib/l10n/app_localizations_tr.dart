@@ -159,6 +159,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get clubs => 'Kulüpler';
 
   @override
+  String get chats => 'Sohbetler';
+
+  @override
   String get myEvents => 'Etkinliklerim';
 
   @override

@@ -129,6 +129,90 @@ class _CalendarScreenState extends State<CalendarScreen>
     }
   }
 
+  /// Dersi düzenle / Edit course
+  Future<void> _editCourse(UserCourse course) async {
+    final result = await showDialog<UserCourse>(
+      context: context,
+      builder: (context) => EditCourseDialog(course: course),
+    );
+
+    if (result != null) {
+      try {
+        await _coursesService.updateCourse(course.courseId, result);
+        await _loadUserCourses();
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${result.courseCode} dersi başarıyla güncellendi'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Ders güncellenirken hata oluştu: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  /// Dersi sil / Delete course
+  Future<void> _deleteCourse(UserCourse course) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Dersi Sil'),
+        content: Text(
+          '${course.courseCode} - ${course.displayName} dersini silmek istediğinizden emin misiniz?\n\nBu işlem geri alınamaz.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('İptal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
+            child: const Text('Sil'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldDelete == true) {
+      try {
+        await _coursesService.deleteCourse(course.courseId);
+        await _loadUserCourses();
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${course.courseCode} dersi başarıyla silindi'),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Ders silinirken hata oluştu: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -1029,6 +1113,47 @@ class _CalendarScreenState extends State<CalendarScreen>
               theme,
             ),
             const SizedBox(height: 24),
+            // Action buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _editCourse(course);
+                    },
+                    icon: const Icon(Icons.edit_rounded),
+                    label: const Text('Düzenle'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _deleteCourse(course);
+                    },
+                    icon: const Icon(Icons.delete_rounded),
+                    label: const Text('Sil'),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: theme.colorScheme.error,
+                      foregroundColor: theme.colorScheme.onError,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -1250,6 +1375,528 @@ class _CalendarScreenState extends State<CalendarScreen>
   bool _hasEventsOnDate(DateTime date) {
     final dayOfWeek = date.weekday;
     return _userCourses.any((course) => course.hasClassOnDay(dayOfWeek));
+  }
+}
+
+/// Dialog for editing existing courses / Ders düzenleme dialog'u
+class EditCourseDialog extends StatefulWidget {
+  final UserCourse course;
+
+  const EditCourseDialog({super.key, required this.course});
+
+  @override
+  State<EditCourseDialog> createState() => _EditCourseDialogState();
+}
+
+class _EditCourseDialogState extends State<EditCourseDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _courseCodeController;
+  late final TextEditingController _courseNameController;
+  late final TextEditingController _instructorNameController;
+  late final TextEditingController _roomController;
+  late final TextEditingController _startTimeController;
+  late final TextEditingController _endTimeController;
+
+  late int _selectedDay;
+  late int _credits;
+  late Color _selectedColor;
+
+  final List<String> _weekDays = [
+    'Pazartesi',
+    'Salı',
+    'Çarşamba',
+    'Perşembe',
+    'Cuma',
+    'Cumartesi',
+    'Pazar',
+  ];
+
+  final List<String> _weekDaysShort = [
+    'Pzt',
+    'Sal',
+    'Çar',
+    'Per',
+    'Cum',
+    'Cmt',
+    'Paz',
+  ];
+
+  final List<Color> _courseColors = [
+    const Color(0xFF1E3A8A), // Blue
+    const Color(0xFF059669), // Green
+    const Color(0xFFDC2626), // Red
+    const Color(0xFF7C2D12), // Brown
+    const Color(0xFF6B21A8), // Purple
+    const Color(0xFFEA580C), // Orange
+    const Color(0xFF0D9488), // Teal
+    const Color(0xFFBE123C), // Pink
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Initialize controllers with existing course data
+    _courseCodeController = TextEditingController(text: widget.course.courseCode);
+    _courseNameController = TextEditingController(text: widget.course.courseName);
+    _instructorNameController = TextEditingController(text: widget.course.instructor.name);
+    
+    // Set schedule data from first schedule item
+    if (widget.course.schedule.isNotEmpty) {
+      final schedule = widget.course.schedule.first;
+      _selectedDay = schedule.dayOfWeek;
+      _roomController = TextEditingController(text: schedule.room);
+      _startTimeController = TextEditingController(text: schedule.startTime);
+      _endTimeController = TextEditingController(text: schedule.endTime);
+    } else {
+      _selectedDay = 1;
+      _roomController = TextEditingController();
+      _startTimeController = TextEditingController();
+      _endTimeController = TextEditingController();
+    }
+    
+    _credits = widget.course.credits;
+    _selectedColor = widget.course.colorAsColor;
+  }
+
+  @override
+  void dispose() {
+    _courseCodeController.dispose();
+    _courseNameController.dispose();
+    _instructorNameController.dispose();
+    _roomController.dispose();
+    _startTimeController.dispose();
+    _endTimeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _selectTime(TextEditingController controller) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            timePickerTheme: TimePickerThemeData(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              hourMinuteTextColor: Theme.of(context).colorScheme.onSurface,
+              dialHandColor: Theme.of(context).colorScheme.primary,
+              dialBackgroundColor: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.1),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      controller.text =
+          '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+    }
+  }
+
+  void _updateCourse() {
+    if (!_formKey.currentState!.validate()) return;
+
+    // Parse start and end times
+    final startParts = _startTimeController.text.split(':');
+    final endParts = _endTimeController.text.split(':');
+
+    if (startParts.length != 2 || endParts.length != 2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Geçerli bir saat formatı girin (ÖR: 09:00)'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final startHour = int.tryParse(startParts[0]);
+    final endHour = int.tryParse(endParts[0]);
+
+    if (startHour == null || endHour == null || startHour >= endHour) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Başlangıç saati bitiş saatinden önce olmalıdır'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final duration = (endHour - startHour).toDouble();
+
+    // Create updated course schedule
+    final schedule = CourseSchedule(
+      dayOfWeek: _selectedDay,
+      startTime: _startTimeController.text,
+      endTime: _endTimeController.text,
+      startHour: startHour,
+      duration: duration,
+      room: _roomController.text,
+      building: 'Campus',
+      classType: 'lecture',
+    );
+
+    // Create updated course instructor
+    final instructor = CourseInstructor(name: _instructorNameController.text);
+
+    // Create updated user course
+    final updatedCourse = widget.course.copyWith(
+      courseCode: _courseCodeController.text.toUpperCase(),
+      courseName: _courseNameController.text,
+      instructor: instructor,
+      schedule: [schedule],
+      credits: _credits,
+      color: '#${_selectedColor.value.toRadixString(16).substring(2).toUpperCase()}',
+      updatedAt: DateTime.now(),
+    );
+
+    Navigator.of(context).pop(updatedCourse);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Row(
+              children: [
+                Icon(
+                  Icons.edit_rounded,
+                  color: theme.colorScheme.primary,
+                  size: 28,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  'Ders Düzenle',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Form
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // Course Code
+                      TextFormField(
+                        controller: _courseCodeController,
+                        decoration: InputDecoration(
+                          labelText: 'Ders Kodu *',
+                          hintText: 'CS101',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: const Icon(Icons.code),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Ders kodu gerekli';
+                          }
+                          return null;
+                        },
+                        textCapitalization: TextCapitalization.characters,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Course Name
+                      TextFormField(
+                        controller: _courseNameController,
+                        decoration: InputDecoration(
+                          labelText: 'Ders Adı *',
+                          hintText: 'Görsel Programlama',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: const Icon(Icons.book),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Ders adı gerekli';
+                          }
+                          return null;
+                        },
+                        textCapitalization: TextCapitalization.words,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Instructor
+                      TextFormField(
+                        controller: _instructorNameController,
+                        decoration: InputDecoration(
+                          labelText: 'Öğretim Görevlisi *',
+                          hintText: 'Dr. Ahmet Yılmaz',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: const Icon(Icons.person),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Öğretim görevlisi adı gerekli';
+                          }
+                          return null;
+                        },
+                        textCapitalization: TextCapitalization.words,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Day and Room Row
+                      Row(
+                        children: [
+                          // Day
+                          Expanded(
+                            child: DropdownButtonFormField<int>(
+                              value: _selectedDay,
+                              decoration: InputDecoration(
+                                labelText: 'Gün',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                prefixIcon: const Icon(Icons.calendar_today),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                              ),
+                              isExpanded: true,
+                              items: _weekDaysShort.asMap().entries.map((
+                                entry,
+                              ) {
+                                return DropdownMenuItem(
+                                  value: entry.key + 1,
+                                  child: Text(
+                                    entry.value,
+                                    style: const TextStyle(fontSize: 14),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedDay = value!;
+                                });
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+
+                          // Room
+                          Expanded(
+                            child: TextFormField(
+                              controller: _roomController,
+                              decoration: InputDecoration(
+                                labelText: 'Sınıf *',
+                                hintText: 'B201',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                prefixIcon: const Icon(Icons.location_on),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Sınıf gerekli';
+                                }
+                                return null;
+                              },
+                              textCapitalization: TextCapitalization.characters,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Time Row
+                      Row(
+                        children: [
+                          // Start Time
+                          Expanded(
+                            child: TextFormField(
+                              controller: _startTimeController,
+                              decoration: InputDecoration(
+                                labelText: 'Başlangıç *',
+                                hintText: '09:00',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                prefixIcon: const Icon(Icons.access_time),
+                              ),
+                              readOnly: true,
+                              onTap: () => _selectTime(_startTimeController),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Başlangıç saati gerekli';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+
+                          // End Time
+                          Expanded(
+                            child: TextFormField(
+                              controller: _endTimeController,
+                              decoration: InputDecoration(
+                                labelText: 'Bitiş *',
+                                hintText: '11:00',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                prefixIcon: const Icon(Icons.schedule),
+                              ),
+                              readOnly: true,
+                              onTap: () => _selectTime(_endTimeController),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Bitiş saati gerekli';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Credits
+                      DropdownButtonFormField<int>(
+                        value: _credits,
+                        decoration: InputDecoration(
+                          labelText: 'Kredi',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          prefixIcon: const Icon(Icons.star),
+                        ),
+                        items: List.generate(8, (index) {
+                          final credits = index + 1;
+                          return DropdownMenuItem(
+                            value: credits,
+                            child: Text('$credits Kredi'),
+                          );
+                        }),
+                        onChanged: (value) {
+                          setState(() {
+                            _credits = value!;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Color Picker
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Renk', style: theme.textTheme.labelLarge),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _courseColors.map((color) {
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedColor = color;
+                                  });
+                                },
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color: color,
+                                    shape: BoxShape.circle,
+                                    border: _selectedColor == color
+                                        ? Border.all(
+                                            color: theme.colorScheme.outline,
+                                            width: 3,
+                                          )
+                                        : null,
+                                  ),
+                                  child: _selectedColor == color
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 20,
+                                        )
+                                      : null,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('İptal'),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _updateCourse,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Güncelle'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
